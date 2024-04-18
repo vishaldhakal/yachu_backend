@@ -1,4 +1,4 @@
-from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners
+from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners,Product
 from rest_framework import serializers
 
 class SiteConfigurationSerializer(serializers.ModelSerializer):
@@ -53,5 +53,11 @@ class VideoGallerySerializer(serializers.ModelSerializer):
 class BannersSerializer(serializers.ModelSerializer):
    class Meta:
       model = Banners
+      fields = '__all__'
+      depth = 2
+
+class ProductSerializer(serializers.ModelSerializer):
+   class Meta:
+      model = Product
       fields = '__all__'
       depth = 2

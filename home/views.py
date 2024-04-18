@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from django.core.mail import send_mail, EmailMultiAlternatives
 from datetime import datetime
 from datetime import date
-from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners
-from .serializers import SiteConfigurationSerializer, FAQCategorySerializer, FAQSerializer, DepartmentSerializer, TeamMemberSerializer, TestimonialSerializer, ImageGallerySerializer, VideoGallerySerializer,BannersSerializer
+from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners,Product
+from .serializers import SiteConfigurationSerializer, FAQCategorySerializer, FAQSerializer, DepartmentSerializer, TeamMemberSerializer, TestimonialSerializer, ImageGallerySerializer, VideoGallerySerializer,BannersSerializer,ProductSerializer
 from rest_framework import generics
 
 class SiteConfigurationListCreate(generics.ListCreateAPIView):
@@ -80,3 +80,11 @@ class BannersListCreate(generics.ListCreateAPIView):
 class BannersDetail(generics.RetrieveUpdateDestroyAPIView):
       queryset = Banners.objects.all()
       serializer_class = BannersSerializer
+
+class ProductListCreate(generics.ListCreateAPIView):
+      queryset = Product.objects.all()
+      serializer_class = ProductSerializer
+
+class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
+      queryset = Product.objects.all()
+      serializer_class = ProductSerializer
