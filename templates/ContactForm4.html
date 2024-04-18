@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Hiking Bees | Customized Trip</title>
+     <style>
+          * {
+               font-family: "Montserrat", sans-serif;
+          }
+
+          .center {
+               display: flex;
+               justify-content: center;
+          }
+
+          .fw-bold {
+               font-weight: bold;
+          }
+
+          .center p {
+               font-size: 20px;
+          }
+     </style>
+</head>
+
+<body>
+     <h1>Hiking Bees Trip Customization Enquiry</h1>
+     <div class="center">
+          <div>
+               <p> <span class="fw-bold">Name</span> : <span>{{name}}</span> </p>
+               <p> <span class="fw-bold">Email</span> : <span>{{email}}</span> </p>
+               <p> <span class="fw-bold">Phone</span> : <span>{{phone}}</span> </p>
+               <p> <span class="fw-bold">Message</span> : <span>{{message}}</span> </p>
+               <p> <span class="fw-bold">No of People</span> : <span>{{noofpeople}}</span> </p>
+               <p> <span class="fw-bold">No of days</span> : <span>{{noofdays}}</span> </p>
+               <p> <span class="fw-bold">Arrival Date</span> : <span>{{arrival}}</span> </p>
+               <p> <span class="fw-bold">Departure Date</span> : <span>{{departure}}</span> </p>
+               <p> <span class="fw-bold">Budget From [ Starting ]</span> : <span>{{budget_from}}</span> </p>
+               <p> <span class="fw-bold">Budget To</span> : <span>{{budget_to}}</span> </p>
+               <p> <span class="fw-bold">Activity</span> : <span> </span><a
+                         href="https://hikingbees.com/activity/{{slug}}">{{activity}}</a> </p>
+          </div>
+     </div>
+</body>
+
+</html>

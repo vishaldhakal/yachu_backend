@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Hiking Bees | Contact Form Submission</title>
+   <style>
+      * {
+         font-family: "Montserrat", sans-serif;
+      }
+
+      .center {
+         display: flex;
+         justify-content: center;
+      }
+
+      .fw-bold {
+         font-weight: bold;
+      }
+
+      .center p {
+         font-size: 20px;
+      }
+   </style>
+</head>
+
+<body>
+   <h1>Hiking Bees Booking Form Submission</h1>
+   <div class="center">
+      <div>
+         <p> <span class="fw-bold">Name</span> : <span>{{name}}</span> </p>
+         <p> <span class="fw-bold">Booking Date</span> : <span>{{booking_date}}</span> </p>
+         <p> <span class="fw-bold">No of Guests</span> : <span>{{no_of_guests}}</span> </p>
+         <p> <span class="fw-bold">Price</span> : <span>{{total_price}}</span> </p>
+         <p> <span class="fw-bold">Email</span> : <span>{{email}}</span> </p>
+         <p> <span class="fw-bold">Phone</span> : <span>{{phone}}</span> </p>
+         <p> <span class="fw-bold">Message</span> : <span>{{message}}</span> </p>
+         <p> <span class="fw-bold">Activity</span> : <span> </span><a
+               href="https://hikingbees.com/activity/{{slug}}">{{activity}}</a> </p>
+      </div>
+   </div>
+</body>
+
+</html>

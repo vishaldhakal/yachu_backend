@@ -1,0 +1,1 @@
+web: gunicorn yachu.wsgi --log-file -
