@@ -38,7 +38,6 @@ soupsieve==2.4
 sqlparse==0.4.3
 sympy==1.12
 tokenizers==0.15.0
-torch==2.1.2
 tqdm==4.66.1
 transformers==4.36.2
 typing_extensions==4.9.0
