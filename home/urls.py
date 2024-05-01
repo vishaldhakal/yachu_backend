@@ -23,4 +23,6 @@ urlpatterns = [
    path('banners/<int:pk>/', views.BannersDetail.as_view(), name='banner_detail'),
    path('products/', views.ProductListCreate.as_view(), name='products'),
    path('products/<int:pk>/', views.ProductDetail.as_view(), name='product_detail'),
+   path('form-data/', views.FormDataListCreateView.as_view(), name='form-data-list-create'),
+   path('form-data/<int:pk>/', views.FormDataRetrieveUpdateDestroyView.as_view(), name='form-data-retrieve-update-destroy'),
 ]

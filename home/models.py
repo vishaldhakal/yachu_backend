@@ -126,3 +126,18 @@ class Product(models.Model):
       
    def __str__(self):
       return self.title
+   
+class Member(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+class FormData(models.Model):
+    team_name = models.CharField(max_length=100)
+    team_description = models.TextField()
+    members = models.ManyToManyField(Member, related_name='form_data')
+    robot_name = models.CharField(max_length=100)
+    robot_description = models.TextField()
+    robot_photos = models.ManyToManyField('FileSchema', related_name='form_data', blank=True)
+
+class FileSchema(models.Model):
+    file = models.FileField(upload_to='uploads/')
