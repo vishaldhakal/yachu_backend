@@ -1,6 +1,6 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners,Product
+from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners,Product, FormData,Member,FileSchema
 
 admin.site.register(SiteConfiguration, SingletonModelAdmin)
 admin.site.register(FAQCategory)
@@ -12,3 +12,6 @@ admin.site.register(ImageGallery)
 admin.site.register(VideoGallery)
 admin.site.register(Banners)
 admin.site.register(Product)
+admin.site.register(FormData)
+admin.site.register(Member)
+admin.site.register(FileSchema)

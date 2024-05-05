@@ -140,4 +140,5 @@ class FormData(models.Model):
     robot_photos = models.ManyToManyField('FileSchema', related_name='form_data', blank=True)
 
 class FileSchema(models.Model):
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to='uploads/') 
+
