@@ -1,17 +1,23 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners,Product, FormData,Member,FileSchema
+from unfold.admin import ModelAdmin
 
-admin.site.register(SiteConfiguration, SingletonModelAdmin)
-admin.site.register(FAQCategory)
-admin.site.register(FAQ)
-admin.site.register(Department)
-admin.site.register(TeamMember)
-admin.site.register(Testimonial)
-admin.site.register(ImageGallery)
-admin.site.register(VideoGallery)
-admin.site.register(Banners)
-admin.site.register(Product)
-admin.site.register(FormData)
+
+class SiteConfigurationAdmin(SingletonModelAdmin,ModelAdmin):
+    pass
+
+admin.site.register(SiteConfiguration,SiteConfigurationAdmin)
+
+admin.site.register(FAQCategory,ModelAdmin)
+admin.site.register(FAQ,ModelAdmin)
+admin.site.register(Department,ModelAdmin)
+admin.site.register(TeamMember,ModelAdmin)
+admin.site.register(Testimonial,ModelAdmin)
+admin.site.register(ImageGallery,ModelAdmin)
+admin.site.register(VideoGallery,ModelAdmin)
+admin.site.register(Banners,ModelAdmin)
+admin.site.register(Product,ModelAdmin)
+""" admin.site.register(FormData)
 admin.site.register(Member)
-admin.site.register(FileSchema)
+admin.site.register(FileSchema) """

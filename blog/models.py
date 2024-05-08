@@ -37,7 +37,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     thumbnail_image = models.FileField()
     thumbnail_image_alt_description = models.CharField(max_length=300)
-    blog_content = tinymce_models.HTMLField(blank=True)
+    blog_content = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag)
     author = models.ForeignKey(Author, on_delete=models.DO_NOTHING)
 
