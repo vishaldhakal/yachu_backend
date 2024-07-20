@@ -13,8 +13,8 @@ class StallBooking(models.Model):
     ]
 
     MERGE_CHOICES = [
-        ('MERGE', 'Merge'),
-        ('SEPARATE', 'Separate'),
+        ('Merge', 'Merge'),
+        ('Separate', 'Separate'),
     ]
 
     # Organization/Company Information
