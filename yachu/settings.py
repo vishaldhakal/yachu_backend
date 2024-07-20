@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'home',
     'about',
     'blog',
+    'cim',
     'django_summernote',
     'solo',
     'corsheaders',
