@@ -9,7 +9,7 @@ class StallBooking(models.Model):
          ('Agro & MSME', 'Agro & MSME'),
          ('Automobiles', 'Automobiles'),
          ('Food Stalls', 'Food Stalls'),
-         ('BDS Providers', 'BDS Providers'),
+         ('BDS Providers Stall', 'BDS Providers Stall'),
     ]
 
     MERGE_CHOICES = [
