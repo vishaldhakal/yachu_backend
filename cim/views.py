@@ -4,6 +4,7 @@ from .serializers import StallBookingSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import api_view
 
 
 
@@ -15,12 +16,14 @@ class StallBookingRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
    queryset = StallBooking.objects.all()
    serializer_class = StallBookingSerializer
 
+@api_view(['POST'])
 def approve_stall(request, pk):
    stall = StallBooking.objects.get(pk=pk)
    stall.status = 'Approved'
    stall.save()
    return Response({'message': 'Stall Approved', 'status': status.HTTP_200_OK})
 
+@api_view(['POST'])
 def reject_stall(request, pk):
    stall = StallBooking.objects.get(pk=pk)
    stall.status = 'Rejected'
