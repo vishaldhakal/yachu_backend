@@ -17,6 +17,12 @@ class StallBooking(models.Model):
         ('Separate', 'Separate'),
     ]
 
+    STATUS = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+
     # Organization/Company Information
     company = models.CharField(max_length=255)
     address = models.TextField()
@@ -25,6 +31,7 @@ class StallBooking(models.Model):
     city = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
     email = models.EmailField()
+    status = models.CharField(max_length=100, choices=STATUS, default='Pending')
 
     # Stall Information
     stall_type = models.CharField(max_length=200, choices=STALL_TYPE_CHOICES)
