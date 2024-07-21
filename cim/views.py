@@ -60,10 +60,16 @@ def get_booked_stalls(request):
    for stall in booked_stalls:
       if stall.stall_no.__contains__(','):
          stall_no = stall.stall_no.split(',')
+         new_listx = []
          for s in stall_no:
-            new_list.append(s)
+            new_listx.append(s)
+            new_listx.append(stall.company)
+         new_list.append(new_listx)
       else:
-         new_list.append(stall.stall_no)
+         new_listx = []
+         new_listx.append(stall.stall_no)
+         new_listx.append(stall.company)
+         new_list.append(new_listx)
 
    #list to serialize
    """ new_list_json  = json.dumps(new_list) """
