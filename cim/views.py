@@ -14,8 +14,8 @@ class StallBookingListCreateView(generics.ListCreateAPIView):
    serializer_class = StallBookingSerializer
 
    def list(self, request, *args, **kwargs):
-      status = request.get.GET('status', None)
-      advance_paid = request.get.GET('advance_paid', None)
+      status = request.GET('status', None)
+      advance_paid = request.GET('advance_paid', None)
       
       if advance_paid is not None:
          queryset = StallBooking.objects.filter(remaining_amount=0)
