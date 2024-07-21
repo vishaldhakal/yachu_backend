@@ -54,6 +54,9 @@ class StallBooking(models.Model):
 
     def __str__(self):
         return f"{self.company} - Stall {self.stall_no}"
+    
+    def has_paid_all(self):
+        return self.remaining_amount == 0
 
     class Meta:
         verbose_name = "Stall Booking"
