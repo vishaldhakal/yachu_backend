@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+import json
 
 
 
@@ -54,7 +55,31 @@ def get_booked_stalls(request):
    else:
       booked_stalls = StallBooking.objects.filter(status='Approved')
       pending_booked = StallBooking.objects.filter(status='Pending')
+   
+   new_list = []
+   for stall in booked_stalls:
+      if stall.stall_no.__contains__(','):
+         stall_no = stall.stall_no.split(',')
+         for s in stall_no:
+            new_list.append(s)
+      else:
+         new_list.append(stall.stall_no)
+
+   #list to serialize
+   new_list_json  = json.dumps(new_list)
+   
+   new_list2 = []
+   for stall in pending_booked:
+      if stall.stall_no.__contains__(','):
+         stall_no = stall.stall_no.split(',')
+         for s in stall_no:
+            new_list2.append(s)
+      else:
+         new_list2.append(stall.stall_no)
+
+   #list to serialize
+   new_list2_json  = json.dumps(new_list2)
 
    serializer = StallBookingSmallSerializer(booked_stalls, many=True)
    serializer2 = StallBookingSmallSerializer(pending_booked, many=True) 
-   return Response({"booked": serializer.data, "pending": serializer2.data})
+   return Response({"booked": serializer.data, "pending": serializer2.data, "stall_no_booked": new_list_json,"stall_no_pending": new_list2_json}, status=status.HTTP_200_OK)
