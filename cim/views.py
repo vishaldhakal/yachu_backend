@@ -13,21 +13,6 @@ class StallBookingListCreateView(generics.ListCreateAPIView):
    queryset = StallBooking.objects.all()
    serializer_class = StallBookingSerializer
 
-   def list(self, request, *args, **kwargs):
-      status = request.GET('status', None)
-      advance_paid = request.GET('advance_paid', None)
-      
-      if advance_paid is not None:
-         queryset = StallBooking.objects.filter(remaining_amount=0)
-      else:
-         queryset = StallBooking.objects.all()
-
-      if status is not None:
-         queryset = queryset.filter(status=status)
-
-      serializer = StallBookingSerializer(queryset, many=True)
-      return Response(serializer.data)
-
 class StallBookingRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
    queryset = StallBooking.objects.all()
    serializer_class = StallBookingSerializer
