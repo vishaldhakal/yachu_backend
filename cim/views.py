@@ -60,8 +60,8 @@ def get_booked_stalls(request):
    for stall in booked_stalls:
       if stall.stall_no.__contains__(','):
          stall_no = stall.stall_no.split(',')
-         new_listx = []
          for s in stall_no:
+            new_listx = []
             new_listx.append(s)
             new_listx.append(stall.company)
             new_list.append(new_listx)
