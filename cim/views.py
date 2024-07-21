@@ -64,7 +64,7 @@ def get_booked_stalls(request):
          for s in stall_no:
             new_listx.append(s)
             new_listx.append(stall.company)
-         new_list.append(new_listx)
+            new_list.append(new_listx)
       else:
          new_listx = []
          new_listx.append(stall.stall_no)
