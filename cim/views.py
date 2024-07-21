@@ -64,11 +64,13 @@ def get_booked_stalls(request):
             new_listx = []
             new_listx.append(s)
             new_listx.append(stall.company)
+            new_listx.append(stall.status)
             new_list.append(new_listx)
       else:
          new_listx = []
          new_listx.append(stall.stall_no)
          new_listx.append(stall.company)
+         new_listx.append(stall.status)
          new_list.append(new_listx)
 
    #list to serialize
@@ -79,9 +81,17 @@ def get_booked_stalls(request):
       if stall.stall_no.__contains__(','):
          stall_no = stall.stall_no.split(',')
          for s in stall_no:
-            new_list2.append(s)
+            new_list2x = []
+            new_list2x.append(s)
+            new_list2x.append(stall.company)
+            new_list2x.append(stall.status)
+            new_list2.append(new_list2x)
       else:
-         new_list2.append(stall.stall_no)
+         new_list2x = []
+         new_list2x.append(stall.stall_no)
+         new_list2x.append(stall.company)
+         new_list2x.append(stall.status)
+         new_list2.append(new_list2x)
 
    #list to serialize
    """ new_list2_json  = json.dumps(new_list2) """
