@@ -6,7 +6,7 @@ class StallBooking(models.Model):
          ('National Prime', 'National Prime'),
          ('National General', 'National General'),
          ('International', 'International'),
-         ('Agro & MSME', 'Agro & MSME'),
+         ('Agro and MSME', 'Agro and MSME'),
          ('Automobiles', 'Automobiles'),
          ('Food Stalls', 'Food Stalls'),
          ('BDS Providers Stall', 'BDS Providers Stall'),
