@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from .models import StallBooking
 from .serializers import StallBookingSerializer,StallBookingSmallSerializer
 from rest_framework import generics
@@ -6,7 +7,22 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 import json
+import csv
 
+
+def export(request):
+    getrec = StallBooking.objects.all()
+    #csv
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="stallbooked.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['stallno','company','phone','email','status','stalltype','total_amount','advance_amount','remaining_amount','amount_in_words','created_at','updated_at'])
+
+    for rec in getrec:
+        writer.writerow([rec.stall_no,rec.company,rec.phone,rec.email,rec.status,rec.stall_type,rec.total_amount,rec.advance_amount,rec.remaining_amount,rec.amount_in_words,rec.created_at,rec.updated_at])
+        
+    return response
 
 
 class StallBookingListCreateView(generics.ListCreateAPIView):
