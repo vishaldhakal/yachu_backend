@@ -22,6 +22,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts',  # Make sure this is here
     'unfold',
     'unfold.contrib.filters',
     'unfold.contrib.forms',    
@@ -39,10 +40,12 @@ INSTALLED_APPS = [
     'home',
     'about',
     'blog',
+    'orders',
     'cim',
     'django_summernote',
     'solo',
-    'corsheaders',
+    'corsheaders'
+    
 ]
 
 MIDDLEWARE = [
@@ -74,31 +77,36 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'yachu.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-} """
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "yachu",
-        "USER": "vishal",
-        "PASSWORD": "DatabaseUserPassword",
-        "HOST": "localhost",
-        "PORT": "",
-    }
 }
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "yachu",
+#         "USER": "vishal",
+#         "PASSWORD": "DatabaseUserPassword",
+#         "HOST": "localhost",
+#         "PORT": "",
+#     }
+# }
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
+
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -271,7 +279,7 @@ CSRF_TRUSTED_ORIGINS = ['https://4963-110-44-120-22.ngrok.io',]
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),
     "SITE_TITLE": _("Yachu Admin"),
-    "THEME": "light",
+    "THEME": "dark",
     "SIDEBAR": {
         "show_search": True,
         "show_all_applications": True,
@@ -283,16 +291,17 @@ UNFOLD = {
                 "items": [
                     {
                         "title": _("Dashboard"),
-                        "icon": "dashboard",  # Supported icon set: https://fonts.google.com/icons
+                        "icon": "dashboard",
                         "link": reverse_lazy("admin:index"),
                     },
                     {
                         "title": _("Users"),
                         "icon": "people",
-                        "link": reverse_lazy("admin:auth_user_changelist"),
+                        "link": reverse_lazy("admin:accounts_customuser_changelist"),
                     },
                 ],
             },
+
             {
                 "title": _("Blog and Event"),
                 "separator": True,
