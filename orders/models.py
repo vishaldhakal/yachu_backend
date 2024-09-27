@@ -22,6 +22,7 @@ class Order(models.Model):
         ('Prepaid', 'Prepaid')
     ]
     ORDER_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
         ('Delivered', 'Delivered'),
         ('Cancelled', 'Cancelled')
     ]
