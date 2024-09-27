@@ -3,56 +3,64 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import OrderSerializer
-from .models import Order
+from .models import Order, Product
 from rest_framework.permissions import IsAuthenticated
+from accounts.models import CustomUser
 
 # Create your views here.
 
 class OrderListCreateView(ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        return Order.objects.filter(convinced_by=user)
+        return Order.objects.filter(convinced_by=1)
 
     def post(self, request, *args, **kwargs):
         data = request.data
-        convinced_by = request.user
-        full_name = data.get('full_name')
-        email = data.get('email')
-        delivery_location = data.get('delivery_location')
-        phone_number = data.get('phone_number')
-        remarks = data.get('remarks')
-        oil_type = data.get('oil_type')
-        quantity = data.get('quantity')
-        total_amount = data.get('total_amount')
-        payment_method = data.get('payment_method')
-        payment_screenshot = data.get('payment_screenshot')
-        order_status = data.get('order_status')
-        shampoo = data.get('shampoo')
+        user = CustomUser.objects.get(id=1)
+        convinced_by = user
+        
+        # Extract order data
+        order_data = {
+            'convinced_by': convinced_by,
+            'full_name': data.get('full_name'),
+            'email': data.get('email'),
+            'delivery_location': data.get('delivery_location'),
+            'landmark': data.get('landmark'),
+            'phone_number': data.get('phone_number'),
+            'alternate_phone_number': data.get('alternate_phone_number'),
+            'delivery_charge': data.get('delivery_charge'),
+            'payment_method': data.get('payment_method'),
+            'payment_screenshot': data.get('payment_screenshot'),
+            'order_status': data.get('order_status', 'Pending'),
+            'shampoo': data.get('shampoo')
+        }
 
-        order = Order.objects.create(
-            convinced_by=convinced_by,
-            full_name=full_name,
-            email=email,
-            delivery_location=delivery_location,
-            phone_number=phone_number,
-            remarks=remarks,
-            oil_type=oil_type,
-            quantity=quantity,
-            total_amount=total_amount,
-            payment_method=payment_method,
-            payment_screenshot=payment_screenshot,
-            order_status=order_status,
-            shampoo=shampoo
-        )
+        # Create order
+        order = Order.objects.create(**order_data)
+
+        # Extract and create products
+        products_data = data.get('products', [])
+        for product_data in products_data:
+            Product.objects.create(
+                order=order,
+                name=product_data.get('name'),
+                price=product_data.get('price')
+            )
+
+        # Recalculate total amount
+        order.calculate_total_amount()
         order.save()
-        serializer = OrderSerializer(order)
+
+        # Fetch the updated order with products
+        updated_order = Order.objects.prefetch_related('products').get(id=order.id)
+        serializer = OrderSerializer(updated_order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-#create a view to retreve,update and delete a single order
+
 class OrderRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

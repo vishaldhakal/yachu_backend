@@ -2,6 +2,8 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin,StackedInline
 from .models import Order,Product
 
+admin.site.register(Product)
+
 class ProductInline(StackedInline):
     model = Product
     extra = 1

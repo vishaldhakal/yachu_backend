@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/', include('about.urls')),
     path('api/', include('cim.urls')),
     path('api/', include('accounts.urls')),
+    path('api/', include('orders.urls')),
     path('summernote/', include('django_summernote.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('tinymce/', include('tinymce.urls')),
