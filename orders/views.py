@@ -64,7 +64,10 @@ class OrderListCreateView(ListCreateAPIView):
 class OrderRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(convinced_by=1)
 
     def get(self, request, *args, **kwargs):
         order = self.get_object()
@@ -75,20 +78,35 @@ class OrderRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
         order = self.get_object()
         data = request.data
         
-        order.full_name = data.get('full_name', order.full_name)
-        order.email = data.get('email', order.email)
-        order.delivery_location = data.get('delivery_location', order.delivery_location)
-        order.phone_number = data.get('phone_number', order.phone_number)
-        order.remarks = data.get('remarks', order.remarks)
-        order.oil_type = data.get('oil_type', order.oil_type)
-        order.quantity = data.get('quantity', order.quantity)
-        order.total_amount = data.get('total_amount', order.total_amount)
-        order.payment_method = data.get('payment_method', order.payment_method)
-        order.payment_screenshot = data.get('payment_screenshot', order.payment_screenshot)
-        order.order_status = data.get('order_status', order.order_status)
-        order.shampoo = data.get('shampoo', order.shampoo)
+        # Update order data
+        order_data = {
+            'full_name': data.get('full_name', order.full_name),
+            'email': data.get('email', order.email),
+            'delivery_location': data.get('delivery_location', order.delivery_location),
+            'landmark': data.get('landmark', order.landmark),
+            'phone_number': data.get('phone_number', order.phone_number),
+            'alternate_phone_number': data.get('alternate_phone_number', order.alternate_phone_number),
+            'delivery_charge': data.get('delivery_charge', order.delivery_charge),
+            'payment_method': data.get('payment_method', order.payment_method),
+            'payment_screenshot': data.get('payment_screenshot', order.payment_screenshot),
+            'order_status': data.get('order_status', order.order_status),
+            'shampoo': data.get('shampoo', order.shampoo)
+        }
+
+        # Update order
+        for key, value in order_data.items():
+            setattr(order, key, value)
+
+        # Handle product data
+        products_data = data.get('products', [])
+        if products_data:
+            # Assuming the Order model has fields for a single product
+            product = products_data[0]  # Take the first product in the list
+            order.name = product.get('name', order.name)
+            order.price = product.get('price', order.price)
 
         order.save()
+
         serializer = OrderSerializer(order)
         return Response(serializer.data)
 
