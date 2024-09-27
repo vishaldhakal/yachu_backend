@@ -13,4 +13,8 @@ class OrderAdmin(ModelAdmin):
     list_filter = ('order_status', 'payment_method')
     search_fields = ('full_name', 'email', 'phone_number')
     readonly_fields = ('total_amount',)
-    
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        form.instance.calculate_total_amount()
+        form.instance.save()

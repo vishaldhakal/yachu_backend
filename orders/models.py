@@ -11,7 +11,7 @@ class Product(models.Model):
     ]
     name = models.CharField(max_length=255, choices=OIL_CHOICES)
     price = models.IntegerField()
-    order=models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_products')
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_products', null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} - ₹{self.price}"
@@ -32,7 +32,7 @@ class Order(models.Model):
     phone_number = models.IntegerField()
     alternate_phone_number = models.IntegerField(blank=True, null=True)
     delivery_charge = models.IntegerField(default=0,blank=True, null=True)
-    total_amount = models.IntegerField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     convinced_by = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='convinced_by')
     payment_method = models.CharField(max_length=255, choices=PAYMENT_CHOICES)
     payment_screenshot = models.ImageField(upload_to='payment_screenshots/', blank=True, null=True)
@@ -45,13 +45,16 @@ class Order(models.Model):
         return f'{self.full_name} - {self.order_status}'
     
     def save(self, *args, **kwargs):
-        # Calculate total amount before saving
-        self.calculate_total_amount()
-        super().save(*args, **kwargs)
+        if self.pk is None:
+            # For new instances, save first to get a primary key
+            super().save(*args, **kwargs)
+            self.calculate_total_amount()
+            super().save(update_fields=['total_amount'])
+        else:
+            # For existing instances, calculate total before saving
+            self.calculate_total_amount()
+            super().save(*args, **kwargs)
 
     def calculate_total_amount(self):
-        # Sum up the prices of all associated products
         product_total = sum(product.price for product in self.order_products.all())
-        
-        # Add delivery charge (if any)
         self.total_amount = product_total + (self.delivery_charge or 0)
