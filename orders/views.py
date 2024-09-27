@@ -69,44 +69,42 @@ class OrderRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Order.objects.filter(convinced_by=1)
 
-    def get(self, request, *args, **kwargs):
-        order = self.get_object()
-        serializer = OrderSerializer(order)
-        return Response(serializer.data)
-
-    def put(self, request, *args, **kwargs):
-        order = self.get_object()
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
         data = request.data
         
         # Update order data
-        order_data = {
-            'full_name': data.get('full_name', order.full_name),
-            'email': data.get('email', order.email),
-            'delivery_location': data.get('delivery_location', order.delivery_location),
-            'landmark': data.get('landmark', order.landmark),
-            'phone_number': data.get('phone_number', order.phone_number),
-            'alternate_phone_number': data.get('alternate_phone_number', order.alternate_phone_number),
-            'delivery_charge': data.get('delivery_charge', order.delivery_charge),
-            'payment_method': data.get('payment_method', order.payment_method),
-            'payment_screenshot': data.get('payment_screenshot', order.payment_screenshot),
-            'order_status': data.get('order_status', order.order_status),
-            'shampoo': data.get('shampoo', order.shampoo)
-        }
-
-        # Update order
-        for key, value in order_data.items():
-            setattr(order, key, value)
+        order_fields = [
+            'full_name', 'email', 'delivery_location', 'landmark', 'phone_number',
+            'alternate_phone_number', 'delivery_charge', 'payment_method',
+            'payment_screenshot', 'order_status', 'shampoo'
+        ]
+        for field in order_fields:
+            if field in data:
+                setattr(instance, field, data[field])
 
         # Handle product data
         products_data = data.get('products', [])
         if products_data:
-            # Assuming the Order model has fields for a single product
-            product = products_data[0]  # Take the first product in the list
-            order.name = product.get('name', order.name)
-            order.price = product.get('price', order.price)
+            # Clear existing products
+            instance.products.all().delete()
+            # Create new products
+            for product_data in products_data:
+                Product.objects.create(
+                    order=instance,
+                    name=product_data.get('name'),
+                    price=product_data.get('price')
+                )
 
-        order.save()
+        instance.save()
+        instance.calculate_total_amount()
 
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def get(self, request, *args, **kwargs):
+        order = self.get_object()
         serializer = OrderSerializer(order)
         return Response(serializer.data)
 
