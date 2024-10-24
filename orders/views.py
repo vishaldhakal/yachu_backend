@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import OrderSerializer
-from .models import Order, Product
+from .serializers import OrderSerializer, CommissionSerializer, SellerSerializer, ProductSerializer
+from .models import Order, Product, Seller, Commission
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser
 
@@ -12,110 +12,53 @@ from accounts.models import CustomUser
 class OrderListCreateView(ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Order.objects.filter(convinced_by=1)
+    def perform_create(self, serializer):
+        order = serializer.save()
+        Commission.objects.create(
+            seller=order.seller,
+            order=order,
+            amount=order.total_amount * (order.seller.commission_rate / 100)
+        )
 
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        user = CustomUser.objects.get(id=1)
-        convinced_by = user
-        
-        # Extract order data
-        order_data = {
-            'convinced_by': convinced_by,
-            'full_name': data.get('full_name'),
-            'email': data.get('email'),
-            'delivery_location': data.get('delivery_location'),
-            'landmark': data.get('landmark'),
-            'phone_number': data.get('phone_number'),
-            'alternate_phone_number': data.get('alternate_phone_number'),
-            'delivery_charge': data.get('delivery_charge'),
-            'payment_method': data.get('payment_method'),
-            'payment_screenshot': data.get('payment_screenshot'),
-            'order_status': data.get('order_status', 'Pending'),
-            'shampoo': data.get('shampoo')
-        }
-
-        # Create order
-        order = Order.objects.create(**order_data)
-
-        # Extract and create products
-        products_data = data.get('products', [])
-        for product_data in products_data:
-            Product.objects.create(
-                order=order,
-                name=product_data.get('name'),
-                price=product_data.get('price')
-            )
-
-        # Recalculate total amount
-        order.calculate_total_amount()
-        order.save()
-
-        # Fetch the updated order with products
-        updated_order = Order.objects.prefetch_related('products').get(id=order.id)
-        serializer = OrderSerializer(updated_order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class OrderRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+class OrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return Order.objects.filter(convinced_by=1)
+    def perform_update(self, serializer):
+        order = serializer.save()
+        commission = Commission.objects.get(order=order)
+        commission.amount = order.total_amount * (order.seller.commission_rate / 100)
+        commission.save()
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        data = request.data
-        
-        # Update order data
-        order_fields = [
-            'full_name', 'email', 'delivery_location', 'landmark', 'phone_number',
-            'alternate_phone_number', 'delivery_charge', 'payment_method',
-            'payment_screenshot', 'order_status', 'shampoo'
-        ]
-        for field in order_fields:
-            if field in data:
-                setattr(instance, field, data[field])
+class CommissionListView(ListAPIView):
+    queryset = Commission.objects.all()
+    serializer_class = CommissionSerializer
+    permission_classes = [IsAuthenticated]
 
-        # Handle product data
-        products_data = data.get('products', [])
-        if products_data:
-            # Clear existing products
-            instance.products.all().delete()
-            # Create new products
-            for product_data in products_data:
-                Product.objects.create(
-                    order=instance,
-                    name=product_data.get('name'),
-                    price=product_data.get('price')
-                )
+class CommissionRetrieveUpdateView(RetrieveUpdateAPIView):
+    queryset = Commission.objects.all()
+    serializer_class = CommissionSerializer
+    permission_classes = [IsAuthenticated]
 
-        instance.save()
-        instance.calculate_total_amount()
+class SellerListCreateView(ListCreateAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    permission_classes = [IsAuthenticated]
 
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+class SellerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        order = self.get_object()
-        serializer = OrderSerializer(order)
-        return Response(serializer.data)
+class ProductListCreateView(ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
 
-    def delete(self, request, *args, **kwargs):
-        order = self.get_object()
-        order.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-
-
-
-
+class ProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
