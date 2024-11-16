@@ -17,15 +17,25 @@ from .models import (
 # Create your views here.
 
 class GlobalSearchView(APIView):
+    search_field_mapping = {
+        ServiceCategory: ['name', 'description'],
+        ServiceSubCategory: ['name', 'description'],
+        NtcService: ['name', 'description'],
+        NtcPackage: ['name', 'description'],
+        NtcCustomerCare: ['name', 'description', 'contact', 'email', 'location', 'address'],
+        NtcFaq: ['question', 'answer']
+    }
+
     def get_model_results(self, model, serializer_class, search_query, limit=5):
         query_terms = search_query.split()
         base_query = Q()
+        search_fields = self.search_field_mapping.get(model, [])
         
         for term in query_terms:
-            base_query |= (
-                Q(name__icontains=term) |
-                Q(description__icontains=term)
-            )
+            field_queries = Q()
+            for field in search_fields:
+                field_queries |= Q(**{f'{field}__icontains': term})
+            base_query |= field_queries
             
         results = model.objects.filter(base_query).distinct()[:limit]
         
@@ -60,7 +70,6 @@ class GlobalSearchView(APIView):
         return [r for r in results if r['results']]
 
     def get(self, request):
-        # Handle GET request with query parameter
         query = request.GET.get('query', '')
         
         if not query or len(query) < 3:
@@ -77,7 +86,6 @@ class GlobalSearchView(APIView):
         })
 
     def post(self, request):
-        # Handle POST request with JSON body
         serializer = SearchQuerySerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
