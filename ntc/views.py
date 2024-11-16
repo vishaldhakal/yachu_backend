@@ -34,13 +34,7 @@ class GlobalSearchView(APIView):
             'results': serializer_class(results, many=True).data
         }
 
-    def post(self, request):
-        serializer = SearchQuerySerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        search_query = serializer.validated_data['query']
-        
+    def perform_search(self, search_query):
         search_configs = [
             (ServiceCategory, ServiceCategorySerializer),
             (ServiceSubCategory, ServiceSubCategorySerializer),
@@ -63,7 +57,33 @@ class GlobalSearchView(APIView):
             
             results = [future.result() for future in futures]
 
-        results = [r for r in results if r['results']]
+        return [r for r in results if r['results']]
+
+    def get(self, request):
+        # Handle GET request with query parameter
+        query = request.GET.get('query', '')
+        
+        if not query or len(query) < 3:
+            return Response(
+                {'error': 'Search query must be at least 3 characters long'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        results = self.perform_search(query)
+        
+        return Response({
+            'query': query,
+            'results': results
+        })
+
+    def post(self, request):
+        # Handle POST request with JSON body
+        serializer = SearchQuerySerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        search_query = serializer.validated_data['query']
+        results = self.perform_search(search_query)
 
         return Response({
             'query': search_query,
