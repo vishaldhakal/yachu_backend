@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     'blog',
     'orders',
     'cim',
+    'ntc',
     'django_summernote',
     'solo',
     'corsheaders'
-    
 ]
 
 MIDDLEWARE = [
