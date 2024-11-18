@@ -22,13 +22,13 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'accounts',  # Make sure this is here
     'unfold',
+    'django.contrib.admin',
+    'accounts',  # Make sure this is here
     'unfold.contrib.filters',
     'unfold.contrib.forms',    
     'ckeditor',
     'ckeditor_uploader',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'orders',
     'cim',
     'ntc',
+    'koshiinvest',
     'django_summernote',
     'solo',
-    'corsheaders'
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -371,4 +372,13 @@ UNFOLD = {
             },
         ],
     },
+}
+
+# DRF Settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
