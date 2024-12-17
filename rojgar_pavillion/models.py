@@ -156,27 +156,27 @@ class Registration(models.Model):
 
             # Plain text email content
             plain_message = f"""
-Dear {self.full_name},
+            Dear {self.full_name},
 
-Your registration for {self.time_slot.topic.name} has been confirmed.
+            Your registration for {self.time_slot.topic.name} has been confirmed.
 
-Event Details:
--------------
-Topic: {self.time_slot.topic.name}
-Venue: {self.time_slot.topic.venue}
-Date: {formatted_date}
-Time: {formatted_start_time} - {formatted_end_time}
-Registration Type: {self.get_registration_type_display()}
-Total Amount: NPR {self.total_price}
+            Event Details:
+            -------------
+            Topic: {self.time_slot.topic.name}
+            Venue: {self.time_slot.topic.venue}
+            Date: {formatted_date}
+            Time: {formatted_start_time} - {formatted_end_time}
+            Registration Type: {self.get_registration_type_display()}
+            Total Amount: NPR {self.total_price}
 
-Important Notes:
-- Please arrive 15 minutes before the session starts
-- Bring a valid ID for verification
-- This registration is non-refundable
+            Important Notes:
+            - Please arrive 15 minutes before the session starts
+            - Bring a valid ID for verification
+            - This registration is non-refundable
 
-Best regards,
-Birat Expo Team
-            """
+            Best regards,
+            Birat Expo Team
+                        """
 
             # HTML email content
             html_message = render_to_string('emails/registration_confirmation.html', {
@@ -188,7 +188,7 @@ Birat Expo Team
 
             # Send email with both HTML and plain text versions
             send_mail(
-                subject=f'Registration Confirmation - Birat Expo 2024',
+                subject=f'Registration Confirmation - Birat Expo 2025',
                 message=plain_message,
                 from_email='Birat Expo 2025 Contact <info@baliyoventures.com>',
                 recipient_list=[self.email],
