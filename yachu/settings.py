@@ -389,5 +389,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'resend'
 EMAIL_HOST_PASSWORD = os.getenv("RESEND_APIKEY", default="")
 
-DEFAULT_FROM_EMAIL = 'Birat Expo <biratexpo2024@gmail.com>'
-SERVER_EMAIL = 'biratexpo2024@gmail.com'
+DEFAULT_FROM_EMAIL = 'Birat Expo 2025 Contact <info@baliyoventures.com>'
+SERVER_EMAIL = 'info@baliyoventures.com'

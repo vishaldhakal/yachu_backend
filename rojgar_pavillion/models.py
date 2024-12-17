@@ -149,40 +149,60 @@ class Registration(models.Model):
 
     def send_confirmation_email(self):
         try:
-            # Render email template
+            # Format the date and time properly
+            formatted_date = self.time_slot.topic.start_date.strftime('%B %d, %Y')
+            formatted_start_time = self.time_slot.start_time.strftime('%I:%M %p')
+            formatted_end_time = self.time_slot.end_time.strftime('%I:%M %p')
+
+            # Plain text email content
+            plain_message = f"""
+Dear {self.full_name},
+
+Your registration for {self.time_slot.topic.name} has been confirmed.
+
+Event Details:
+-------------
+Topic: {self.time_slot.topic.name}
+Venue: {self.time_slot.topic.venue}
+Date: {formatted_date}
+Time: {formatted_start_time} - {formatted_end_time}
+Registration Type: {self.get_registration_type_display()}
+Total Amount: NPR {self.total_price}
+
+Important Notes:
+- Please arrive 15 minutes before the session starts
+- Bring a valid ID for verification
+- This registration is non-refundable
+
+Best regards,
+Birat Expo Team
+            """
+
+            # HTML email content
             html_message = render_to_string('emails/registration_confirmation.html', {
-                'registration': self
+                'registration': self,
+                'formatted_date': formatted_date,
+                'formatted_start_time': formatted_start_time,
+                'formatted_end_time': formatted_end_time,
             })
 
-            # Send email
+            # Send email with both HTML and plain text versions
             send_mail(
-                subject=f'Registration Confirmation - {self.time_slot.topic.name}',
-                message=f'''
-                Dear {self.full_name},
-                
-                Your registration for {self.time_slot.topic.name} has been confirmed.
-                
-                Event Details:
-                Topic: {self.time_slot.topic.name}
-                Venue: {self.time_slot.topic.venue}
-                Date: {self.time_slot.topic.start_date}
-                Time: {self.time_slot.start_time} - {self.time_slot.end_time}
-                
-                Please arrive 15 minutes before the session starts.
-                Bring a valid ID for verification.
-                
-                Best regards,
-                Event Team
-                ''',
-                from_email=settings.DEFAULT_FROM_EMAIL,
+                subject=f'Registration Confirmation - Birat Expo 2024',
+                message=plain_message,
+                from_email='Birat Expo 2025 Contact <info@baliyoventures.com>',
                 recipient_list=[self.email],
                 html_message=html_message,
                 fail_silently=False,
             )
+            print(f"Email sent successfully to {self.email}")
         except Exception as e:
-            print(f"Failed to send email: {str(e)}")
+            print(f"Failed to send email to {self.email}: {str(e)}")
 
     def save(self, *args, **kwargs):
+        # Check if this is a new registration
+        is_new = self._state.adding
+        
         # Check early bird eligibility
         early_bird_date = timezone.datetime(2025, 1, 18).date()
         self.is_early_bird = timezone.now().date() <= early_bird_date
@@ -195,17 +215,21 @@ class Registration(models.Model):
         elif self.registration_type == 'EXPO_ACCESS':
             self.total_price = self.PRICE_CONFIG['EXPO_ACCESS']
 
-        # For new registrations
-        is_new = self._state.adding
-        
-        # Save the instance first to get an ID
+        # Save first to get the ID
         super().save(*args, **kwargs)
-        
-        # Generate QR code and send email for new registrations
-        if is_new and self.status == 'CONFIRMED':
-            self.generate_qr_code()
-            self.send_confirmation_email()
-            super().save(update_fields=['qr_code'])
+
+        # Handle post-save actions for new confirmed registrations
+        if is_new or (not is_new and self.status == 'CONFIRMED'):
+            try:
+                # Generate QR code if needed
+                if not self.qr_code:
+                    self.generate_qr_code()
+                    super().save(update_fields=['qr_code'])
+                
+                # Send confirmation email
+                self.send_confirmation_email()
+            except Exception as e:
+                print(f"Error in post-save processing: {str(e)}")
 
     def __str__(self):
         return f"{self.full_name} - {self.time_slot.topic.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"
