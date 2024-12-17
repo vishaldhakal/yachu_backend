@@ -388,3 +388,6 @@ EMAIL_HOST = 'smtp.resend.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'resend'
 EMAIL_HOST_PASSWORD = os.getenv("RESEND_APIKEY", default="")
+
+DEFAULT_FROM_EMAIL = 'Birat Expo <biratexpo2024@gmail.com>'
+SERVER_EMAIL = 'biratexpo2024@gmail.com'

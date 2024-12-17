@@ -145,8 +145,17 @@ class Registration(models.Model):
         )
 
     def send_confirmation_email(self):
-        email = RegistrationConfirmationEmail(context={'registration': self})
-        email.send([self.email])
+        email = RegistrationConfirmationEmail(
+            context={
+                'registration': self
+            },
+            to=[self.email]
+        )
+        try:
+            email.send()
+        except Exception as e:
+            # Log the error but don't stop execution
+            print(f"Failed to send email: {str(e)}")
 
     def save(self, *args, **kwargs):
         # Check early bird eligibility
@@ -183,3 +192,10 @@ class RegistrationConfirmationEmail(BaseEmailMessage):
         context = super().get_context_data()
         context['registration'] = self.context['registration']
         return context
+
+    def get_from_email(self):
+        # Use a proper from email address
+        return 'Yachu Events <events@yachu.com.np>'
+
+    def get_subject(self):
+        return f'Registration Confirmation - {self.context["registration"].time_slot.topic.name}'
