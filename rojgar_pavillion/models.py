@@ -8,7 +8,6 @@ from django.core.files import File
 import json
 from django.core.files.base import ContentFile
 from templated_mail.mail import BaseEmailMessage
-
 class Topic(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
