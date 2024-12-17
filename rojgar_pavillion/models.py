@@ -2,12 +2,15 @@ from django.db import models
 from django.core.validators import MinValueValidator, RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 import qrcode
 from io import BytesIO
 from django.core.files import File
 import json
 from django.core.files.base import ContentFile
-from templated_mail.mail import BaseEmailMessage
+
 class Topic(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -145,16 +148,38 @@ class Registration(models.Model):
         )
 
     def send_confirmation_email(self):
-        email = RegistrationConfirmationEmail(
-            context={
-                'registration': self
-            },
-            to=[self.email]
-        )
         try:
-            email.send()
+            # Render email template
+            html_message = render_to_string('emails/registration_confirmation.html', {
+                'registration': self
+            })
+
+            # Send email
+            send_mail(
+                subject=f'Registration Confirmation - {self.time_slot.topic.name}',
+                message=f'''
+                Dear {self.full_name},
+                
+                Your registration for {self.time_slot.topic.name} has been confirmed.
+                
+                Event Details:
+                Topic: {self.time_slot.topic.name}
+                Venue: {self.time_slot.topic.venue}
+                Date: {self.time_slot.topic.start_date}
+                Time: {self.time_slot.start_time} - {self.time_slot.end_time}
+                
+                Please arrive 15 minutes before the session starts.
+                Bring a valid ID for verification.
+                
+                Best regards,
+                Event Team
+                ''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
         except Exception as e:
-            # Log the error but don't stop execution
             print(f"Failed to send email: {str(e)}")
 
     def save(self, *args, **kwargs):
@@ -176,26 +201,11 @@ class Registration(models.Model):
         # Save the instance first to get an ID
         super().save(*args, **kwargs)
         
-        # Generate QR code for new registrations
-        if is_new:
+        # Generate QR code and send email for new registrations
+        if is_new and self.status == 'CONFIRMED':
             self.generate_qr_code()
             self.send_confirmation_email()
             super().save(update_fields=['qr_code'])
 
     def __str__(self):
         return f"{self.full_name} - {self.time_slot.topic.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"
-
-class RegistrationConfirmationEmail(BaseEmailMessage):
-    template_name = "emails/registration_confirmation.html"
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['registration'] = self.context['registration']
-        return context
-
-    def get_from_email(self):
-        # Use a proper from email address
-        return 'Yachu Events <events@yachu.com.np>'
-
-    def get_subject(self):
-        return f'Registration Confirmation - {self.context["registration"].time_slot.topic.name}'
