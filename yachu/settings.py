@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_summernote',
     'solo',
     'corsheaders',
+    'rojgar_pavillion',
 ]
 
 MIDDLEWARE = [
@@ -86,14 +87,14 @@ WSGI_APPLICATION = 'yachu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-} """
+} 
 
-DATABASES = {
+"""DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "yachu",
@@ -102,7 +103,7 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "",
     }
-}
+}"""
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 

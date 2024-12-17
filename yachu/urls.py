@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/', include('koshiinvest.urls')),
     path('api/', include('ntc.urls')),
     path('api/', include('orders.urls')),
+    path('api/', include('rojgar_pavillion.urls')),
     path('summernote/', include('django_summernote.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('tinymce/', include('tinymce.urls')),
