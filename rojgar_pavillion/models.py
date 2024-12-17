@@ -1,16 +1,29 @@
 from django.db import models
 from django.core.validators import MinValueValidator, RegexValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+import qrcode
+from io import BytesIO
+from django.core.files import File
+import json
+from django.core.files.base import ContentFile
+from templated_mail.mail import BaseEmailMessage
 
 class Topic(models.Model):
     name = models.CharField(max_length=200)
-    description = models.CharField(max_length=200)
+    description = models.TextField()
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
+    venue = models.CharField(max_length=200)
+    is_active = models.BooleanField(default=True)
+
+    def clean(self):
+        if self.end_date < self.start_date:
+            raise ValidationError("End date cannot be before start date")
 
     def __str__(self):
         return self.name
-    
+
 class TimeSlot(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='time_slots')
     start_time = models.TimeField(default=timezone.now)
@@ -24,9 +37,15 @@ class TimeSlot(models.Model):
     def available_spots(self):
         return self.max_participants - self.current_participants
 
+    def clean(self):
+        if self.end_time <= self.start_time:
+            raise ValidationError("End time must be after start time")
+        if self.max_participants < 1:
+            raise ValidationError("Maximum participants must be at least 1")
+
     def __str__(self):
         return f"{self.topic.name}: {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')}"
-    
+
 class Registration(models.Model):
     REGISTRATION_TYPES = [
         ('SINGLE', 'Single Person'),
@@ -36,6 +55,11 @@ class Registration(models.Model):
     PAYMENT_METHODS = [
         ('Nabil_Bank', 'Nabil Bank'),
     ]
+    REGISTRATION_STATUS = [
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled')
+    ]
 
     PRICE_CONFIG = {
         'SINGLE': 300,
@@ -43,17 +67,87 @@ class Registration(models.Model):
         'EXPO_ACCESS': 2100
     }
 
+    # Basic Fields
     time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
     registration_type = models.CharField(max_length=20, choices=REGISTRATION_TYPES)
+    status = models.CharField(max_length=20, choices=REGISTRATION_STATUS, default='PENDING')
     
+    # Participant Info
+    full_name = models.CharField(max_length=200)
+    qualification = models.CharField(max_length=20, choices=[
+        ('Under SEE', 'Under SEE'),
+        ('10+2', '10+2'),
+        ('Graduate', 'Graduate'),
+        ('Post Graduate', 'Post Graduate'),
+    ])
+    gender = models.CharField(max_length=10, choices=[
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+    ])
+    age = models.IntegerField(validators=[MinValueValidator(14)])
+    address = models.TextField()
+    mobile_number = models.CharField(
+        max_length=20, 
+        validators=[RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message="Phone number must be entered in the format: '+999999999'"
+        )]
+    )
+    email = models.EmailField()
+    
+    # Payment and Status
     total_participants = models.IntegerField(validators=[MinValueValidator(1)])
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
     payment_screenshot = models.ImageField(upload_to='payments/', null=True, blank=True)
+    
+    # Flags
     agreed_to_no_refund = models.BooleanField(default=False)
     is_early_bird = models.BooleanField(default=False)
     is_expo_access = models.BooleanField(default=False)
+    is_free_entry = models.BooleanField(default=False)
+    
+    # QR Code
+    qr_code = models.ImageField(upload_to='qr_codes/', null=True, blank=True)
+    
+    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def generate_qr_code(self):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        
+        qr_data = {
+            'registration_id': self.id,
+            'participant_name': self.full_name,
+            'event': self.time_slot.topic.name,
+            'date': self.time_slot.topic.start_date.isoformat(),
+            'time': f"{self.time_slot.start_time.strftime('%H:%M')} - {self.time_slot.end_time.strftime('%H:%M')}",
+            'type': self.registration_type
+        }
+        
+        qr.add_data(json.dumps(qr_data))
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color="black", back_color="white")
+        blob = BytesIO()
+        img.save(blob, 'PNG')
+        
+        self.qr_code.save(
+            f'qr_code_{self.id}.png',
+            ContentFile(blob.getvalue()),
+            save=False
+        )
+
+    def send_confirmation_email(self):
+        email = RegistrationConfirmationEmail(context={'registration': self})
+        email.send([self.email])
 
     def save(self, *args, **kwargs):
         # Check early bird eligibility
@@ -68,42 +162,25 @@ class Registration(models.Model):
         elif self.registration_type == 'EXPO_ACCESS':
             self.total_price = self.PRICE_CONFIG['EXPO_ACCESS']
 
+        # For new registrations
+        is_new = self._state.adding
+        
+        # Save the instance first to get an ID
         super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return f"{self.time_slot.topic.name} - {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
-
-class Participant(models.Model):
-    QUALIFICATIONS = [
-        ('Under SEE', 'Under SEE'),
-        ('10+2', '10+2'),
-        ('Graduate', 'Graduate'),
-        ('Post Graduate', 'Post Graduate'),
-    ]
-    GENDERS = [
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('Other', 'Other'),
-    ]
-    
-    mobile_validator = RegexValidator(
-        regex=r'^\+?1?\d{9,15}$',
-        message="Phone number must be entered in the format: '+999999999'"
-    )
-
-    registration = models.ForeignKey(
-        Registration, 
-        on_delete=models.CASCADE, 
-        related_name='participants'
-    )
-    full_name = models.CharField(max_length=200)
-    qualification = models.CharField(max_length=20, choices=QUALIFICATIONS)
-    gender = models.CharField(max_length=10, choices=GENDERS)
-    age = models.IntegerField(validators=[MinValueValidator(14)])
-    address = models.TextField()
-    mobile_number = models.CharField(max_length=20, validators=[mobile_validator])
-    email = models.EmailField()
-    is_free_entry = models.BooleanField(default=False)
+        
+        # Generate QR code for new registrations
+        if is_new:
+            self.generate_qr_code()
+            self.send_confirmation_email()
+            super().save(update_fields=['qr_code'])
 
     def __str__(self):
-        return self.full_name
+        return f"{self.full_name} - {self.time_slot.topic.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"
+
+class RegistrationConfirmationEmail(BaseEmailMessage):
+    template_name = "emails/registration_confirmation.html"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['registration'] = self.context['registration']
+        return context
