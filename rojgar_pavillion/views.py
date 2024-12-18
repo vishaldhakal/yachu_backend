@@ -15,6 +15,11 @@ class RegistrationView(generics.ListCreateAPIView):
         
         try:
             registration = serializer.save()
+            # Increase the current participants count
+            time_slot = registration.time_slot
+            time_slot.current_participants += registration.total_participants
+            time_slot.save()
+
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED

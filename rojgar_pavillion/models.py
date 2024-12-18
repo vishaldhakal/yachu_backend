@@ -76,6 +76,9 @@ class Registration(models.Model):
     
     # Participant Info
     full_name = models.CharField(max_length=200)
+    email = models.EmailField()
+    group_members=models.JSONField(blank=True, null=True)
+
     qualification = models.CharField(max_length=20, choices=[
         ('Under SEE', 'Under SEE'),
         ('10+2', '10+2'),
@@ -96,13 +99,13 @@ class Registration(models.Model):
             message="Phone number must be entered in the format: '+999999999'"
         )]
     )
-    email = models.EmailField()
+    
     
     # Payment and Status
     total_participants = models.IntegerField(validators=[MinValueValidator(1)])
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    payment_screenshot = models.ImageField(upload_to='payments/', null=True, blank=True)
+    payment_screenshot = models.ImageField(upload_to='payments/')
     
     # Flags
     agreed_to_no_refund = models.BooleanField(default=False)

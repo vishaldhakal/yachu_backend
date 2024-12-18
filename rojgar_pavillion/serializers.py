@@ -19,7 +19,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
             # QR Code
             'qr_code',
             # Timestamps
-            'created_at', 'updated_at'
+            'created_at', 'updated_at',
+            # Group Members
+            'group_members',
         ]
         read_only_fields = [
             'registration_type', 'total_price', 'is_early_bird',
@@ -60,6 +62,30 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Not enough spots available in this time slot"
             )
+
+        # Validate group_members if registration type is GROUP
+        if data['registration_type'] == 'GROUP':
+            group_members = data.get('group_members')
+            if not group_members:
+                raise serializers.ValidationError(
+                    "Group members information is required for group registrations"
+                )
+            # Ensure group_members is a valid JSON structure
+            if not isinstance(group_members, list):
+                raise serializers.ValidationError(
+                    "Group members must be a list"
+                )
+            # Additional validation for each member can be added here
+            for member in group_members:
+                if not isinstance(member, dict):
+                    raise serializers.ValidationError(
+                        "Each group member must be a dictionary"
+                    )
+                # Example validation for required fields in each member
+                if 'name' not in member or 'email' not in member:
+                    raise serializers.ValidationError(
+                        "Each group member must have a 'name' and 'email'"
+                    )
 
         return data
 
