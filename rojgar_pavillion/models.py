@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.conf import settings
 import qrcode
 from io import BytesIO
 from django.core.files import File
@@ -50,23 +49,23 @@ class TimeSlot(models.Model):
 
 class Registration(models.Model):
     REGISTRATION_TYPES = [
-        ('SINGLE', 'Single Person'),
-        ('GROUP', 'Group'),
-        ('EXPO_ACCESS', 'Expo Access')
+        ('Single Person', 'Single Person'),
+        ('Group', 'Group'),
+        ('Expo Access', 'Expo Access')
     ]
     PAYMENT_METHODS = [
-        ('Nabil_Bank', 'Nabil Bank'),
+        ('Nabil Bank', 'Nabil Bank'),
     ]
     REGISTRATION_STATUS = [
-        ('PENDING', 'Pending'),
-        ('CONFIRMED', 'Confirmed'),
-        ('CANCELLED', 'Cancelled')
+        ('Pending', 'Pending'),
+        ('Confirmed', 'Confirmed'),
+        ('Cancelled', 'Cancelled')
     ]
 
     PRICE_CONFIG = {
-        'SINGLE': 300,
-        'GROUP': 1500,
-        'EXPO_ACCESS': 2100
+        'Single Person': 300,
+        'Group': 1500,
+        'Expo Access': 2100
     }
 
     # Basic Fields
@@ -76,9 +75,6 @@ class Registration(models.Model):
     
     # Participant Info
     full_name = models.CharField(max_length=200)
-    email = models.EmailField()
-    group_members=models.JSONField(blank=True, null=True)
-
     qualification = models.CharField(max_length=20, choices=[
         ('Under SEE', 'Under SEE'),
         ('10+2', '10+2'),
@@ -99,13 +95,13 @@ class Registration(models.Model):
             message="Phone number must be entered in the format: '+999999999'"
         )]
     )
-    
+    email = models.EmailField()
     
     # Payment and Status
     total_participants = models.IntegerField(validators=[MinValueValidator(1)])
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    payment_screenshot = models.ImageField(upload_to='payments/')
+    payment_screenshot = models.ImageField(upload_to='payments/', null=True, blank=True)
     
     # Flags
     agreed_to_no_refund = models.BooleanField(default=False)
@@ -211,18 +207,18 @@ class Registration(models.Model):
         self.is_early_bird = timezone.now().date() <= early_bird_date
 
         # Calculate total price
-        if self.registration_type == 'SINGLE':
-            self.total_price = self.PRICE_CONFIG['SINGLE'] * self.total_participants
-        elif self.registration_type == 'GROUP':
-            self.total_price = self.PRICE_CONFIG['GROUP']
-        elif self.registration_type == 'EXPO_ACCESS':
-            self.total_price = self.PRICE_CONFIG['EXPO_ACCESS']
+        if self.registration_type == 'Single Person':
+            self.total_price = self.PRICE_CONFIG['Single Person'] * self.total_participants
+        elif self.registration_type == 'Group':
+            self.total_price = self.PRICE_CONFIG['Group']
+        elif self.registration_type == 'Expo Access':
+            self.total_price = self.PRICE_CONFIG['Expo Access']
 
         # Save first to get the ID
         super().save(*args, **kwargs)
 
         # Handle post-save actions for new confirmed registrations
-        if is_new or (not is_new and self.status == 'CONFIRMED'):
+        if is_new or (not is_new and self.status == 'Confirmed'):
             try:
                 # Generate QR code if needed
                 if not self.qr_code:
