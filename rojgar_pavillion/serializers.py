@@ -64,7 +64,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             )
 
         # Validate group_members if registration type is GROUP
-        if data['registration_type'] == 'GROUP':
+        if data['registration_type'] == 'Group':
             group_members = data.get('group_members')
             if not group_members:
                 raise serializers.ValidationError(
@@ -97,7 +97,7 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'topic', 'start_time', 'end_time',
             'max_participants', 'current_participants',
-            'available_spots'
+            'available_spots','date'
         ]
 
 class TopicSerializer(serializers.ModelSerializer):

@@ -28,6 +28,7 @@ class Topic(models.Model):
 
 class TimeSlot(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='time_slots')
+    date = models.DateField(default=timezone.now)
     start_time = models.TimeField(default=timezone.now)
     end_time = models.TimeField(default=timezone.now)
     max_participants = models.IntegerField(default=0)
