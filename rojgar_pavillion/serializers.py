@@ -7,24 +7,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = Registration
         fields = [
             'id', 'time_slot', 'registration_type', 'status',
-            # Participant Info
             'full_name', 'qualification', 'gender', 'age',
             'address', 'mobile_number', 'email',
-            # Payment and Status
             'total_participants', 'total_price', 'payment_method',
             'payment_screenshot', 
-            # Flags
             'agreed_to_no_refund', 'is_early_bird', 'is_expo_access',
             'is_free_entry',
-            # QR Code
             'qr_code',
-            # Timestamps
             'created_at', 'updated_at',
-            # Group Members
             'group_members',
+            'registration_type'
         ]
         read_only_fields = [
-            'registration_type', 'total_price', 'is_early_bird',
+            'total_price', 'is_early_bird',
             'is_expo_access', 'status', 'qr_code', 'created_at',
             'updated_at'
         ]
