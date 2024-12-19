@@ -91,7 +91,7 @@ class Registration(models.Model):
         ('Female', 'Female'),
         ('Other', 'Other'),
     ])
-    age = models.IntegerField(validators=[MinValueValidator(14)])
+    age = models.IntegerField(validators=[MinValueValidator(10)])
     address = models.TextField()
     mobile_number = models.CharField(
         max_length=20, 
