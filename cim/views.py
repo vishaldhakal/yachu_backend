@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import StallBooking
-from .serializers import StallBookingSerializer,StallBookingSmallSerializer
+from .models import StallBooking,SponsorBooking
+from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
@@ -100,3 +100,12 @@ def get_booked_stalls(request):
    serializer = StallBookingSmallSerializer(booked_stalls, many=True)
    serializer2 = StallBookingSmallSerializer(pending_booked, many=True) 
    return Response({"booked": serializer.data, "pending": serializer2.data, "stall_no_booked": new_list,"stall_no_pending": new_list2}, status=status.HTTP_200_OK)
+
+
+class SponsorBookingListCreateView(generics.ListCreateAPIView):
+   queryset = SponsorBooking.objects.all()
+   serializer_class = SponsorBookingSerializer
+
+class SponsorBookingRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+   queryset = SponsorBooking.objects.all()
+   serializer_class = SponsorBookingSerializer

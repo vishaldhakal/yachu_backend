@@ -61,3 +61,26 @@ class StallBooking(models.Model):
     class Meta:
         verbose_name = "Stall Booking"
         verbose_name_plural = "Stall Bookings"
+
+
+class SponsorBooking(models.Model):
+    STALL_TYPE_CHOICES = [
+        ('Main Sponsor', 'Main Sponsor'),
+        ('Powered By Sponsor', 'Powered By Sponsor'),
+        ('Platinum', 'Platinum'),
+        ('Diamond', 'Diamond'),
+        ('Gold', 'Gold'),
+        ('Partner Sponsor', 'Partner Sponsor'),
+        ('Silver', 'Silver'),
+    ]
+
+    stall_type = models.CharField(max_length=200, choices=STALL_TYPE_CHOICES)
+    stall_id = models.CharField(max_length=200)
+    company_name = models.CharField(max_length=200,blank=True, null=True)
+    company_email = models.CharField(max_length=200,blank=True, null=True)
+    contact_number = models.CharField(max_length=200,blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.company_name} - {self.stall_id}"
+                                    
+

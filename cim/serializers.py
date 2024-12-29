@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StallBooking
+from .models import StallBooking,SponsorBooking
 
 class StallBookingSerializer(serializers.ModelSerializer):
       class Meta:
@@ -10,3 +10,8 @@ class StallBookingSmallSerializer(serializers.ModelSerializer):
       class Meta:
          model = StallBooking
          fields = ["company", "stall_no", "status"]
+
+class SponsorBookingSerializer(serializers.ModelSerializer):
+      class Meta:
+         model = SponsorBooking
+         fields = "__all__"
