@@ -10,7 +10,6 @@ from io import BytesIO
 from django.core.files import File
 import json
 from django.core.files.base import ContentFile
-from django.db.models import Count
 
 class Topic(models.Model):
     name = models.CharField(max_length=200)
@@ -19,7 +18,6 @@ class Topic(models.Model):
     end_date = models.DateField(default=timezone.now)
     venue = models.CharField(max_length=200)
     is_active = models.BooleanField(default=True)
-    time_slots = models.JSONField(default=list)
 
     def clean(self):
         if self.end_date < self.start_date:
@@ -27,30 +25,6 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def create_time_slots(self):
-    # Clear existing time slots for this topic
-        TimeSlot.objects.filter(topic=self).delete()
-        
-        # Define the time slots for each day
-        time_slots = self.time_slots  # Assuming this is a list of dicts from the JSON field
-        
-        current_date = self.start_date
-        while current_date <= self.end_date:
-            for slot in time_slots:
-                TimeSlot.objects.create(
-                    topic=self,
-                    date=current_date,
-                    start_time=slot['start_time'],
-                    end_time=slot['end_time'],
-                    max_participants=20,  # Set default or modify as needed
-                    current_participants=0  # Set default or modify as needed
-                )
-            current_date += timezone.timedelta(days=1)  # Move to the next day
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Save the Topic instance first
-        self.create_time_slots()  # Create time slots after saving the Topic
-
 
 class TimeSlot(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='time_slots')
@@ -74,7 +48,6 @@ class TimeSlot(models.Model):
 
     def __str__(self):
         return f"{self.topic.name}: {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')}"
-
 
 class Registration(models.Model):
     REGISTRATION_TYPES = [
@@ -156,9 +129,16 @@ class Registration(models.Model):
             border=4,
         )
         
-        # Directly add the link to the QR code
-        link = f"https://biratexpo.cim.org.np/live-training/participants/{self.id}"
-        qr.add_data(link)  # Changed to add only the link
+        qr_data = {
+            'registration_id': self.id,
+            'participant_name': self.full_name,
+            'event': self.time_slot.topic.name,
+            'date': self.time_slot.topic.start_date.isoformat(),
+            'time': f"{self.time_slot.start_time.strftime('%H:%M')} - {self.time_slot.end_time.strftime('%H:%M')}",
+            'type': self.registration_type
+        }
+        
+        qr.add_data(json.dumps(qr_data))
         qr.make(fit=True)
         
         img = qr.make_image(fill_color="black", back_color="white")

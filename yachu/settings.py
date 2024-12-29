@@ -107,7 +107,7 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "",
     }
-}"""
+}
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
