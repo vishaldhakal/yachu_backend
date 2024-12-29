@@ -39,7 +39,7 @@ class AvailableSessionsView(generics.ListAPIView):
         """
         return Topic.objects.filter(
             is_active=True
-        ).prefetch_related('time_slots')
+        ).prefetch_related('time_slot_instances')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

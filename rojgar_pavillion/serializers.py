@@ -96,7 +96,7 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         ]
 
 class TopicSerializer(serializers.ModelSerializer):
-    time_slots = TimeSlotSerializer(many=True, read_only=True)
+    time_slots = TimeSlotSerializer(source='time_slot_instances', many=True, read_only=True)
     
     class Meta:
         model = Topic
