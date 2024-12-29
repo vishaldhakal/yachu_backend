@@ -51,6 +51,8 @@ class TimeSlotByDateView(generics.ListAPIView):
 
     def get_queryset(self):
         date = self.request.query_params.get('date')  # Get the date from query parameters
+        topic = self.request.query_params.get('topic')
+        top = Topic.objects.get(id=topic)
         if date:
-            return TimeSlot.objects.filter(date=date)  # Filter time slots by the provided date
+            return TimeSlot.objects.filter(date=date,topic=top)  # Filter time slots by the provided date
         return TimeSlot.objects.none() 

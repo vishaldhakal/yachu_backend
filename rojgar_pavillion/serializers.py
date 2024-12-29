@@ -96,11 +96,9 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         ]
 
 class TopicSerializer(serializers.ModelSerializer):
-    time_slots = TimeSlotSerializer(source='time_slot_instances', many=True, read_only=True)
-    
     class Meta:
         model = Topic
         fields = [
             'id', 'name', 'description', 'start_date',
-            'end_date', 'venue', 'is_active', 'time_slots'
+            'end_date', 'venue', 'is_active'
         ]
