@@ -53,10 +53,10 @@ class Topic(models.Model):
 
 
 class TimeSlot(models.Model):
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='time_slot_instances')
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='time_slots')
     date = models.DateField(default=timezone.now)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_time = models.TimeField(default=timezone.now)
+    end_time = models.TimeField(default=timezone.now)
     max_participants = models.IntegerField(default=0)
     current_participants = models.IntegerField(default=0)
 
@@ -78,23 +78,23 @@ class TimeSlot(models.Model):
 
 class Registration(models.Model):
     REGISTRATION_TYPES = [
-        ('SINGLE', 'Single Person'),
-        ('GROUP', 'Group'),
-        ('EXPO_ACCESS', 'Expo Access')
+        ('Single Person', 'Single Person'),
+        ('Group', 'Group'),
+        ('Expo Access', 'Expo Access')
     ]
     PAYMENT_METHODS = [
-        ('Nabil_Bank', 'Nabil Bank'),
+        ('Nabil Bank', 'Nabil Bank'),
     ]
     REGISTRATION_STATUS = [
-        ('PENDING', 'Pending'),
-        ('CONFIRMED', 'Confirmed'),
-        ('CANCELLED', 'Cancelled')
+        ('Pending', 'Pending'),
+        ('Confirmed', 'Confirmed'),
+        ('Cancelled', 'Cancelled')
     ]
 
     PRICE_CONFIG = {
-        'SINGLE': 300,
-        'GROUP': 1500,
-        'EXPO_ACCESS': 2100
+        'Single Person': 300,
+        'Group': 1500,
+        'Expo Access': 2100
     }
 
     # Basic Fields
@@ -118,7 +118,7 @@ class Registration(models.Model):
         ('Female', 'Female'),
         ('Other', 'Other'),
     ])
-    age = models.IntegerField(validators=[MinValueValidator(14)])
+    age = models.IntegerField(validators=[MinValueValidator(10)])
     address = models.TextField()
     mobile_number = models.CharField(
         max_length=20, 
@@ -133,7 +133,7 @@ class Registration(models.Model):
     total_participants = models.IntegerField(validators=[MinValueValidator(1)])
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    payment_screenshot = models.ImageField(upload_to='payments/')
+    payment_screenshot = models.ImageField(blank=True, null=True)
     
     # Flags
     agreed_to_no_refund = models.BooleanField(default=False)
@@ -232,18 +232,18 @@ class Registration(models.Model):
         self.is_early_bird = timezone.now().date() <= early_bird_date
 
         # Calculate total price
-        if self.registration_type == 'SINGLE':
-            self.total_price = self.PRICE_CONFIG['SINGLE'] * self.total_participants
-        elif self.registration_type == 'GROUP':
-            self.total_price = self.PRICE_CONFIG['GROUP']
-        elif self.registration_type == 'EXPO_ACCESS':
-            self.total_price = self.PRICE_CONFIG['EXPO_ACCESS']
+        if self.registration_type == 'Single Person':
+            self.total_price = self.PRICE_CONFIG['Single Person'] * self.total_participants
+        elif self.registration_type == 'Group':
+            self.total_price = self.PRICE_CONFIG['Group']
+        elif self.registration_type == 'Expo Access':
+            self.total_price = self.PRICE_CONFIG['Expo Access']
 
         # Save first to get the ID
         super().save(*args, **kwargs)
 
         # Handle post-save actions for new confirmed registrations
-        if is_new or (not is_new and self.status == 'CONFIRMED'):
+        if is_new or (not is_new and self.status == 'Confirmed'):
             try:
                 # Generate QR code if needed
                 if not self.qr_code:
@@ -257,4 +257,3 @@ class Registration(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.time_slot.topic.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"
-
