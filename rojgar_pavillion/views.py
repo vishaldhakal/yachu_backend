@@ -45,3 +45,12 @@ class AvailableSessionsView(generics.ListAPIView):
         context = super().get_serializer_context()
         context['include_available_spots'] = True
         return context
+    
+class TimeSlotByDateView(generics.ListAPIView):
+    serializer_class = TimeSlotSerializer
+
+    def get_queryset(self):
+        date = self.request.query_params.get('date')  # Get the date from query parameters
+        if date:
+            return TimeSlot.objects.filter(date=date)  # Filter time slots by the provided date
+        return TimeSlot.objects.none() 
