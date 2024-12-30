@@ -100,5 +100,5 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = [
             'id', 'name', 'description', 'start_date',
-            'end_date', 'venue', 'is_active'
+            'end_date', 'venue', 'is_active','image'
         ]
