@@ -258,4 +258,4 @@ class Registration(models.Model):
                 print(f"Error in post-save processing: {str(e)}")
 
     def __str__(self):
-        return f"{self.full_name} - {self.time_slot.topic.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"
+        return f"{self.first_name} {self.last_name} - {self.time_slot.topic.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"

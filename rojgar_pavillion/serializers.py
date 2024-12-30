@@ -7,7 +7,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = Registration
         fields = [
             'id', 'time_slot', 'registration_type', 'status',
-            'full_name', 'qualification', 'gender', 'age',
+            'first_name', 'last_name', 'qualification', 'gender', 'age',
             'address', 'mobile_number', 'email',
             'total_participants', 'total_price', 'payment_method',
             'payment_screenshot', 
