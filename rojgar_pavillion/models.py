@@ -18,6 +18,7 @@ class Topic(models.Model):
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
     venue = models.CharField(max_length=200)
+    image=models.FileField(blank=True,null=True)
     is_active = models.BooleanField(default=True)
     time_slots = models.JSONField(default=list)
 
@@ -103,7 +104,8 @@ class Registration(models.Model):
     status = models.CharField(max_length=20, choices=REGISTRATION_STATUS, default='PENDING')
     
     # Participant Info
-    full_name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=220, blank=True, null=True)
+    last_name = models.CharField(max_length=220, blank=True, null=True)
     email = models.EmailField()
     group_members=models.JSONField(blank=True, null=True)
 
