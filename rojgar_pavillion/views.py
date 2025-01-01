@@ -29,6 +29,11 @@ class RegistrationView(generics.ListCreateAPIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+class RegistrationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Registration.objects.all()
+    serializer_class = RegistrationSerializer
+    
 
 class AvailableSessionsView(generics.ListAPIView):
     serializer_class = TopicSerializer

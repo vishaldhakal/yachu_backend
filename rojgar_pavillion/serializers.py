@@ -5,6 +5,7 @@ from django.utils import timezone
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registration
+        depth = 2
         fields = [
             'id', 'time_slot', 'registration_type', 'status',
             'first_name', 'last_name', 'qualification', 'gender', 'age',
