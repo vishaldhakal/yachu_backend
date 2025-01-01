@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .models import Registration, Topic, TimeSlot
-from .serializers import RegistrationSerializer, TopicSerializer, TimeSlotSerializer
+from .serializers import RegistrationSerializer, TopicSerializer, TimeSlotSerializer, RegistrationDetailSerializer
 
 class RegistrationView(generics.ListCreateAPIView):
     queryset = Registration.objects.all()
@@ -32,7 +32,7 @@ class RegistrationView(generics.ListCreateAPIView):
         
 class RegistrationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Registration.objects.all()
-    serializer_class = RegistrationSerializer
+    serializer_class = RegistrationDetailSerializer
     
 
 class AvailableSessionsView(generics.ListAPIView):
