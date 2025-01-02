@@ -82,5 +82,78 @@ class SponsorBooking(models.Model):
 
     def __str__(self):
         return f"{self.company_name} - {self.stall_id}"
-                                    
+
+# Model for Thematic Session
+class ThematicSession(models.Model):
+    title = models.CharField(max_length=255)
+    date = models.DateField()
+    time = models.TimeField()
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+
+# Model for Thematic Registration
+class ThematicRegistration(models.Model):
+    name = models.CharField(max_length=255)
+    organization = models.CharField(max_length=255)
+    designation = models.CharField(max_length=255)
+    address = models.TextField()
+    email = models.EmailField()
+    contact = models.CharField(max_length=15)
+    sessions = models.ManyToManyField(ThematicSession, related_name='registrations')
+
+    def __str__(self):
+        return f"{self.name} - {self.organization}"
+
+
+# Model for Thematic Registration Response (If required as a separate entity)
+class ThematicRegistrationResponse(models.Model):
+    name=models.CharField(max_length=255)
+    organization=models.CharField(max_length=255)
+    designation=models.CharField(max_length=255)
+    address=models.CharField(max_length=255)
+    email=models.EmailField()
+    contact=models.CharField(max_length=15)
+    sessions=models.ManyToManyField(ThematicSession, related_name='responses')
+
+    def __str__(self):
+        return f"Response for {self.registration.name}"
+    
+
+class GuidedTour(models.Model):
+    # College Details
+    college_name = models.CharField(max_length=255)
+    district = models.CharField(max_length=255)
+    municipality = models.CharField(max_length=255)
+    ward = models.CharField(max_length=50)
+   
+    # Contact Details
+    phone = models.CharField(max_length=15)
+    email = models.EmailField()
+    contact_person_name = models.CharField(max_length=255)
+    designation = models.CharField(max_length=255)
+    mobile_no = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True
+    )    
+    # Tour Details
+    tour_date = models.DateField()
+    number_of_students = models.PositiveIntegerField()
+    STUDENT_LEVEL_CHOICES = [
+        ('10+2', '10+2'),
+        ('Bachelors', 'Bachelors'),
+        ('Masters', 'Masters'),
+        ('Mixed', 'Mixed'),
+    ]
+    student_level = models.CharField(
+        max_length=20,
+        choices=STUDENT_LEVEL_CHOICES,
+        default='10+2'
+    )
+
+    def __str__(self):
+        return f"{self.college_name} - {self.tour_date}"
 

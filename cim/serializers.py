@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StallBooking,SponsorBooking
+from .models import StallBooking,SponsorBooking,ThematicSession,ThematicRegistration,ThematicRegistrationResponse,GuidedTour
 
 class StallBookingSerializer(serializers.ModelSerializer):
       class Meta:
@@ -15,3 +15,23 @@ class SponsorBookingSerializer(serializers.ModelSerializer):
       class Meta:
          model = SponsorBooking
          fields = "__all__"
+
+class ThematicSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThematicSession
+        fields = '__all__'
+
+class ThematicRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThematicRegistration
+        fields = '__all__'
+
+class ThematicRegistrationResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThematicRegistrationResponse
+        fields = '__all__'
+
+class GuidedTourSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuidedTour
+        fields = '__all__'

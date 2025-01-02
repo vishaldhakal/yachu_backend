@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import StallBooking,SponsorBooking
-from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer
+from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, ThematicRegistrationResponse, GuidedTour
+from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, ThematicRegistrationResponseSerializer, GuidedTourSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
@@ -109,3 +109,43 @@ class SponsorBookingListCreateView(generics.ListCreateAPIView):
 class SponsorBookingRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
    queryset = SponsorBooking.objects.all()
    serializer_class = SponsorBookingSerializer
+
+# ListCreate view for ThematicSession
+class ThematicSessionListCreateView(generics.ListCreateAPIView):
+    queryset = ThematicSession.objects.all()
+    serializer_class = ThematicSessionSerializer
+
+# RetrieveUpdateDestroy view for ThematicSession
+class ThematicSessionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ThematicSession.objects.all()
+    serializer_class = ThematicSessionSerializer
+
+# ListCreate view for ThematicRegistration
+class ThematicRegistrationListCreateView(generics.ListCreateAPIView):
+    queryset = ThematicRegistration.objects.all()
+    serializer_class = ThematicRegistrationSerializer
+
+# RetrieveUpdateDestroy view for ThematicRegistration
+class ThematicRegistrationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ThematicRegistration.objects.all()
+    serializer_class = ThematicRegistrationSerializer
+
+# ListCreate view for ThematicRegistrationResponse
+class ThematicRegistrationResponseListCreateView(generics.ListCreateAPIView):
+    queryset = ThematicRegistrationResponse.objects.all()
+    serializer_class = ThematicRegistrationResponseSerializer
+
+# RetrieveUpdateDestroy view for ThematicRegistrationResponse
+class ThematicRegistrationResponseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ThematicRegistrationResponse.objects.all()
+    serializer_class = ThematicRegistrationResponseSerializer
+
+# ListCreate view for GuidedTour
+class GuidedTourListCreateView(generics.ListCreateAPIView):
+    queryset = GuidedTour.objects.all()
+    serializer_class = GuidedTourSerializer
+
+# RetrieveUpdateDestroy view for GuidedTour
+class GuidedTourRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GuidedTour.objects.all()
+    serializer_class = GuidedTourSerializer
