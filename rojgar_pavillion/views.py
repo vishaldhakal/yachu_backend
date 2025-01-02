@@ -6,8 +6,12 @@ from .serializers import RegistrationSerializer, TopicSerializer, TimeSlotSerial
 
 class RegistrationView(generics.ListCreateAPIView):
     queryset = Registration.objects.all()
-    serializer_class = RegistrationSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return RegistrationSerializer
+        return RegistrationDetailSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
