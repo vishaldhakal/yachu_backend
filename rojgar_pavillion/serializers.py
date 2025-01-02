@@ -84,7 +84,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         return data
 
+class TimeSlotSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimeSlot
+        fields = ['id', 'start_time', 'end_time', 'date']
+
 class RegistrationDetailSerializer(serializers.ModelSerializer):
+    time_slot = TimeSlotSmallSerializer()
     class Meta:
         model = Registration
         fields = '__all__'
