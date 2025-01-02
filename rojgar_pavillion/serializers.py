@@ -88,7 +88,6 @@ class RegistrationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registration
         fields = '__all__'
-        depth = 2
 
 class TimeSlotSerializer(serializers.ModelSerializer):
     available_spots = serializers.IntegerField(read_only=True)
