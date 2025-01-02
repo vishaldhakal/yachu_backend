@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, ThematicRegistrationResponse, GuidedTour
-from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, ThematicRegistrationResponseSerializer, GuidedTourSerializer
+from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour
+from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, GuidedTourSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
@@ -129,16 +129,6 @@ class ThematicRegistrationListCreateView(generics.ListCreateAPIView):
 class ThematicRegistrationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ThematicRegistration.objects.all()
     serializer_class = ThematicRegistrationSerializer
-
-# ListCreate view for ThematicRegistrationResponse
-class ThematicRegistrationResponseListCreateView(generics.ListCreateAPIView):
-    queryset = ThematicRegistrationResponse.objects.all()
-    serializer_class = ThematicRegistrationResponseSerializer
-
-# RetrieveUpdateDestroy view for ThematicRegistrationResponse
-class ThematicRegistrationResponseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ThematicRegistrationResponse.objects.all()
-    serializer_class = ThematicRegistrationResponseSerializer
 
 # ListCreate view for GuidedTour
 class GuidedTourListCreateView(generics.ListCreateAPIView):

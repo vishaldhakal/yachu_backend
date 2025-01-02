@@ -96,30 +96,33 @@ class ThematicSession(models.Model):
 
 # Model for Thematic Registration
 class ThematicRegistration(models.Model):
+    PARTICIPANT_TYPE_CHOICES = [
+        ('Speaker', 'Speaker'),
+        ('Participant', 'Participant'),
+    ]
+    FOOD_CHOICES = [
+        ('Veg', 'Veg'),
+        ('Non Veg', 'Non Veg'),
+    ]
+    HOTEL_ACCOMODATION_CHOICES = [
+        ('Self', 'Self'),
+        ('CIM', 'CIM'),
+    ]
     name = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
     designation = models.CharField(max_length=255)
-    address = models.TextField()
+    address = models.CharField(max_length=255)
     email = models.EmailField()
     contact = models.CharField(max_length=15)
+    travel_arrive_date = models.DateField(null=True, blank=True)
+    travel_back_date = models.DateField(null=True, blank=True)
+    food= models.CharField(max_length=20, choices=FOOD_CHOICES,null=True, blank=True)
+    hotel_accomodation= models.CharField(max_length=20, choices=HOTEL_ACCOMODATION_CHOICES,null=True, blank=True)
+    participant= models.CharField(max_length=20, choices=PARTICIPANT_TYPE_CHOICES)
     sessions = models.ManyToManyField(ThematicSession, related_name='registrations')
 
     def __str__(self):
         return f"{self.name} - {self.organization}"
-
-
-# Model for Thematic Registration Response (If required as a separate entity)
-class ThematicRegistrationResponse(models.Model):
-    name=models.CharField(max_length=255)
-    organization=models.CharField(max_length=255)
-    designation=models.CharField(max_length=255)
-    address=models.CharField(max_length=255)
-    email=models.EmailField()
-    contact=models.CharField(max_length=15)
-    sessions=models.ManyToManyField(ThematicSession, related_name='responses')
-
-    def __str__(self):
-        return f"Response for {self.registration.name}"
     
 
 class GuidedTour(models.Model):
