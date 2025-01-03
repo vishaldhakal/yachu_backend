@@ -87,7 +87,8 @@ class SponsorBooking(models.Model):
 class ThematicSession(models.Model):
     title = models.CharField(max_length=255)
     date = models.DateField()
-    time = models.TimeField()
+    start_time = models.TimeField()
+    end_time=models.TimeField(blank=True, null=True)
     description = models.TextField()
 
     def __str__(self):
