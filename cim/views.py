@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour
-from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, GuidedTourSerializer
+from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour,Invitation
+from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, GuidedTourSerializer,InvitationSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
@@ -139,3 +139,7 @@ class GuidedTourListCreateView(generics.ListCreateAPIView):
 class GuidedTourRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = GuidedTour.objects.all()
     serializer_class = GuidedTourSerializer
+
+class InvitationListCreateView(generics.ListCreateAPIView):
+    queryset = Invitation.objects.all()
+    serializer_class = InvitationSerializer

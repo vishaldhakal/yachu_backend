@@ -161,3 +161,20 @@ class GuidedTour(models.Model):
     def __str__(self):
         return f"{self.college_name} - {self.tour_date}"
 
+
+
+class Invitation(models.Model):
+    STATUS_CHOICES = [
+        ('ACCEPTED', 'ACCEPTED'),
+        ('REJECTED', 'REJECTED'),
+    ]
+    name = models.CharField(max_length=255)
+    designation = models.CharField(max_length=255)
+    company_name = models.CharField(max_length=255)
+    email = models.EmailField(blank=True, null=True)
+    phone_number = models.CharField(max_length=15,blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACCEPTED')
+    remarks = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.company_name}"

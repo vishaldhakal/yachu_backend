@@ -10,16 +10,15 @@ urlpatterns = [
    path('reject-stall/<int:pk>/',views.reject_stall,name='reject stall'),
    path('sponsor/',views.SponsorBookingListCreateView.as_view(),name='sponsor-list-create'),
    path('sponsor/<int:pk>/',views.SponsorBookingRetrieveUpdateDestroyView.as_view(),name='sponsor-retrieve-update-destroy'),
+   path('thematic-sessions/', views.ThematicSessionListCreateView.as_view(), name='thematic-session-list-create'),
+   path('thematic-sessions/<int:pk>/', views.ThematicSessionRetrieveUpdateDestroyView.as_view(), name='thematic-session-detail'),
 
-    path('thematic-sessions/', views.ThematicSessionListCreateView.as_view(), name='thematic-session-list-create'),
-    path('thematic-sessions/<int:pk>/', views.ThematicSessionRetrieveUpdateDestroyView.as_view(), name='thematic-session-detail'),
+   # ThematicRegistration URLs
+   path('thematic-registrations/', views.ThematicRegistrationListCreateView.as_view(), name='thematic-registration-list-create'),
+   path('thematic-registrations/<int:pk>/', views.ThematicRegistrationRetrieveUpdateDestroyView.as_view(), name='thematic-registration-detail'),
 
-    # ThematicRegistration URLs
-    path('thematic-registrations/', views.ThematicRegistrationListCreateView.as_view(), name='thematic-registration-list-create'),
-    path('thematic-registrations/<int:pk>/', views.ThematicRegistrationRetrieveUpdateDestroyView.as_view(), name='thematic-registration-detail'),
-
-    # GuidedTour URLs
-    path('guided-tours/', views.GuidedTourListCreateView.as_view(), name='guided-tour-list-create'),
-    path('guided-tours/<int:pk>/', views.GuidedTourRetrieveUpdateDestroyView.as_view(), name='guided-tour-detail'),
-
+   # GuidedTour URLs
+   path('guided-tours/', views.GuidedTourListCreateView.as_view(), name='guided-tour-list-create'),
+   path('guided-tours/<int:pk>/', views.GuidedTourRetrieveUpdateDestroyView.as_view(), name='guided-tour-detail'),
+   path('rsvp/', views.InvitationListCreateView.as_view(), name='invitation-list-create'),
 ]
