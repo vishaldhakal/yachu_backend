@@ -8,6 +8,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import json
 import csv
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def export(request):
@@ -143,3 +145,47 @@ class GuidedTourRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
 class InvitationListCreateView(generics.ListCreateAPIView):
     queryset = Invitation.objects.all()
     serializer_class = InvitationSerializer
+
+@api_view(['POST'])
+def approve_thematic_registration(request, pk):
+    try:
+        registration = ThematicRegistration.objects.get(pk=pk)
+        
+        # Get hotel email from the request data
+        hotel_email = request.data.get('hotel_email')
+        participant_email = registration.email  # Assuming the participant's email is stored in the registration object
+        
+        # Prepare email content
+        email_subject = "Guest Information"
+        email_body = f"""
+        Information:
+        Guest Name: {registration.name}
+        Address: {registration.address}
+        Contact: {registration.contact}
+        Arrival Date: {registration.arrival_date}
+        Departure Date: {registration.departure_date}
+        Airlines: {registration.airline}
+        """
+        
+        # Send email to hotel
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [hotel_email],
+            fail_silently=False,
+        )
+        
+        # Send email to participant
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [participant_email],
+            fail_silently=False,
+        )
+        
+        registration.save()
+        return Response({'message': 'Registration Approved and emails sent', 'status': status.HTTP_200_OK})
+    except ThematicRegistration.DoesNotExist:
+        return Response({'error': 'ThematicRegistration not found'}, status=status.HTTP_404_NOT_FOUND)

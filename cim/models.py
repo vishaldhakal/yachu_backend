@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.mail import send_mail
+from django.conf import settings
 
 class StallBooking(models.Model):
 
@@ -109,22 +111,35 @@ class ThematicRegistration(models.Model):
         ('Self', 'Self'),
         ('CIM', 'CIM'),
     ]
+    AIRLINE_CHOICES=[
+        ('Buddha', 'Buddha'),
+        ('Yeti', 'Yeti'),
+        ('Shree', 'Shree'),
+    ]
+
     name = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
     designation = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     email = models.EmailField()
     contact = models.CharField(max_length=15)
-    travel_arrive_date = models.DateField(null=True, blank=True)
-    travel_back_date = models.DateField(null=True, blank=True)
+    participant= models.CharField(max_length=20, choices=PARTICIPANT_TYPE_CHOICES)
+
+    arrival_date = models.DateField(null=True, blank=True)
+    departure_date = models.DateField(null=True, blank=True)
+    flight_no = models.CharField(max_length=20, null=True, blank=True)
+    flight_time = models.TimeField(null=True, blank=True)
+    airline= models.CharField(max_length=20, choices=AIRLINE_CHOICES,null=True, blank=True)
+    
     food= models.CharField(max_length=20, choices=FOOD_CHOICES,null=True, blank=True)
     hotel_accomodation= models.CharField(max_length=20, choices=HOTEL_ACCOMODATION_CHOICES,null=True, blank=True)
-    participant= models.CharField(max_length=20, choices=PARTICIPANT_TYPE_CHOICES)
+    check_in_date = models.DateField(null=True, blank=True)
+    hotel= models.CharField(max_length=20,null=True, blank=True)
+
     sessions = models.ManyToManyField(ThematicSession, related_name='registrations')
 
     def __str__(self):
         return f"{self.name} - {self.organization}"
-    
 
 class GuidedTour(models.Model):
     # College Details

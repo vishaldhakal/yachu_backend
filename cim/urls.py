@@ -21,4 +21,5 @@ urlpatterns = [
    path('guided-tours/', views.GuidedTourListCreateView.as_view(), name='guided-tour-list-create'),
    path('guided-tours/<int:pk>/', views.GuidedTourRetrieveUpdateDestroyView.as_view(), name='guided-tour-detail'),
    path('rsvp/', views.InvitationListCreateView.as_view(), name='invitation-list-create'),
+   path('approve-thematic-registration/<int:pk>/', views.approve_thematic_registration, name='approve_thematic_registration'),
 ]

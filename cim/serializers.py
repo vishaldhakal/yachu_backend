@@ -22,6 +22,7 @@ class ThematicSessionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ThematicRegistrationSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ThematicRegistration
         fields = '__all__'
