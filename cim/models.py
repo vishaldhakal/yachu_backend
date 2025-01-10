@@ -134,7 +134,7 @@ class ThematicRegistration(models.Model):
     food= models.CharField(max_length=20, choices=FOOD_CHOICES,null=True, blank=True)
     hotel_accomodation= models.CharField(max_length=20, choices=HOTEL_ACCOMODATION_CHOICES,null=True, blank=True)
     check_in_date = models.DateField(null=True, blank=True)
-    hotel= models.CharField(max_length=20,null=True, blank=True)
+    hotel= models.CharField(max_length=220,null=True, blank=True)
 
     sessions = models.ManyToManyField(ThematicSession, related_name='registrations')
 
