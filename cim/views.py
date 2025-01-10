@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.http import HttpResponse
 from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour,Invitation
 from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, GuidedTourSerializer,InvitationSerializer
@@ -6,7 +6,6 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
-import json
 import csv
 from django.core.mail import send_mail
 from django.conf import settings
@@ -154,35 +153,35 @@ def approve_thematic_registration(request, pk):
         # Get hotel email from the request data
         hotel_email = request.data.get('hotel_email')
         participant_email = registration.email  # Assuming the participant's email is stored in the registration object
-        
-        # Prepare email content
+
+        # Prepare email content using an HTML template
         email_subject = "Guest Information"
-        email_body = f"""
-        Information:
-        Guest Name: {registration.name}
-        Address: {registration.address}
-        Contact: {registration.contact}
-        Arrival Date: {registration.arrival_date}
-        Departure Date: {registration.departure_date}
-        Airlines: {registration.airline}
-        """
-        
+        context = {
+            'name': registration.name,
+            'address': registration.address,
+            'contact': registration.contact,
+            'arrival_date': registration.arrival_date,
+            'departure_date': registration.departure_date,
+            'airlines': registration.airline,
+        }
+        email_body = render_to_string('email_template/guest_information.html', context)
+
         # Send email to hotel
         send_mail(
             email_subject,
-            email_body,
             settings.DEFAULT_FROM_EMAIL,
             [hotel_email],
             fail_silently=False,
+            html_message=email_body  # HTML version of the email
         )
         
         # Send email to participant
         send_mail(
             email_subject,
-            email_body,
             settings.DEFAULT_FROM_EMAIL,
             [participant_email],
             fail_silently=False,
+            html_message=email_body  # HTML version of the email
         )
         
         registration.save()

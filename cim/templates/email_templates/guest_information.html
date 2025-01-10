@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Information</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e0e0e0;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: normal;
+        }
+        .content {
+            padding: 30px;
+        }
+        .content p {
+            margin: 10px 0;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        .content p strong {
+            color: #2c3e50;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Guest Information</h1>
+        </div>
+        <div class="content">
+            <p><strong>Guest Name:</strong> {{ registration.name }}</p>
+            <p><strong>Address:</strong> {{ registration.address }}</p>
+            <p><strong>Contact:</strong> {{ registration.contact }}</p>
+            <p><strong>Arrival Date:</strong> {{ registration.arrival_date }}</p>
+            <p><strong>Departure Date:</strong> {{ registration.departure_date }}</p>
+            <p><strong>Airlines:</strong> {{ registration.airline }}</p>
+        </div>
+        <div class="footer">
+            <p>Thank you for choosing our services! If you have any questions, please feel free to <a href="mailto:support@example.com">contact us</a>.</p>
+        </div>
+    </div>
+</body>
+</html>
