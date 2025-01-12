@@ -114,6 +114,7 @@ class Panelist(models.Model):
         ('Keynote Speaker', 'Keynote Speaker'),
         ('Moderator', 'Moderator'),
         ('Speaker', 'Speaker'),
+        ('Discussion Leader', 'Discussion Leader'),
     ]
 
     sub_session = models.ManyToManyField(
