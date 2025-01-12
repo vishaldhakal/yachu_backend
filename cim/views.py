@@ -1,7 +1,7 @@
 from django.template.loader import render_to_string
 from django.http import HttpResponse
-from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour,Invitation
-from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, GuidedTourSerializer,InvitationSerializer
+from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour,Invitation, SubSession, Panelist
+from .serializers import StallBookingSerializer,StallBookingSmallSerializer,SponsorBookingSerializer,ThematicSessionSerializer, ThematicRegistrationSerializer, GuidedTourSerializer,InvitationSerializer, SubSessionSerializer, PanelistSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
@@ -188,3 +188,23 @@ def approve_thematic_registration(request, pk):
         return Response({'message': 'Registration Approved and emails sent', 'status': status.HTTP_200_OK})
     except ThematicRegistration.DoesNotExist:
         return Response({'error': 'ThematicRegistration not found'}, status=status.HTTP_404_NOT_FOUND)
+
+# ListCreate view for SubSession
+class SubSessionListCreateView(generics.ListCreateAPIView):
+    queryset = SubSession.objects.all()
+    serializer_class = SubSessionSerializer
+
+# RetrieveUpdateDestroy view for SubSession
+class SubSessionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SubSession.objects.all()
+    serializer_class = SubSessionSerializer
+
+# ListCreate view for Panelist
+class PanelistListCreateView(generics.ListCreateAPIView):
+    queryset = Panelist.objects.all()
+    serializer_class = PanelistSerializer
+
+# RetrieveUpdateDestroy view for Panelist
+class PanelistRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Panelist.objects.all()
+    serializer_class = PanelistSerializer

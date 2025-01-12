@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour
+from .models import StallBooking,SponsorBooking,ThematicSession, ThematicRegistration, GuidedTour, SubSession, Panelist
 from unfold.admin import ModelAdmin
 from django.db import models
 # Register your models here.
@@ -17,3 +17,5 @@ admin.site.register(SponsorBooking,ModelAdmin)
 admin.site.register(ThematicSession,TinyMce)
 admin.site.register(ThematicRegistration,ModelAdmin)
 admin.site.register(GuidedTour,ModelAdmin)
+admin.site.register(SubSession,TinyMce)
+admin.site.register(Panelist,ModelAdmin)

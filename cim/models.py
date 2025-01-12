@@ -95,7 +95,41 @@ class ThematicSession(models.Model):
 
     def __str__(self):
         return self.title
+    
+class SubSession(models.Model):
+    thematic_session = models.ForeignKey(
+        ThematicSession, 
+        on_delete=models.CASCADE, 
+        related_name="sub_sessions"
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField()
 
+    def __str__(self):
+        return f"{self.title} - {self.thematic_session.title}"
+
+
+class Panelist(models.Model):
+    ROLE_CHOICES = [
+        ('Keynote Speaker', 'Keynote Speaker'),
+        ('Moderator', 'Moderator'),
+        ('Speaker', 'Speaker'),
+    ]
+
+    sub_session = models.ManyToManyField(
+        SubSession, 
+        
+        related_name="panelists"
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    name = models.CharField(max_length=255)
+    profile_image = models.ImageField(upload_to="panelists/", blank=True, null=True)
+    company = models.CharField(max_length=255, blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    biodata = models.TextField()
+
+    def __str__(self):
+        return f"{self.role}: {self.name}"
 
 # Model for Thematic Registration
 class ThematicRegistration(models.Model):

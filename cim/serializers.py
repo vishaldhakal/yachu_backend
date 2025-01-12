@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StallBooking,SponsorBooking,ThematicSession,ThematicRegistration,GuidedTour,Invitation
+from .models import StallBooking,SponsorBooking,ThematicSession,ThematicRegistration,GuidedTour,Invitation,SubSession,Panelist
 
 class StallBookingSerializer(serializers.ModelSerializer):
       class Meta:
@@ -16,10 +16,26 @@ class SponsorBookingSerializer(serializers.ModelSerializer):
          model = SponsorBooking
          fields = "__all__"
 
+class PanelistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Panelist
+        fields = ['role', 'name', 'profile_image', 'company', 'location', 'biodata']
+
+
+class SubSessionSerializer(serializers.ModelSerializer):
+    panelists = PanelistSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = SubSession
+        fields = ['id', 'title', 'description', 'panelists']
+
+
 class ThematicSessionSerializer(serializers.ModelSerializer):
+    sub_sessions = SubSessionSerializer(many=True, read_only=True)
+
     class Meta:
         model = ThematicSession
-        fields = '__all__'
+        fields = ['id', 'title', 'date', 'start_time', 'end_time', 'description', 'sub_sessions']
 
 class ThematicRegistrationSerializer(serializers.ModelSerializer):
 
