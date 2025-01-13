@@ -42,7 +42,7 @@ class ThematicRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ThematicRegistration
-        fields = '__all__'
+        fields = ['id','name','organization','designation','address','email','contact','participant','arrival_date','departure_date','flight_no','flight_time','airline','food','hotel_accomodation','check_in_date','check_out_date','sessions']
 
 class GuidedTourSerializer(serializers.ModelSerializer):
     class Meta:
