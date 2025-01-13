@@ -6,73 +6,93 @@
     <title>Guest Information</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f6f9;
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
             margin: 0;
             padding: 0;
         }
-        .email-container {
+        .container {
             max-width: 600px;
-            margin: 40px auto;
-            background: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e0e0e0;
-        }
-        .header {
-            background-color: #2c3e50;
-            color: #ffffff;
+            margin: 0 auto;
             padding: 20px;
-            text-align: center;
+            background-color: #f4f7f9;
+            border-radius: 10px;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: normal;
-        }
-        .content {
+        .main {
+            background-color: white;
             padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .content p {
-            margin: 10px 0;
-            color: #34495e;
+        h1 {
+            color: #3730a3;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #4b5563;
             line-height: 1.6;
         }
-        .content p strong {
-            color: #2c3e50;
+        .detail-row {
+            margin: 10px 0;
+            color: #4b5563;
+        }
+        .detail-row strong {
+            font-weight: bold;
         }
         .footer {
-            background-color: #f9f9f9;
-            padding: 15px;
+            margin-top: 20px;
             text-align: center;
-            font-size: 12px;
-            color: #7f8c8d;
-            border-top: 1px solid #e0e0e0;
-        }
-        .footer a {
-            color: #2c3e50;
-            text-decoration: none;
-            font-weight: bold;
+            color: #6b7280;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="header">
+    <div class="container">
+        <div class="main">
             <h1>Guest Information</h1>
-        </div>
-        <div class="content">
-            <p><strong>Guest Name:</strong> {{ name }}</p>
-            <p><strong>Address:</strong> {{ address }}</p>
-            <p><strong>Contact:</strong> {{ contact }}</p>
-            <p><strong>Arrival Date:</strong> {{ arrival_date }}</p>
-            <p><strong>Departure Date:</strong> {{ departure_date }}</p>
-            <p><strong>Airlines:</strong> {{ airlines }}</p>
-        </div>
-        <div class="footer">
-            <p>Thank you for choosing our services! If you have any questions, please feel free to <a href="mailto:support@example.com">contact us</a>.</p>
+            <p>Dear {{ name }},</p>
+            <p>Thank you for your registration. We are pleased to inform you that your hotel has been successfully booked. Below are your details:</p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #f0f4f8; text-align: left;">Detail</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #f0f4f8; text-align: left;">Information</th>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Guest Name:</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ name }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Address:</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ address }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Contact:</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ contact }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Arrival Date:</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ arrival_date }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Departure Date:</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ departure_date }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Airlines:</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ airlines }}</td>
+                </tr>
+            </table>
+            
+            <p>If you have any questions or need further assistance, please do not hesitate to contact us.</p>
         </div>
     </div>
+
+    <footer class="footer">
+        <p>Thank you for choosing our services! If you have any questions, please feel free to <a href="mailto:support@example.com" style="color: #4b5563;">contact us</a>.</p>
+    </footer>
 </body>
 </html>
+

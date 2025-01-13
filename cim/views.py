@@ -140,6 +140,19 @@ class ThematicRegistrationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestr
     queryset = ThematicRegistration.objects.all()
     serializer_class = ThematicRegistrationSerializer
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        
+        # Update the status field directly
+        if 'status' in request.data:
+            instance.status = request.data['status']  # Update status directly
+
+        # Save the updated instance
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
 # ListCreate view for GuidedTour
 class GuidedTourListCreateView(generics.ListCreateAPIView):
     queryset = GuidedTour.objects.all()

@@ -152,6 +152,12 @@ class ThematicRegistration(models.Model):
         ('Shree', 'Shree'),
     ]
 
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+
     name = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
     designation = models.CharField(max_length=255)
@@ -172,6 +178,7 @@ class ThematicRegistration(models.Model):
     hotel= models.CharField(max_length=220,null=True, blank=True)
 
     sessions = models.ManyToManyField(ThematicSession, related_name='registrations')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 
     def __str__(self):
         return f"{self.name} - {self.organization}"
