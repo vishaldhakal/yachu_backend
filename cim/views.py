@@ -126,6 +126,15 @@ class ThematicRegistrationListCreateView(generics.ListCreateAPIView):
     queryset = ThematicRegistration.objects.all()
     serializer_class = ThematicRegistrationSerializer
 
+    def perform_create(self, serializer):
+        sessions_data = self.request.data.get('sessions', [])
+        registration = serializer.save()
+        for session_id in sessions_data:
+            session = ThematicSession.objects.get(id=session_id)
+            registration.sessions.add(session)
+        return ThematicRegistrationSerializer(registration).data
+    
+
 # RetrieveUpdateDestroy view for ThematicRegistration
 class ThematicRegistrationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ThematicRegistration.objects.all()

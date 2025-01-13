@@ -38,22 +38,10 @@ class ThematicSessionSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'date', 'start_time', 'end_time', 'description', 'sub_sessions']
 
 class ThematicRegistrationSerializer(serializers.ModelSerializer):
-    sessions = ThematicSessionSerializer(many=True, read_only=True)
-
+    sessions=ThematicSessionSerializer(many=True,read_only=True)
     class Meta:
         model = ThematicRegistration
-        fields = ['id', 'name', 'organization', 'designation', 'address', 'email', 'contact', 'participant', 'arrival_date', 'departure_date', 'flight_no', 'flight_time', 'airline', 'food', 'hotel_accomodation', 'check_in_date', 'hotel', 'sessions']
-
-    def create(self, validated_data):
-        sessions_data = validated_data.pop('sessions')  # Extract sessions data
-        registration = ThematicRegistration.objects.create(**validated_data)  # Create registration
-
-        # Register each session
-        for session_data in sessions_data:
-            session = ThematicSession.objects.get(id=session_data['id'])  # Get session by ID
-            registration.sessions.add(session)  # Associate session with registration
-
-        return registration
+        fields = ['id','name','organization','designation','address','email','contact','participant','arrival_date','departure_date','flight_no','flight_time','airline','food','hotel_accomodation','check_in_date','hotel','sessions']
 
 class GuidedTourSerializer(serializers.ModelSerializer):
     class Meta:
