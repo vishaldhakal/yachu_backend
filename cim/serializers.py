@@ -38,6 +38,7 @@ class ThematicSessionSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'date', 'start_time', 'end_time', 'description', 'sub_sessions']
 
 class ThematicRegistrationSerializer(serializers.ModelSerializer):
+    session=ThematicSessionSerializer(many=True,read_only=True)
 
     class Meta:
         model = ThematicRegistration
