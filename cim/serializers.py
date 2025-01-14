@@ -41,7 +41,7 @@ class ThematicRegistrationSerializer(serializers.ModelSerializer):
     sessions=ThematicSessionSerializer(many=True,read_only=True)
     class Meta:
         model = ThematicRegistration
-        fields = ['id','name','organization','designation','address','email','contact','participant','arrival_date','departure_date','flight_no','flight_time','airline','food','hotel_accomodation','check_in_date','hotel','status','sessions']
+        fields = ['id','name','organization','designation','address','email','contact','participant','arrival_date','departure_date','flight_no','flight_time','airline','food','hotel_accomodation','check_in_date','check_out_date','hotel','status','sessions']
 
 class GuidedTourSerializer(serializers.ModelSerializer):
     class Meta:

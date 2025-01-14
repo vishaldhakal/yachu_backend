@@ -182,10 +182,13 @@ def approve_thematic_registration(request, pk):
             'name': registration.name,
             'address': registration.address,
             'contact': registration.contact,
-            'arrival_date': registration.arrival_date,
-            'departure_date': registration.departure_date,
-            'airlines': registration.airline,
+            'email': registration.email,
+            'check_in_date': registration.check_in_date,
+            'check_out_date': registration.check_out_date,
+            'hotel': registration.hotel,
+            'hotel_accomodation': registration.hotel_accomodation,
         }
+
         email_body = render_to_string('email_template/guest_information.html', context)
 
         # Send email to hotel
