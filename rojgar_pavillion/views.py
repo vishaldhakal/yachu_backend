@@ -20,7 +20,7 @@ def send_confirmation_email(request: HttpRequest, registration, status):
                 'registration_date': registration.created_at.strftime('%B %d, %Y'),
                 'number_of_participants': registration.total_participants,
                 'total_amount': registration.total_price,
-                'full_name': registration.first_name,
+                'full_name': registration.first_name + " " + registration.last_name,
                 'email': registration.email,
                 'mobile_number': registration.mobile_number,
                 'qualification': registration.qualification,
@@ -42,7 +42,7 @@ def send_confirmation_email(request: HttpRequest, registration, status):
                 subject=f'Registration {status} - Birat Expo 2025',
                 message=f'Your registration has been {status}. Please check your email for details.',  # Fallback message for plain text
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[registration.email],
+                recipient_list=[registration.email,],
                 html_message=html_message,
                 fail_silently=False,
             )
