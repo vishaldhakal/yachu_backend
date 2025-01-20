@@ -158,6 +158,64 @@ class GuidedTourListCreateView(generics.ListCreateAPIView):
     queryset = GuidedTour.objects.all()
     serializer_class = GuidedTourSerializer
 
+    def create(self, request, *args, **kwargs):
+        # Check if college is already registered
+        college_name = request.data.get('college_name')
+        existing_tour = GuidedTour.objects.filter(college_name__iexact=college_name).first()
+        
+        if existing_tour:
+            return Response(
+                {'error': 'This college is already registered for a guided tour'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Create new tour if college not registered
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Send email notification
+        email_subject = "New Guided Tour Registration"
+        email_body = f"""
+        New guided tour registration received:
+
+        College Details:
+        ---------------
+        College Name: {request.data.get('college_name')}
+        District: {request.data.get('district')}
+        Municipality: {request.data.get('municipality')}
+        Ward: {request.data.get('ward')}
+
+        Contact Details:
+        ---------------
+        Contact Person: {request.data.get('contact_person_name')}
+        Designation: {request.data.get('designation')}
+        Phone: {request.data.get('phone')}
+        Mobile: {request.data.get('mobile_no', 'Not provided')}
+        Email: {request.data.get('email')}
+
+        Tour Details:
+        ------------
+        Tour Date: {request.data.get('tour_date')}
+        Number of Students: {request.data.get('number_of_students')}
+        Student Level: {request.data.get('student_level')}
+        """
+        
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            ['ratish.shakya149@gmail.com',],
+            fail_silently=False,
+        )
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, 
+            status=status.HTTP_201_CREATED, 
+            headers=headers
+        )
+
 # RetrieveUpdateDestroy view for GuidedTour
 class GuidedTourRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = GuidedTour.objects.all()
