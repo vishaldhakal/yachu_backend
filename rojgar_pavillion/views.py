@@ -11,6 +11,7 @@ from django.http import HttpRequest  # Import HttpRequest if needed
 
 def send_confirmation_email(request: HttpRequest, registration, status):
         try:
+
             # Prepare the context for the email template
             print(registration.qr_code)
             full_qr_code_link = request.build_absolute_uri(registration.qr_code.url)  # Generate full link for qr_code
@@ -36,13 +37,19 @@ def send_confirmation_email(request: HttpRequest, registration, status):
 
             # HTML email content using the registration_confirmation.html template
             html_message = render_to_string('emails/registration_confirmation.html', context)
+            
+
+            # Modify recipient list based on status
+            recipient_list = [registration.email]
+            if status == 'Pending':
+                recipient_list.append('ajit.chapagain@gmail.com')  # Append additional email for pending status
 
             # Send email with both HTML and plain text versions
             send_mail(
                 subject=f'Registration {status} - Birat Expo 2025',
                 message=f'Your registration has been {status}. Please check your email for details.',  # Fallback message for plain text
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[registration.email,],
+                recipient_list=recipient_list,
                 html_message=html_message,
                 fail_silently=False,
             )
