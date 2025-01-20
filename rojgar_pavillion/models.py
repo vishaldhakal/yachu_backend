@@ -101,7 +101,7 @@ class Registration(models.Model):
     # Basic Fields
     time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
     registration_type = models.CharField(max_length=20, choices=REGISTRATION_TYPES)
-    status = models.CharField(max_length=20, choices=REGISTRATION_STATUS, default='PENDING')
+    status = models.CharField(max_length=20, choices=REGISTRATION_STATUS, default='Pending')
     
     # Participant Info
     first_name = models.CharField(max_length=220, blank=True, null=True)
