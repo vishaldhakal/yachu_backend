@@ -216,7 +216,7 @@ class Registration(models.Model):
             send_mail(
                 subject=f'Registration Confirmation - Birat Expo 2025',
                 message=plain_message,
-                from_email='Birat Expo 2025 Contact <info@baliyoventures.com>',
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[self.email],
                 html_message=html_message,
                 fail_silently=False,
@@ -253,7 +253,7 @@ class Registration(models.Model):
                     super().save(update_fields=['qr_code'])
                 
                 # Send confirmation email
-                self.send_confirmation_email()
+                # self.send_confirmation_email()
             except Exception as e:
                 print(f"Error in post-save processing: {str(e)}")
 

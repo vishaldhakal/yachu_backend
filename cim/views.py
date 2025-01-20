@@ -200,7 +200,7 @@ class GuidedTourListCreateView(generics.ListCreateAPIView):
         Number of Students: {request.data.get('number_of_students')}
         Student Level: {request.data.get('student_level')}
 
-        Please keep this information for your records. If you need to make any changes to your registration, please contact +977-9852033100.
+        Please keep this information for your records. If you need to make any changes to your registration, please contact +977-9862134318.
 
         Best regards,
         CIM 2025 Team
