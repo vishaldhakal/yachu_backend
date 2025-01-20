@@ -210,7 +210,7 @@ class GuidedTourListCreateView(generics.ListCreateAPIView):
         college_email = request.data.get('email')
         
         # Send email to both admin and college
-        recipient_list = ['abhishekag159@gmail.com']
+        recipient_list = ['maanojtiwariy@gmail.com']
         if college_email:
             recipient_list.append(college_email)
             
