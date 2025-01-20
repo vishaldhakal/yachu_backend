@@ -63,5 +63,5 @@ class TimeSlotByDateView(generics.ListAPIView):
         topic = self.request.query_params.get('topic')
         top = Topic.objects.get(id=topic)
         if date:
-            return TimeSlot.objects.filter(date=date,topic=top).order_by('-start_time')  # Filter time slots by the provided date
+            return TimeSlot.objects.filter(date=date,topic=top).order_by('start_time')  # Filter time slots by the provided date
         return TimeSlot.objects.none() 
