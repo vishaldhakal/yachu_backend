@@ -173,58 +173,6 @@ class Registration(models.Model):
             save=False
         )
 
-    def send_confirmation_email(self):
-        try:
-            # Format the date and time properly
-            formatted_date = self.time_slot.topic.start_date.strftime('%B %d, %Y')
-            formatted_start_time = self.time_slot.start_time.strftime('%I:%M %p')
-            formatted_end_time = self.time_slot.end_time.strftime('%I:%M %p')
-
-            # Plain text email content
-            plain_message = f"""
-            Dear {self.full_name},
-
-            Your registration for {self.time_slot.topic.name} has been confirmed.
-
-            Event Details:
-            -------------
-            Topic: {self.time_slot.topic.name}
-            Venue: {self.time_slot.topic.venue}
-            Date: {formatted_date}
-            Time: {formatted_start_time} - {formatted_end_time}
-            Registration Type: {self.get_registration_type_display()}
-            Total Amount: NPR {self.total_price}
-
-            Important Notes:
-            - Please arrive 15 minutes before the session starts
-            - Bring a valid ID for verification
-            - This registration is non-refundable
-
-            Best regards,
-            Birat Expo Team
-                        """
-
-            # HTML email content
-            html_message = render_to_string('emails/registration_confirmation.html', {
-                'registration': self,
-                'formatted_date': formatted_date,
-                'formatted_start_time': formatted_start_time,
-                'formatted_end_time': formatted_end_time,
-            })
-
-            # Send email with both HTML and plain text versions
-            send_mail(
-                subject=f'Registration Confirmation - Birat Expo 2025',
-                message=plain_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[self.email],
-                html_message=html_message,
-                fail_silently=False,
-            )
-            print(f"Email sent successfully to {self.email}")
-        except Exception as e:
-            print(f"Failed to send email to {self.email}: {str(e)}")
-
     def save(self, *args, **kwargs):
         # Check if this is a new registration
         is_new = self._state.adding

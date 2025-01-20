@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .models import Registration, Topic, TimeSlot
 from .serializers import RegistrationSerializer, TopicSerializer, TimeSlotSerializer, RegistrationDetailSerializer
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 class RegistrationView(generics.ListCreateAPIView):
     queryset = Registration.objects.all()
@@ -24,6 +27,9 @@ class RegistrationView(generics.ListCreateAPIView):
             time_slot.current_participants += registration.total_participants
             time_slot.save()
 
+            # Send confirmation email with status 'pending'
+            self.send_confirmation_email(registration, status='pending')
+
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
@@ -33,11 +39,53 @@ class RegistrationView(generics.ListCreateAPIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
+    def send_confirmation_email(self, registration, status):
+        try:
+            # Prepare the context for the email template
+            context = {
+                'registration': registration.id,
+                'registration_date': registration.created_at.strftime('%B %d, %Y'),
+                'number_of_participants': registration.total_participants,
+                'total_amount': registration.total_price,
+                'full_name': registration.first_name,
+                'email': registration.email,
+                'mobile_number': registration.mobile_number,
+                'qualification': registration.qualification,
+                'gender': registration.gender,
+                'age': registration.age,
+                'address': registration.address,
+                'status': status,
+                'qr_code': registration.qr_code,
+                'topic': registration.time_slot.topic.name,
+                'date': registration.time_slot.date.strftime('%B %d, %Y'),
+                'time_slot': registration.time_slot.start_time.strftime('%I:%M %p'),
+            }
+
+            # HTML email content using the registration_confirmation.html template
+            html_message = render_to_string('emails/registration_confirmation.html', context)
+
+            # Send email with both HTML and plain text versions
+            send_mail(
+                subject=f'Registration Confirmation - Birat Expo 2025',
+                message='Your registration has been confirmed. Please check your email for details.',  # Fallback message for plain text
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[registration.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            print(f"Email sent successfully to {registration.email}")
+        except Exception as e:
+            print(f"Failed to send email to {registration.email}: {str(e)}")
+
 class RegistrationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Registration.objects.all()
     serializer_class = RegistrationDetailSerializer
-    
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        status = instance.status        
+        self.send_confirmation_email(instance, status)
 
 class AvailableSessionsView(generics.ListAPIView):
     serializer_class = TopicSerializer
