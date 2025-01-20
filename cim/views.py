@@ -161,7 +161,7 @@ class GuidedTourListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         # Check if college is already registered
         college_name = request.data.get('college_name')
-        existing_tour = GuidedTour.objects.filter(college_name__iexact=college_name).first()
+        existing_tour = GuidedTour.objects.filter(college_name=college_name).first()
         
         if existing_tour:
             return Response(
@@ -199,13 +199,26 @@ class GuidedTourListCreateView(generics.ListCreateAPIView):
         Tour Date: {request.data.get('tour_date')}
         Number of Students: {request.data.get('number_of_students')}
         Student Level: {request.data.get('student_level')}
+
+        Please keep this information for your records. If you need to make any changes to your registration, please contact +977-9852033100.
+
+        Best regards,
+        CIM 2025 Team
         """
         
+        # Get college email from request data
+        college_email = request.data.get('email')
+        
+        # Send email to both admin and college
+        recipient_list = ['abhishekag159@gmail.com']
+        if college_email:
+            recipient_list.append(college_email)
+            
         send_mail(
             email_subject,
             email_body,
             settings.DEFAULT_FROM_EMAIL,
-            ['ratish.shakya149@gmail.com',],
+            recipient_list,
             fail_silently=False,
         )
 
