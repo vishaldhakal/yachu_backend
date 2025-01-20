@@ -74,7 +74,7 @@ class TimeSlot(models.Model):
             raise ValidationError("Maximum participants must be at least 1")
 
     def __str__(self):
-        return f"{self.topic.name}: {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')}"
+        return f"{self.topic.name}: {self.date.strftime('%Y-%m-%d')} {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')}"
 
 
 class Registration(models.Model):
