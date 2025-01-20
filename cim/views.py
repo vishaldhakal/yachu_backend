@@ -172,45 +172,57 @@ def approve_thematic_registration(request, pk):
     try:
         registration = ThematicRegistration.objects.get(pk=pk)
         
-        # Get hotel email from the request data
-        hotel_email = request.data.get('hotel_email')
-        participant_email = registration.email  # Assuming the participant's email is stored in the registration object
-
-        # Prepare email content using an HTML template
-        email_subject = "Guest Information"
-        context = {
-            'name': registration.name,
-            'address': registration.address,
-            'contact': registration.contact,
-            'email': registration.email,
-            'check_in_date': registration.check_in_date,
-            'check_out_date': registration.check_out_date,
-            'hotel': registration.hotel,
-            'hotel_accomodation': registration.hotel_accomodation,
-        }
-
-        email_body = render_to_string('email_template/guest_information.html', context)
-
-        # Send email to hotel
-        send_mail(
-            email_subject,
-            settings.DEFAULT_FROM_EMAIL,
-            [hotel_email],
-            fail_silently=False,
-            html_message=email_body  # HTML version of the email
-        )
-        
-        # Send email to participant
-        send_mail(
-            email_subject,
-            settings.DEFAULT_FROM_EMAIL,
-            [participant_email],
-            fail_silently=False,
-            html_message=email_body  # HTML version of the email
-        )
-        
+        # Update status to Approved
+        registration.status = 'Approved'
         registration.save()
-        return Response({'message': 'Registration Approved and emails sent', 'status': status.HTTP_200_OK})
+
+        # Only send emails if status is Approved
+        if registration.status == 'Approved':
+            # Get hotel email from the request data
+            hotel_email = request.data.get('hotel_email')
+            participant_email = registration.email
+
+            # Prepare email content using an HTML template
+            email_subject = "Guest Information"
+            context = {
+                'name': registration.name,
+                'address': registration.address,
+                'contact': registration.contact,
+                'email': registration.email,
+                'check_in_date': registration.check_in_date,
+                'check_out_date': registration.check_out_date,
+                'hotel': registration.hotel,
+                'hotel_accomodation': registration.hotel_accomodation,
+            }
+
+            email_body = render_to_string('email_template/guest_information.html', context)
+
+            # Send email to hotel only if hotel_email is provided
+            if hotel_email:
+                send_mail(
+                    email_subject,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [hotel_email],
+                    fail_silently=False,
+                    html_message=email_body
+                )
+            
+            # Send email to participant
+            send_mail(
+                email_subject,
+                settings.DEFAULT_FROM_EMAIL,
+                [participant_email],
+                fail_silently=False,
+                html_message=email_body
+            )
+            
+            message = 'Registration Approved and emails sent'
+            if not hotel_email:
+                message = 'Registration Approved and email sent to participant only'
+            
+            return Response({'message': message, 'status': status.HTTP_200_OK})
+        
+        return Response({'message': 'Registration status updated', 'status': status.HTTP_200_OK})
     except ThematicRegistration.DoesNotExist:
         return Response({'error': 'ThematicRegistration not found'}, status=status.HTTP_404_NOT_FOUND)
 

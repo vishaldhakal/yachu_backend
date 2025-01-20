@@ -146,11 +146,6 @@ class ThematicRegistration(models.Model):
         ('Self', 'Self'),
         ('CIM', 'CIM'),
     ]
-    AIRLINE_CHOICES=[
-        ('Buddha', 'Buddha'),
-        ('Yeti', 'Yeti'),
-        ('Shree', 'Shree'),
-    ]
 
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -170,7 +165,7 @@ class ThematicRegistration(models.Model):
     departure_date = models.DateField(null=True, blank=True)
     flight_no = models.CharField(max_length=20, null=True, blank=True)
     flight_time = models.TimeField(null=True, blank=True)
-    airline= models.CharField(max_length=20, choices=AIRLINE_CHOICES,null=True, blank=True)
+    airline= models.CharField(max_length=50,null=True, blank=True)
     
     food= models.CharField(max_length=20, choices=FOOD_CHOICES,null=True, blank=True)
     hotel_accomodation= models.CharField(max_length=20, choices=HOTEL_ACCOMODATION_CHOICES,null=True, blank=True)
