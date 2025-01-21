@@ -145,6 +145,7 @@ class Registration(models.Model):
     
     # QR Code
     qr_code = models.ImageField(upload_to='qr_codes/', null=True, blank=True)
+    is_attended = models.BooleanField(default=False,null=True,blank=True)
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

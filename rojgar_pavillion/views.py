@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .models import Registration, Topic, TimeSlot
@@ -127,3 +127,17 @@ class TimeSlotByDateView(generics.ListAPIView):
         if date:
             return TimeSlot.objects.filter(date=date,topic=top).order_by('start_time')  # Filter time slots by the provided date
         return TimeSlot.objects.none() 
+
+class UpdateAttendanceView(generics.UpdateAPIView):
+    queryset = Registration.objects.all()
+    serializer_class = RegistrationDetailSerializer
+
+    def update(self, request, *args, **kwargs):
+        registration = self.get_object()
+        registration.is_attended = True  # Update the is_attended field
+        registration.save()  # Save the changes
+
+        return Response(
+            {'status': 'Attendance updated successfully'},
+            status=status.HTTP_200_OK
+        ) 

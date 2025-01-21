@@ -4,6 +4,7 @@ from .views import (
     AvailableSessionsView,
     TimeSlotByDateView,
     RegistrationDetailView,
+    UpdateAttendanceView,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
         name="registration-detail",
     ),
     path("timeslots/", TimeSlotByDateView.as_view(), name="timeslot-by-date"),
+    path('registrations/<int:pk>/attendance/', UpdateAttendanceView.as_view(), name='update-attendance'),
 ]
