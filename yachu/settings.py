@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'yachu.wsgi.application'
 } """
 
 
-""" DATABASES = {
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "yachu",
@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'yachu.wsgi.application'
         "HOST": "localhost",
         "PORT": "",
     }
-} """
+}
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
