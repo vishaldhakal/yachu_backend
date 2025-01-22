@@ -24,7 +24,7 @@ class SubSessionAdmin(ModelAdmin):
     
     list_display = ('title', 'thematic_session')
     search_fields = ('title', 'thematic_session__title')
-    list_filter = ('thematic_session',)
+    list_filter = ('thematic_session__title',)
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()},
     }
