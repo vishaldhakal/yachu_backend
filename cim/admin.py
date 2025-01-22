@@ -11,12 +11,18 @@ class TinyMce(ModelAdmin):
         models.TextField: {'widget': TinyMCE()},
     }
 
-class ThematicSessionAdmin(ModelAdmin,TinyMce):
+class ThematicSessionAdmin(ModelAdmin, TinyMce):
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE()},
+    }
     list_display = ('title', 'date', 'start_time', 'end_time')
     search_fields = ('title',)
     list_filter = ('date',)
 
-class SubSessionAdmin(ModelAdmin,TinyMce):
+class SubSessionAdmin(ModelAdmin, TinyMce):
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE()},
+    }
     list_display = ('title', 'thematic_session')
     search_fields = ('title', 'thematic_session__title')
     list_filter = ('thematic_session',)
@@ -26,5 +32,5 @@ admin.site.register(SponsorBooking,ModelAdmin)
 admin.site.register(ThematicSession, ThematicSessionAdmin)
 admin.site.register(ThematicRegistration,ModelAdmin)
 admin.site.register(GuidedTour,ModelAdmin)
-admin.site.register(SubSession, SubSessionAdmin)
+admin.site.register(SubSession, TinyMce)
 admin.site.register(Panelist,TinyMce)
