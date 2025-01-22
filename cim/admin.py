@@ -11,18 +11,12 @@ class TinyMce(ModelAdmin):
         models.TextField: {'widget': TinyMCE()},
     }
 
-class ThematicSessionAdmin(ModelAdmin, TinyMce):
-    formfield_overrides = {
-        models.TextField: {'widget': TinyMCE()},
-    }
+class ThematicSessionAdmin(ModelAdmin):
     list_display = ('title', 'date', 'start_time', 'end_time')
     search_fields = ('title',)
     list_filter = ('date',)
 
-class SubSessionAdmin(ModelAdmin, TinyMce):
-    formfield_overrides = {
-        models.TextField: {'widget': TinyMCE()},
-    }
+class SubSessionAdmin(ModelAdmin):
     list_display = ('title', 'thematic_session')
     search_fields = ('title', 'thematic_session__title')
     list_filter = ('thematic_session',)
