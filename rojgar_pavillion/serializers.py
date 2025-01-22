@@ -16,7 +16,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'qr_code',
             'created_at', 'updated_at',
             'group_members',
-            'registration_type'
+            'registration_type',
+            'is_attended'
         ]
         read_only_fields = [
             'total_price', 'is_early_bird',
