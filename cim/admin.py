@@ -29,10 +29,18 @@ class SubSessionAdmin(ModelAdmin):
         models.TextField: {'widget': TinyMCE()},
     }
 
+class PanelistAdmin(ModelAdmin):
+    list_display = ('name', 'role', 'company')
+    search_fields = ('name', 'company')
+    list_filter = ('role',)
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE()},
+    }
+
 admin.site.register(StallBooking,ModelAdmin)
 admin.site.register(SponsorBooking,ModelAdmin)
 admin.site.register(ThematicSession, ThematicSessionAdmin)
 admin.site.register(ThematicRegistration,ModelAdmin)
 admin.site.register(GuidedTour,ModelAdmin)
 admin.site.register(SubSession, SubSessionAdmin)
-admin.site.register(Panelist,TinyMce)
+admin.site.register(Panelist, PanelistAdmin)
