@@ -165,6 +165,8 @@ class ThematicRegistration(models.Model):
     departure_date = models.DateField(null=True, blank=True)
     flight_no = models.CharField(max_length=20, null=True, blank=True)
     flight_time = models.TimeField(null=True, blank=True)
+    return_flight_no = models.CharField(max_length=20, null=True, blank=True)
+    return_flight_time = models.TimeField(null=True, blank=True)
     airline= models.CharField(max_length=50,null=True, blank=True)
     
     food= models.CharField(max_length=20, choices=FOOD_CHOICES,null=True, blank=True)
