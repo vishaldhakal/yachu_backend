@@ -32,7 +32,7 @@ class SubSessionAdmin(ModelAdmin):
 class PanelistAdmin(ModelAdmin):
     list_display = ('name', 'role', 'company')
     search_fields = ('name', 'company')
-    list_filter = ('role',)
+    list_filter = ('role', 'sub_session')
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()},
     }
