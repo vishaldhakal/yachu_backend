@@ -11,11 +11,20 @@ class TinyMce(ModelAdmin):
         models.TextField: {'widget': TinyMCE()},
     }
 
+class ThematicSessionAdmin(ModelAdmin):
+    list_display = ('title', 'date', 'start_time', 'end_time')
+    search_fields = ('title',)
+    list_filter = ('date',)
+
+class SubSessionAdmin(ModelAdmin):
+    list_display = ('title', 'thematic_session')
+    search_fields = ('title', 'thematic_session__title')
+    list_filter = ('thematic_session',)
 
 admin.site.register(StallBooking,ModelAdmin)
 admin.site.register(SponsorBooking,ModelAdmin)
-admin.site.register(ThematicSession,TinyMce)
+admin.site.register(ThematicSession, ThematicSessionAdmin)
 admin.site.register(ThematicRegistration,ModelAdmin)
 admin.site.register(GuidedTour,ModelAdmin)
-admin.site.register(SubSession,TinyMce)
+admin.site.register(SubSession, SubSessionAdmin)
 admin.site.register(Panelist,TinyMce)
