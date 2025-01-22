@@ -137,6 +137,43 @@
           <strong>Registration Status:</strong>
           <span class="highlight">{{ status }}</span>
         </p>
+
+        <h2>Flight Arrival Details</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Flight No</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Arrival Date</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Arrival Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #ddd; padding: 8px;">{{ flight_no }}</td>
+              <td style="border: 1px solid #ddd; padding: 8px;">{{ arrival_date }}</td>
+              <td style="border: 1px solid #ddd; padding: 8px;">{{ arrival_time }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Flight Departure Details</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Flight No</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Departure Date</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Departure Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #ddd; padding: 8px;">{{ return_flight_no }}</td>
+              <td style="border: 1px solid #ddd; padding: 8px;">{{ return_flight_time }}</td>
+              <td style="border: 1px solid #ddd; padding: 8px;">{{ departure_time }}</td>
+            </tr>
+          </tbody>
+        </table>
+
         {% if status == 'Confirmed' and qr_code %}
         <div class="qr-section">
           <h2>Your QR Code</h2>
