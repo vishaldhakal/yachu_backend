@@ -115,8 +115,9 @@ class Panelist(models.Model):
         ('Theme Chair', 'Theme Chair'),
         ('Moderator', 'Moderator'),
         ('Chief Guest', 'Chief Guest'),
-        ('Guest of Honour', 'Guest of Honour'),
+        ('Guest of Honor', 'Guest of Honor'),
         ('Speaker', 'Speaker'),
+        ('Guest', 'Guest'),
         ('Discussion Leader', 'Discussion Leader'),
     ]
     thematic_session=models.ManyToManyField(ThematicSession, related_name="thematicpanelists",blank=True)
