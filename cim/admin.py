@@ -30,7 +30,7 @@ class SubSessionAdmin(ModelAdmin):
     }
 
 class PanelistAdmin(ModelAdmin):
-    list_display = ('name', 'role', 'company')
+    list_display = ('name', 'role', 'company','profile_image')
     search_fields = ('name', 'company')
     list_filter = ('role', 'thematic_session','sub_session')
     formfield_overrides = {
