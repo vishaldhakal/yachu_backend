@@ -112,15 +112,19 @@ class SubSession(models.Model):
 class Panelist(models.Model):
     ROLE_CHOICES = [
         ('Keynote Speaker', 'Keynote Speaker'),
+        ('Theme Chair', 'Theme Chair'),
         ('Moderator', 'Moderator'),
+        ('Chief Guest', 'Chief Guest'),
+        ('Guest of Honour', 'Guest of Honour'),
         ('Speaker', 'Speaker'),
         ('Discussion Leader', 'Discussion Leader'),
     ]
-
+    thematic_session=models.ManyToManyField(ThematicSession, related_name="thematicpanelists",blank=True)
     sub_session = models.ManyToManyField(
         SubSession, 
         
-        related_name="panelists"
+        related_name="panelists",
+        blank=True
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     name = models.CharField(max_length=255)

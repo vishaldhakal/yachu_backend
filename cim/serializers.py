@@ -31,11 +31,13 @@ class SubSessionSerializer(serializers.ModelSerializer):
 
 
 class ThematicSessionSerializer(serializers.ModelSerializer):
+    thematicpanelists = PanelistSerializer(many=True, read_only=True)
     sub_sessions = SubSessionSerializer(many=True, read_only=True)
+
 
     class Meta:
         model = ThematicSession
-        fields = ['id', 'title', 'date', 'start_time', 'end_time', 'description', 'sub_sessions']
+        fields = ['id', 'title', 'date', 'start_time', 'end_time', 'thematicpanelists','description', 'sub_sessions']
 
 class ThematicRegistrationSerializer(serializers.ModelSerializer):
     sessions=ThematicSessionSerializer(many=True,read_only=True)
