@@ -113,7 +113,7 @@ class SponsorBookingRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIV
 
 # ListCreate view for ThematicSession
 class ThematicSessionListCreateView(generics.ListCreateAPIView):
-    queryset = ThematicSession.objects.all()
+    queryset = ThematicSession.objects.all().order_by('id')
     serializer_class = ThematicSessionSerializer
 
 # RetrieveUpdateDestroy view for ThematicSession
