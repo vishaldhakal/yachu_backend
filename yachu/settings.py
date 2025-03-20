@@ -49,8 +49,7 @@ INSTALLED_APPS = [
     'django_summernote',
     'solo',
     'corsheaders',
-    'cim',
-    'rojgar_pavillion'
+
 ]
 
 MIDDLEWARE = [
