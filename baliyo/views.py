@@ -39,8 +39,14 @@ class ImageDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 # Project Views
 class ProjectListCreateView(generics.ListCreateAPIView):
-    queryset = Project.objects.all()
     pagination_class = CustomPagination
+    
+    def get_queryset(self):
+        queryset = Project.objects.all()
+        category_slug = self.request.query_params.get('category', None)
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+        return queryset
     
     def get_serializer_class(self):
         if self.request.method == 'GET':
