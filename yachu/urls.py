@@ -16,6 +16,7 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('tinymce/', include('tinymce.urls')),
+    path('api/baliyo/', include('baliyo.urls')),
 ]
 
 if settings.DEBUG:
