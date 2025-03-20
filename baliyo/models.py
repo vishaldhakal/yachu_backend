@@ -3,9 +3,15 @@ from django.utils.text import slugify
 
 # Create your models here.
 class SlugMixin:
-    
     def generate_unique_slug(self):
-        self.slug = slugify(self.title)
+        base_slug = slugify(self.title)
+        slug = base_slug
+
+        model = self.__class__
+        while model.objects.filter(slug=slug).exclude(id=self.id).exists():
+            slug = base_slug
+
+        self.slug = slug
 
     def save(self, *args, **kwargs):
         self.generate_unique_slug()
@@ -22,6 +28,11 @@ class Service(models.Model,SlugMixin):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:  # Only generate if slug doesn't exist
+            self.generate_unique_slug()
+        super().save(*args, **kwargs)
 
 class Image(models.Model):
     image=models.FileField(upload_to='images/')
