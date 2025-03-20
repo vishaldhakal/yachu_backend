@@ -13,7 +13,7 @@ class SlugMixin:
 
 class Service(models.Model,SlugMixin):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(null=True,blank=True)
     description = models.TextField()
     thumbnail_image = models.FileField(upload_to='service/',null=True,blank=True)
     thumbnail_image_alt_description = models.CharField(max_length=255,null=True,blank=True)
@@ -29,7 +29,7 @@ class Image(models.Model):
 
 class Project(models.Model,SlugMixin):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(null=True,blank=True)
     category = models.ForeignKey('Service', on_delete=models.CASCADE, related_name='projects')
     description = models.TextField()
     meta_title = models.CharField(max_length=255,null=True,blank=True)
@@ -46,7 +46,7 @@ class Project(models.Model,SlugMixin):
 
 class BlogCategory(models.Model,SlugMixin):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -63,7 +63,7 @@ class BlogTag(models.Model):
 
 class Blog(models.Model,SlugMixin):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(null=True,blank=True)
     description = models.TextField()
     thumbnail_image = models.FileField(upload_to='blog/',null=True,blank=True)
     thumbnail_image_alt_description = models.CharField(max_length=255,null=True,blank=True)
