@@ -44,13 +44,13 @@ INSTALLED_APPS = [
     'about',
     'blog',
     'orders',
-    'cim',
     'ntc',
     'koshiinvest',
     'django_summernote',
     'solo',
     'corsheaders',
-    'rojgar_pavillion',
+    'cim',
+    'rojgar_pavillion'
 ]
 
 MIDDLEWARE = [

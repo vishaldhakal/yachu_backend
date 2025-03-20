@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
         ('Customer','Customer'),
         ('Sales','Sales')
     }
-    role=models.CharField(max_length=255, choices=role_choices)
+    role=models.CharField(max_length=255, choices=role_choices, default='Customer')
     phone_number=models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
