@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],
-            bases=(models.Model, baliyo.models.SlugMixin),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='BlogTag',

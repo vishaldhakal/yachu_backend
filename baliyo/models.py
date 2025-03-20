@@ -2,24 +2,10 @@ from django.db import models
 from django.utils.text import slugify
 
 # Create your models here.
-class SlugMixin:
-    def generate_unique_slug(self):
-        base_slug = slugify(self.title)
-        slug = base_slug
 
-        model = self.__class__
-        while model.objects.filter(slug=slug).exclude(id=self.id).exists():
-            slug = base_slug
-
-        self.slug = slug
-
-    def save(self, *args, **kwargs):
-        self.generate_unique_slug()
-        super().save(*args, **kwargs)
-
-class Service(models.Model,SlugMixin):
+class Service(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(null=True,blank=True)
+    slug = models.SlugField(unique=True,null=True,blank=True)
     description = models.TextField()
     thumbnail_image = models.FileField(upload_to='service/',null=True,blank=True)
     thumbnail_image_alt_description = models.CharField(max_length=255,null=True,blank=True)
@@ -28,19 +14,19 @@ class Service(models.Model,SlugMixin):
 
     def __str__(self):
         return self.title
-
+    
     def save(self, *args, **kwargs):
-        if not self.slug:  # Only generate if slug doesn't exist
-            self.generate_unique_slug()
+        self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
 
 class Image(models.Model):
     image=models.FileField(upload_to='images/')
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='images')
 
-class Project(models.Model,SlugMixin):
+class Project(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(null=True,blank=True)
+    slug = models.SlugField(unique=True,null=True,blank=True)
     category = models.ForeignKey('Service', on_delete=models.CASCADE, related_name='projects')
     description = models.TextField()
     meta_title = models.CharField(max_length=255,null=True,blank=True)
@@ -53,16 +39,25 @@ class Project(models.Model,SlugMixin):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.title   
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
-class BlogCategory(models.Model,SlugMixin):
+class BlogCategory(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(null=True,blank=True)
+    slug = models.SlugField(unique=True,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
 
 class BlogTag(models.Model):
     title = models.CharField(max_length=255)
@@ -72,9 +67,9 @@ class BlogTag(models.Model):
     def __str__(self):
         return self.title
 
-class Blog(models.Model,SlugMixin):
+class Blog(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(null=True,blank=True)
+    slug = models.SlugField(unique=True,null=True,blank=True)
     description = models.TextField()
     thumbnail_image = models.FileField(upload_to='blog/',null=True,blank=True)
     thumbnail_image_alt_description = models.CharField(max_length=255,null=True,blank=True)
@@ -85,6 +80,10 @@ class Blog(models.Model,SlugMixin):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 class Contact(models.Model):
     name=models.CharField(max_length=255)
@@ -99,8 +98,8 @@ class Contact(models.Model):
 
 class TeamMember(models.Model):
     name=models.CharField(max_length=255)
-    designation=models.CharField(max_length=255)
-    image=models.FileField(upload_to='team/')
+    designation=models.CharField(max_length=255,null=True,blank=True)
+    image=models.FileField(upload_to='team/',null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
