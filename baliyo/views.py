@@ -1,14 +1,23 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.response import Response
 from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag
 from .serializers import (
-    ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
+    ProjectSmallSerializer, ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
     ContactSerializer, TeamMemberSerializer, FaqSerializer, TestimonialSerializer,
-    BlogCategorySerializer, BlogTagSerializer
+    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer
 )
+from rest_framework.pagination import PageNumberPagination
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+from rest_framework import status
 
 # Create your views here.
-
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 # Service Views
 class ServiceListCreateView(generics.ListCreateAPIView):
     queryset = Service.objects.all()
@@ -31,17 +40,47 @@ class ImageDetailView(generics.RetrieveUpdateDestroyAPIView):
 # Project Views
 class ProjectListCreateView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    pagination_class = CustomPagination
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ProjectSmallSerializer
+        return ProjectSerializer
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     lookup_field = 'slug'
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        # Get similar projects from same category
+        similar_projects = Project.objects.filter(
+            category=instance.category
+        ).exclude(
+            id=instance.id
+        )[:3]
+        
+        # Serialize similar projects
+        similar_projects_data = ProjectSmallSerializer(similar_projects, many=True).data
+        
+        # Combine the data
+        response_data = serializer.data
+        response_data['similar_projects'] = similar_projects_data
+        
+        return Response(response_data)
+
 # Blog Views
 class BlogListCreateView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
-    serializer_class = BlogSerializer
+    pagination_class = CustomPagination
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return BlogSmallSerializer
+        return BlogSerializer
 
 class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Blog.objects.all()
@@ -52,6 +91,36 @@ class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ContactListCreateView(generics.ListCreateAPIView):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            contact = serializer.save()
+            
+            # Prepare email context
+            context = {
+                'name': contact.name,
+                'email': contact.email,
+                'phone': contact.phone,
+                'message': contact.message,
+                'date': contact.created_at.strftime("%B %d, %Y"),
+                'time': contact.created_at.strftime("%I:%M %p")
+            }
+            
+            # Render email template
+            html_message = render_to_string('emails/contact_notification.html', context)
+            
+            # Send email
+            send_mail(
+                subject=f'New Contact Form Submission from {contact.name}',
+                message=f'New contact form submission received from {contact.name}',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[settings.EMAIL_HOST_USER],
+                html_message=html_message
+            )
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Contact.objects.all()

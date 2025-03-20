@@ -21,7 +21,7 @@ class Service(models.Model,SlugMixin):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.service_name
+        return self.title
 
 class Image(models.Model):
     image=models.FileField(upload_to='images/')
@@ -30,8 +30,14 @@ class Image(models.Model):
 class Project(models.Model,SlugMixin):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
-    service = models.ForeignKey('Service', on_delete=models.CASCADE, related_name='projects')
+    category = models.ForeignKey('Service', on_delete=models.CASCADE, related_name='projects')
     description = models.TextField()
+    meta_title = models.CharField(max_length=255,null=True,blank=True)
+    meta_description = models.CharField(max_length=255,null=True,blank=True)
+    thumbnail_image = models.FileField(upload_to='project/',null=True,blank=True)
+    thumbnail_image_alt_description = models.CharField(max_length=255,null=True,blank=True)
+    catalogue=models.FileField(upload_to='catalogue/',null=True,blank=True)
+    quotation=models.FileField(upload_to='quotation/',null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -104,4 +110,8 @@ class Testimonial(models.Model):
     image=models.FileField(upload_to='testimonial/',null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 

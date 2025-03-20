@@ -18,6 +18,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
 
+class ProjectSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id','title','slug','thumbnail_image','thumbnail_image_alt_description']
+
 class BlogTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogTag
@@ -36,7 +41,7 @@ class BlogSerializer(serializers.ModelSerializer):
         source='category',
         write_only=True
     )
-    tag_ids = serializers.PrimaryKeyRelatedField(
+    tag_id = serializers.PrimaryKeyRelatedField(
         queryset=BlogTag.objects.all(),
         source='tags',
         write_only=True,
@@ -48,7 +53,12 @@ class BlogSerializer(serializers.ModelSerializer):
         model = Blog
         fields = ['id', 'title', 'slug', 'description', 'thumbnail_image', 
                  'thumbnail_image_alt_description', 'category', 'category_id',
-                 'tags', 'tag_ids', 'created_at', 'updated_at']
+                 'tags', 'tag_id', 'created_at', 'updated_at']
+
+class BlogSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = ['id','title','slug','thumbnail_image','thumbnail_image_alt_description']
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:

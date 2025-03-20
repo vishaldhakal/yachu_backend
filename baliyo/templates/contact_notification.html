@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 25px 15px;
+            background-color: #111111;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            margin-bottom: 25px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #FFD700;
+            margin: 0;
+            letter-spacing: 0.3px;
+        }
+        .content {
+            background-color: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .field {
+            margin-bottom: 20px;
+        }
+        .label {
+            color: rgba(255, 215, 0, 0.9);
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .value {
+            background-color: #222222;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border-left: 2px solid rgba(255, 215, 0, 0.5);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 15px;
+            color: #888888;
+            font-size: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 25px;
+        }
+        .timestamp {
+            color: rgba(255, 215, 0, 0.7);
+            text-align: right;
+            font-size: 12px;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.1), transparent);
+            margin: 20px 0;
+        }
+        .message-value {
+            background-color: #222222;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 2px solid rgba(255, 215, 0, 0.5);
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+        .footer p {
+            margin: 4px 0;
+        }
+        .footer-logo {
+            opacity: 0.6;
+            margin-bottom: 10px;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://yachu.baliyoventures.com/media/baliyo-logo.svg" alt="Baliyo Ventures" class="logo">
+            <h1>New Contact Inquiry</h1>
+        </div>
+        
+        <div class="content">
+            <div class="field">
+                <div class="label">Name</div>
+                <div class="value">{{ name }}</div>
+            </div>
+            
+            <div class="field">
+                <div class="label">Email</div>
+                <div class="value">{{ email }}</div>
+            </div>
+            
+            <div class="field">
+                <div class="label">Phone</div>
+                <div class="value">{{ phone }}</div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="field">
+                <div class="label">Message</div>
+                <div class="message-value">{{ message }}</div>
+            </div>
+            
+            <div class="timestamp">
+                Received on {{ date }} at {{ time }}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated notification from Baliyo Ventures</p>
+            <p style="color: #666666;">© {% now "Y" %} Baliyo Ventures. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
