@@ -74,7 +74,7 @@ class Blog(models.Model):
     thumbnail_image = models.FileField(upload_to='blog/',null=True,blank=True)
     thumbnail_image_alt_description = models.CharField(max_length=255,null=True,blank=True)
     category = models.ForeignKey('BlogCategory', on_delete=models.CASCADE, related_name='blogs')
-    tags = models.ManyToManyField('BlogTag', related_name='blogs')
+    tags = models.ManyToManyField('BlogTag', related_name='blogs',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
