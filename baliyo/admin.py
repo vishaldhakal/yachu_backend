@@ -1,6 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin,TabularInline
-from .models import Service,Project,Blog,Contact,TeamMember,Faq,Testimonial,Image,BlogCategory,BlogTag
+from .models import Service,Project,Blog,Contact,TeamMember,Faq,Testimonial,Image,BlogCategory,BlogTag,OurPartner
 from tinymce.widgets import TinyMCE
 from django.db import models
 
@@ -52,6 +52,10 @@ class FaqAdmin(ModelAdmin):
 @admin.register(Testimonial)
 class TestimonialAdmin(ModelAdmin):
     list_display = ['name','message','rating','designation','created_at','updated_at']
+
+@admin.register(OurPartner)
+class OurPartnerAdmin(ModelAdmin):
+    list_display = ['title','website_url','created_at','updated_at']
 
 
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag
+from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
 
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,7 +58,7 @@ class BlogSerializer(serializers.ModelSerializer):
 class BlogSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ['id','title','slug','thumbnail_image','thumbnail_image_alt_description']
+        fields = ['id','title','slug','thumbnail_image','thumbnail_image_alt_description','meta_title','meta_description']
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
@@ -79,3 +79,9 @@ class TestimonialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Testimonial
         fields = '__all__'
+
+class OurPartnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OurPartner
+        fields = '__all__'
+

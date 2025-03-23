@@ -41,5 +41,9 @@ urlpatterns = [
     # Testimonial URLs
     path('testimonials/', views.TestimonialListCreateView.as_view(), name='testimonial-list-create'),
     path('testimonials/<int:pk>/', views.TestimonialDetailView.as_view(), name='testimonial-detail'),
+
+    # OurPartner URLs
+    path('our-partners/', views.OurPartnerListCreateView.as_view(), name='our-partner-list-create'),
+    path('our-partners/<int:pk>/', views.OurPartnerDetailView.as_view(), name='our-partner-detail'),
 ]
 

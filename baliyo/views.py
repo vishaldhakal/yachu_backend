@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
-from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag
+from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
 from .serializers import (
     ProjectSmallSerializer, ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
     ContactSerializer, TeamMemberSerializer, FaqSerializer, TestimonialSerializer,
-    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer
+    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer
 )
 from rest_framework.pagination import PageNumberPagination
 from django.core.mail import send_mail
@@ -177,3 +177,12 @@ class BlogTagListCreateView(generics.ListCreateAPIView):
 class BlogTagDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BlogTag.objects.all()
     serializer_class = BlogTagSerializer
+
+# OurPartner Views
+class OurPartnerListCreateView(generics.ListCreateAPIView):
+    queryset = OurPartner.objects.all()
+    serializer_class = OurPartnerSerializer
+
+class OurPartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = OurPartner.objects.all()
+    serializer_class = OurPartnerSerializer

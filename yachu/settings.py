@@ -89,15 +89,14 @@ WSGI_APPLICATION = 'yachu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
- """
 
-DATABASES = {
+""" DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "yachu",
@@ -106,7 +105,7 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "",
     }
-}
+} """
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
@@ -389,7 +388,7 @@ REST_FRAMEWORK = {
 # EMAIL_HOST_USER = 'resend'
 # EMAIL_HOST_PASSWORD = os.getenv("RESEND_APIKEY", default="")
 
-# DEFAULT_FROM_EMAIL = 'Birat Expo 2025 Contact <info@baliyoventures.com>'
+# DEFAULT_FROM_EMAIL = 'Baliyo Ventures <info@baliyoventures.com>'
 # SERVER_EMAIL = 'info@baliyoventures.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
