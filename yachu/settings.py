@@ -391,18 +391,11 @@ REST_FRAMEWORK = {
 # DEFAULT_FROM_EMAIL = 'Baliyo Ventures <info@baliyoventures.com>'
 # SERVER_EMAIL = 'info@baliyoventures.com'
 
-""" EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'biratexpo2025@gmail.com'
-EMAIL_HOST_PASSWORD = 'bokk emuw glri hybr' """
+EMAIL_HOST_PASSWORD = 'bokk emuw glri hybr'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.resend.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'resend'
-EMAIL_HOST_PASSWORD="re_3Sb2tExA_CKjeCJQ5BiTLNYJqZLpegerR"
-
-""" DEFAULT_FROM_EMAIL = 'Birat Expo 2025 <info@hikingbees.com>' """
+DEFAULT_FROM_EMAIL = 'Birat Expo 2025 <info@hikingbees.com>'
