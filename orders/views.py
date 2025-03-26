@@ -48,8 +48,9 @@ class OrderListCreateView(ListCreateAPIView):
                 'email': request.data.get('email'),
                 'phone_number': request.data.get('phone_number'),
                 'delivery_address': request.data.get('delivery_address'),
-                'payment_method': request.data.get('payment_method'),
                 'total_amount': request.data.get('total_amount'),
+                'alternate_phone_number': request.data.get('alternate_phone_number'),
+                'remarks': request.data.get('remarks'),
                 'order_products': order_products
             }
             # Update the request data
