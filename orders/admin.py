@@ -1,16 +1,12 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Seller, Product, OrderProduct, Order, Commission
+from .models import Seller, OrderProduct, Order, Commission
 
 @admin.register(Seller)
 class SellerAdmin(ModelAdmin):
     list_display = ('user', 'phone_number', 'commission_rate')
     search_fields = ('user__username', 'user__email', 'phone_number')
 
-@admin.register(Product)
-class ProductAdmin(ModelAdmin):
-    list_display = ('name', 'price')
-    search_fields = ('name',)
 
 class OrderProductInline(TabularInline):
     model = OrderProduct
