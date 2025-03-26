@@ -36,11 +36,6 @@ class OrderProduct(models.Model):
         return f"{self.product.title} - {self.quantity}"
 
 class Order(models.Model):
-    PAYMENT_CHOICES = [
-        ('Cash on Delivery', 'Cash on Delivery'),
-        ('Prepaid', 'Prepaid')
-    ]
-
     ORDER_STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Processing', 'Processing'),
@@ -54,11 +49,7 @@ class Order(models.Model):
     phone_number = models.CharField(max_length=20)
     delivery_address = models.CharField(max_length=200)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
-    alternate_phone_number = models.CharField(max_length=20, blank=True,null=True)
-    delivery_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True,blank=True)
-    payment_method = models.CharField(max_length=255, choices=PAYMENT_CHOICES)
-    payment_screenshot = models.ImageField(upload_to='payment_screenshots/', blank=True, null=True)
+    alternate_phone_number = models.CharField(max_length=20, blank=True,null=True)    
     order_status = models.CharField(max_length=255, choices=ORDER_STATUS_CHOICES, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

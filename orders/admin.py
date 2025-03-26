@@ -20,7 +20,7 @@ class OrderProductInline(TabularInline):
 class OrderAdmin(ModelAdmin):
     inlines = [OrderProductInline]
     list_display = ('full_name', 'phone_number', 'total_amount', 'order_status', 'created_at')
-    list_filter = ('order_status', 'payment_method')
+    list_filter = ('order_status',)
     search_fields = ('full_name', 'phone_number')
 
     def save_model(self, request, obj, form, change):
