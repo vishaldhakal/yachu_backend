@@ -23,7 +23,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id','full_name', 'email', 'phone_number', 'alternate_phone_number', 'delivery_address',
-                  'order_status', 'created_at', 'updated_at', 'total_amount', 'order_products' ]
+                  'order_status', 'created_at', 'updated_at', 'total_amount', 'order_products','remarks']
 
     def create(self, validated_data):
         # Extract order products data
