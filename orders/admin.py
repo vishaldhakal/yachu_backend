@@ -22,7 +22,6 @@ class OrderAdmin(ModelAdmin):
     list_display = ('full_name', 'phone_number', 'total_amount', 'order_status', 'created_at')
     list_filter = ('order_status', 'payment_method')
     search_fields = ('full_name', 'phone_number')
-    readonly_fields = ('total_amount',)
 
     def save_model(self, request, obj, form, change):
         is_new = obj.pk is None
