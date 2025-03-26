@@ -12,15 +12,56 @@ from accounts.models import CustomUser
 class OrderListCreateView(ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        order = serializer.save()
-        Commission.objects.create(
-            seller=order.seller,
-            order=order,
-            amount=order.total_amount * (order.seller.commission_rate / 100)
-        )
+    def create(self, request, *args, **kwargs):
+        try:
+            # Handle both form-data and raw JSON formats
+            order_products = []
+
+            # Check if order_products is already a list (JSON payload)
+            if isinstance(request.data.get('order_products'), list):
+                order_products = request.data.get('order_products')
+            # Check if it's form-data format
+            elif hasattr(request.data, 'getlist'):
+                # Get the order_products string and convert it to list
+                order_products_str = request.data.get('order_products')
+                if order_products_str:
+                    try:
+                        import json
+                        order_products = json.loads(order_products_str)
+                    except json.JSONDecodeError:
+                        return Response(
+                            {"error": "Invalid order_products format"},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+
+            # Validate order products
+            if not order_products:
+                return Response(
+                    {"error": "At least one product is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Create the modified data dictionary
+            modified_data = {
+                'full_name': request.data.get('full_name'),
+                'email': request.data.get('email'),
+                'phone_number': request.data.get('phone_number'),
+                'delivery_address': request.data.get('delivery_address'),
+                'payment_method': request.data.get('payment_method'),
+                'total_amount': request.data.get('total_amount'),
+                'order_products': order_products
+            }
+            # Update the request data
+            request._full_data = modified_data
+
+            return super().create(request, *args, **kwargs)
+
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to create order: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class OrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
@@ -56,7 +97,6 @@ class SellerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class ProductListCreateView(ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
 
 class ProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()

@@ -69,8 +69,6 @@ class OurPartner(models.Model):
     def __str__(self):
         return self.title
     
-    
-
 class BlogTag(models.Model):
     title = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -151,10 +149,25 @@ class Testimonial(models.Model):
     rating=models.IntegerField()
     designation=models.CharField(max_length=255,null=True,blank=True)
     image=models.FileField(upload_to='testimonial/',null=True,blank=True)
+    image_alt_description=models.CharField(max_length=255,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+class Gallery(models.Model):
+    CHOICES=(
+        ('image','Image'),
+        ('video','Video'),
+    )
+    title=models.CharField(max_length=255)
+    media=models.FileField(upload_to='image_gallery/',null=True,blank=True)
+    media_type=models.CharField(max_length=255,choices=CHOICES,null=True,blank=True)
+    media_alt_description=models.CharField(max_length=255,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
 

@@ -1,41 +1,44 @@
 from rest_framework import serializers
-from .models import Seller, Product, OrderProduct, Order, Commission
+from .models import Seller, OrderProduct, Order, Commission
+from home.models import Product
+from home.serializers import ProductSerializer, ProductSmallSerializer
 
 class SellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seller
         fields = ['id', 'user', 'phone_number', 'address', 'commission_rate']
 
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ['id', 'name', 'price', 'description', 'stock_quantity']
 
 class OrderProductSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
+    product = ProductSmallSerializer(read_only=True)
     product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), write_only=True, source='product')
 
     class Meta:
         model = OrderProduct
-        fields = ['id', 'product', 'product_id', 'quantity', 'discount', 'get_total_price']
+        fields = ['id', 'product', 'product_id', 'quantity']
 
 class OrderSerializer(serializers.ModelSerializer):
     order_products = OrderProductSerializer(many=True)
-    seller = SellerSerializer(read_only=True)
-    seller_id = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all(), write_only=True, source='seller')
 
     class Meta:
         model = Order
-        fields = ['id', 'seller', 'seller_id', 'full_name', 'city', 'delivery_address', 'landmark',
-                  'phone_number', 'alternate_phone_number', 'delivery_charge', 'payment_method',
-                  'payment_screenshot', 'order_status', 'created_at', 'updated_at', 'order_products',
-                  'total_amount', 'remarks']
+        fields = ['id','full_name', 'email', 'phone_number', 'alternate_phone_number', 'delivery_address',
+                  'delivery_charge', 'payment_method', 'payment_screenshot', 'order_status', 'created_at',
+                  'updated_at', 'total_amount', 'order_products' ]
 
     def create(self, validated_data):
-        order_products_data = validated_data.pop('order_products')
+        # Extract order products data
+        order_products_data = validated_data.pop('order_products', [])
+        
+        # Create order
         order = Order.objects.create(**validated_data)
+        
+        # Create order products
         for order_product_data in order_products_data:
-            OrderProduct.objects.create(order=order, **order_product_data)
+            product = order_product_data['product']
+            quantity = order_product_data['quantity']
+            OrderProduct.objects.create(order=order, product=product, quantity=quantity)
+        
         return order
 
     def update(self, instance, validated_data):

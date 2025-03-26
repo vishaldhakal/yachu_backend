@@ -9,7 +9,7 @@ class SellerAdmin(ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
-    list_display = ('name', 'price', 'stock_quantity')
+    list_display = ('name', 'price')
     search_fields = ('name',)
 
 class OrderProductInline(TabularInline):
@@ -19,9 +19,9 @@ class OrderProductInline(TabularInline):
 @admin.register(Order)
 class OrderAdmin(ModelAdmin):
     inlines = [OrderProductInline]
-    list_display = ('full_name', 'seller', 'phone_number', 'total_amount', 'order_status', 'created_at')
-    list_filter = ('order_status', 'payment_method', 'seller')
-    search_fields = ('full_name', 'phone_number', 'seller__user__username')
+    list_display = ('full_name', 'phone_number', 'total_amount', 'order_status', 'created_at')
+    list_filter = ('order_status', 'payment_method')
+    search_fields = ('full_name', 'phone_number')
     readonly_fields = ('total_amount',)
 
     def save_model(self, request, obj, form, change):

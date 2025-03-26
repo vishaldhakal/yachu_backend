@@ -62,6 +62,11 @@ class ProductSerializer(serializers.ModelSerializer):
       fields = '__all__'
       depth = 2
 
+class ProductSmallSerializer(serializers.ModelSerializer):
+   class Meta:
+      model = Product
+      fields = ['id', 'title', 'price']
+
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
