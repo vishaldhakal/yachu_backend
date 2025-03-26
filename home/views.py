@@ -12,7 +12,7 @@ from rest_framework import generics
 @api_view(['POST'])
 def send_email(request):
     data = request.data
-    send_mail(data['subject'], data['message'], "info@hikingbees.com", ['vishaldhakal96@gmail.com'])
+    send_mail(data['subject'], data['message'], "info@yetihikes.com", ['vishaldhakal96@gmail.com'])
     return Response({'message': 'Email sent successfully'})
 
 
