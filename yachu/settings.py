@@ -398,4 +398,4 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'biratexpo2025@gmail.com'
 EMAIL_HOST_PASSWORD = 'bokk emuw glri hybr'
 
-DEFAULT_FROM_EMAIL = 'Birat Expo 2025 <biratexpo2025@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Birat Expo 2025 <info@hikingbees.com>'

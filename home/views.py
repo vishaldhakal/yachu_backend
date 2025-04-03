@@ -9,6 +9,13 @@ from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember,
 from .serializers import SiteConfigurationSerializer, FAQCategorySerializer, FAQSerializer, DepartmentSerializer, TeamMemberSerializer, TestimonialSerializer, ImageGallerySerializer, VideoGallerySerializer,BannersSerializer,ProductSerializer,FormDataSerializer
 from rest_framework import generics
 
+@api_view(['POST'])
+def send_email(request):
+    data = request.data
+    send_mail(data['subject'], data['message'], "info@yetihikes.com", ['vishaldhakal96@gmail.com'])
+    return Response({'message': 'Email sent successfully'})
+
+
 class SiteConfigurationListCreate(generics.ListCreateAPIView):
       queryset = SiteConfiguration.objects.all()
       serializer_class = SiteConfigurationSerializer
