@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'accounts',  # Make sure this is here
     'unfold.contrib.filters',
-    'unfold.contrib.forms',    
+    'unfold.contrib.forms',
     'ckeditor',
     'ckeditor_uploader',
     'django.contrib.auth',
@@ -80,7 +80,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 
 WSGI_APPLICATION = 'yachu.wsgi.application'
@@ -173,7 +172,7 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Welcome to the Hikingbees Admin",
     # Copyright on the footer
     "copyright": "Baliyo Software",
-    "search_model": ["blog.post","activity.activity"],
+    "search_model": ["blog.post", "activity.activity"],
     # Field name on user model that contains avatar FileField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,
     ############
@@ -221,7 +220,8 @@ SUMMERNOTE_CONFIG = {
         'width': '100%',
         'toolbar': [
             ['style', ['style',]],
-            ['font', ['fontname', 'fontsize', 'bold', 'italic', 'strikethrough', 'clear',]],
+            ['font', ['fontname', 'fontsize', 'bold',
+                      'italic', 'strikethrough', 'clear',]],
             ['color', ['forecolor', 'backcolor', ]],
             ['para', ['ul', 'ol', 'height']],
             ['insert', ['link']],
@@ -233,8 +233,8 @@ SUMMERNOTE_CONFIG = {
 SUMMERNOTE_THEME = 'bs4'
 
 TINYMCE_DEFAULT_CONFIG = {
-    "height" : "780",
-    "width" : "780",
+    "height": "780",
+    "width": "780",
     "entity_encoding": "raw",
     "menubar": "file edit view insert format tools table help",
     "plugins": 'print preview paste importcss searchreplace autolink autosave save code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap emoticons quickbars',
@@ -281,7 +281,7 @@ UNFOLD = {
         "show_search": True,
         "show_all_applications": True,
         "navigation_expanded": True,
-        "navigation":[
+        "navigation": [
             {
                 "title": _("Basic"),
                 "separator": True,
