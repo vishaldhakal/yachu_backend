@@ -23,6 +23,12 @@ class ImageInline(TabularInline):
 class ServiceAdmin(ModelAdmin):
     list_display = ['title', 'slug', 'description', 'created_at', 'updated_at']
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if form.base_fields.get('description'):
+            form.base_fields['description'].widget = TinyMCE()
+        return form
+
 
 @admin.register(Project)
 class ProjectAdmin(TinyMCEAdmin):

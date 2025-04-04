@@ -1,37 +1,53 @@
 from rest_framework import serializers
 from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
 
+
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['created_at', 'updated_at']
+
+
+class ServiceSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = ['id', 'title', 'slug', 'icon', 'thumbnail_image',
+                  'thumbnail_image_alt_description', 'short_description']
+
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = '__all__'
 
+
 class ProjectSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = Project
         fields = '__all__'
 
+
 class ProjectSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['id','title','slug','thumbnail_image','thumbnail_image_alt_description']
+        fields = ['id', 'title', 'slug', 'thumbnail_image',
+                  'thumbnail_image_alt_description']
+
 
 class BlogTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogTag
         fields = '__all__'
 
+
 class BlogCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogCategory
         fields = '__all__'
+
 
 class BlogSerializer(serializers.ModelSerializer):
     category = BlogCategorySerializer(read_only=True)
@@ -51,37 +67,43 @@ class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Blog
-        fields = ['id', 'title', 'slug', 'description', 'thumbnail_image', 
-                 'thumbnail_image_alt_description', 'category', 'category_id',
-                 'tags', 'tag_id', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'slug', 'description', 'thumbnail_image',
+                  'thumbnail_image_alt_description', 'category', 'category_id',
+                  'tags', 'tag_id', 'created_at', 'updated_at']
+
 
 class BlogSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ['id','title','slug','thumbnail_image','thumbnail_image_alt_description','meta_title','meta_description']
+        fields = ['id', 'title', 'slug', 'thumbnail_image',
+                  'thumbnail_image_alt_description', 'meta_title', 'meta_description']
+
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'
 
+
 class TeamMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
         fields = '__all__'
+
 
 class FaqSerializer(serializers.ModelSerializer):
     class Meta:
         model = Faq
         fields = '__all__'
 
+
 class TestimonialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Testimonial
         fields = '__all__'
 
+
 class OurPartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = OurPartner
         fields = '__all__'
-
