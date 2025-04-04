@@ -6,7 +6,7 @@ class ProjectSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'title', 'slug', 'thumbnail_image',
-                  'thumbnail_image_alt_description']
+                  'thumbnail_image_alt_description', 'meta_description', 'meta_title']
 
 
 class ServiceSerializer(serializers.ModelSerializer):
