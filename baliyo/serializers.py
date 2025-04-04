@@ -2,7 +2,16 @@ from rest_framework import serializers
 from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
 
 
+class ProjectSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'title', 'slug', 'thumbnail_image',
+                  'thumbnail_image_alt_description']
+
+
 class ServiceSerializer(serializers.ModelSerializer):
+    projects = ProjectSmallSerializer(many=True, read_only=True)
+
     class Meta:
         model = Service
         # fields = '__all__'
@@ -28,13 +37,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
-
-
-class ProjectSmallSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project
-        fields = ['id', 'title', 'slug', 'thumbnail_image',
-                  'thumbnail_image_alt_description']
 
 
 class BlogTagSerializer(serializers.ModelSerializer):
