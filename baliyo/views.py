@@ -98,7 +98,7 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BlogListCreateView(generics.ListCreateAPIView):
-    queryset = Blog.objects.all()
+    queryset = Blog.objects.all().order_by('-created_at')
     pagination_class = CustomPagination
 
     def get_serializer_class(self):
