@@ -56,6 +56,19 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
 
+class OurPartner(models.Model):
+    title = models.CharField(max_length=255)
+    image = models.FileField(upload_to='our_partner/', null=True, blank=True)
+    image_alt_description = models.CharField(
+        max_length=255, null=True, blank=True)
+    website_url = models.URLField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
 class BlogCategory(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True, blank=True)
@@ -68,19 +81,6 @@ class BlogCategory(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
-
-
-class OurPartner(models.Model):
-    title = models.CharField(max_length=255)
-    image = models.FileField(upload_to='our_partner/', null=True, blank=True)
-    image_alt_description = models.CharField(
-        max_length=255, null=True, blank=True)
-    website_url = models.URLField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
 
 
 class BlogTag(models.Model):

@@ -54,7 +54,7 @@ class BlogTagAdmin(ModelAdmin):
 
 @admin.register(Blog)
 class BlogAdmin(TinyMCEAdmin):
-    list_display = ['title', 'slug', 'description', 'created_at', 'updated_at']
+    list_display = ['title', 'slug', 'created_at', 'updated_at']
 
 
 @admin.register(Contact)
