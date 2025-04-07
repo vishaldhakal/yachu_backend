@@ -6,7 +6,7 @@ from django.utils.text import slugify
 
 class Service(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     description = models.TextField()
     short_description = models.TextField(null=True, blank=True)
     icon = models.FileField(upload_to='icon/', null=True, blank=True)
@@ -33,7 +33,7 @@ class Image(models.Model):
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     category = models.ManyToManyField(
         'Service', related_name='projects', blank=True)
     description = models.TextField()
@@ -71,7 +71,7 @@ class OurPartner(models.Model):
 
 class BlogCategory(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -94,7 +94,7 @@ class BlogTag(models.Model):
 
 class Blog(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     description = models.TextField()
     meta_title = models.CharField(max_length=255, null=True, blank=True)
     meta_description = models.CharField(max_length=255, null=True, blank=True)
