@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
+from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner, Gallery
 
 
 class ProjectSmallSerializer(serializers.ModelSerializer):
@@ -123,3 +123,15 @@ class OurPartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = OurPartner
         fields = '__all__'
+
+
+class GallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gallery
+        fields = '__all__'
+
+
+class GallerySmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gallery
+        fields = ['id', 'title', 'media', 'media_type', 'media_alt_description']

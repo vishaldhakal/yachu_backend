@@ -45,5 +45,9 @@ urlpatterns = [
     # OurPartner URLs
     path('our-partners/', views.OurPartnerListCreateView.as_view(), name='our-partner-list-create'),
     path('our-partners/<int:pk>/', views.OurPartnerDetailView.as_view(), name='our-partner-detail'),
+
+    # Gallery URLs
+    path('gallery/', views.GalleryListCreateView.as_view(), name='gallery-list-create'),
+    path('gallery/<int:pk>/', views.GalleryDetailView.as_view(), name='gallery-detail'),
 ]
 

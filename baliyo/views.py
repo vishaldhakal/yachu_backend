@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
-from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
+from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner, Gallery
 from .serializers import (
-    ProjectSmallSerializer, ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
+    GallerySmallSerializer, ProjectSmallSerializer, ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
     ContactSerializer, TeamMemberSerializer, FaqSerializer, TeamMemberSmallSerializer, TestimonialSerializer,
-    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer, ServiceSmallSerializer, TestimonialSmallSerializer
+    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer, ServiceSmallSerializer, TestimonialSmallSerializer, GallerySerializer
 )
 from rest_framework.pagination import PageNumberPagination
 from django.core.mail import send_mail
@@ -237,3 +237,19 @@ class OurPartnerListCreateView(generics.ListCreateAPIView):
 class OurPartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = OurPartner.objects.all()
     serializer_class = OurPartnerSerializer
+
+# Gallery Views
+
+
+class GalleryListCreateView(generics.ListCreateAPIView):
+    queryset = Gallery.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return GallerySmallSerializer
+        return GallerySerializer
+
+
+class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Gallery.objects.all()
+    serializer_class = GallerySerializer
