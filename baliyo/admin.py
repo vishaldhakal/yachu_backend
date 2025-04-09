@@ -75,7 +75,7 @@ class FaqAdmin(ModelAdmin):
 
 @admin.register(Testimonial)
 class TestimonialAdmin(ModelAdmin):
-    list_display = ['name', 'message', 'rating',
+    list_display = ['name', 'rating',
                     'designation', 'created_at', 'updated_at']
 
 
