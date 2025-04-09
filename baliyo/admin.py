@@ -1,6 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Service, Project, Blog, Contact, TeamMember, Faq, Testimonial, Image, BlogCategory, BlogTag, OurPartner
+from .models import Service, Project, Blog, Contact, TeamMember, Faq, Testimonial, Image, BlogCategory, BlogTag, OurPartner, Gallery
 from tinymce.widgets import TinyMCE
 from django.db import models
 from django.utils.safestring import mark_safe
@@ -82,3 +82,8 @@ class TestimonialAdmin(ModelAdmin):
 @admin.register(OurPartner)
 class OurPartnerAdmin(ModelAdmin):
     list_display = ['title', 'website_url', 'created_at', 'updated_at']
+
+
+@admin.register(Gallery)
+class GalleryAdmin(ModelAdmin):
+    list_display = ['title', 'media_type', 'created_at', 'updated_at']

@@ -134,4 +134,5 @@ class GallerySerializer(serializers.ModelSerializer):
 class GallerySmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gallery
-        fields = ['id', 'title', 'media', 'media_type', 'media_alt_description']
+        fields = ['id', 'title', 'media',
+                  'media_type', 'media_alt_description']

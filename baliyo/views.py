@@ -249,6 +249,13 @@ class GalleryListCreateView(generics.ListCreateAPIView):
             return GallerySmallSerializer
         return GallerySerializer
 
+    def get_queryset(self):
+        queryset = Gallery.objects.all()
+        media_type = self.request.query_params.get('media_type', None)
+        if media_type:
+            queryset = queryset.filter(media_type=media_type)
+        return queryset
+
 
 class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Gallery.objects.all()
