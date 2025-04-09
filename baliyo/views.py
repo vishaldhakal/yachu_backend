@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Testimonial, BlogCategory, BlogTag, OurPartner
 from .serializers import (
     ProjectSmallSerializer, ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
-    ContactSerializer, TeamMemberSerializer, FaqSerializer, TestimonialSerializer,
+    ContactSerializer, TeamMemberSerializer, FaqSerializer, TeamMemberSmallSerializer, TestimonialSerializer,
     BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer, ServiceSmallSerializer
 )
 from rest_framework.pagination import PageNumberPagination
@@ -162,6 +162,10 @@ class TeamMemberListCreateView(generics.ListCreateAPIView):
     queryset = TeamMember.objects.all()
     serializer_class = TeamMemberSerializer
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TeamMemberSmallSerializer
+        return TeamMemberSerializer
 
 class TeamMemberDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TeamMember.objects.all()

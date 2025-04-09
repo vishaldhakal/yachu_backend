@@ -93,6 +93,13 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TeamMemberSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamMember
+        fields = ['id', 'name', 'designation',
+                  'image', 'image_alt_description']
+
+
 class FaqSerializer(serializers.ModelSerializer):
     class Meta:
         model = Faq
