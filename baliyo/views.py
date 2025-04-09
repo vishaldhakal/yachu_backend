@@ -5,7 +5,7 @@ from .models import Service, Image, Project, Blog, Contact, TeamMember, Faq, Tes
 from .serializers import (
     ProjectSmallSerializer, ServiceSerializer, ImageSerializer, ProjectSerializer, BlogSerializer,
     ContactSerializer, TeamMemberSerializer, FaqSerializer, TeamMemberSmallSerializer, TestimonialSerializer,
-    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer, ServiceSmallSerializer
+    BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer, ServiceSmallSerializer, TestimonialSmallSerializer
 )
 from rest_framework.pagination import PageNumberPagination
 from django.core.mail import send_mail
@@ -167,6 +167,7 @@ class TeamMemberListCreateView(generics.ListCreateAPIView):
             return TeamMemberSmallSerializer
         return TeamMemberSerializer
 
+
 class TeamMemberDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TeamMember.objects.all()
     serializer_class = TeamMemberSerializer
@@ -189,6 +190,11 @@ class FaqDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TestimonialListCreateView(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TestimonialSmallSerializer
+        return TestimonialSerializer
 
 
 class TestimonialDetailView(generics.RetrieveUpdateDestroyAPIView):

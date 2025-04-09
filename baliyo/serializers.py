@@ -112,6 +112,13 @@ class TestimonialSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TestimonialSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Testimonial
+        fields = ['id', 'name', 'message', 'rating',
+                  'designation', 'image', 'image_alt_description']
+
+
 class OurPartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = OurPartner
