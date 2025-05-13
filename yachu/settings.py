@@ -155,7 +155,7 @@ CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path(BASE_DIR, 'media')
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -275,6 +275,9 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 
 CSRF_TRUSTED_ORIGINS = ['https://4963-110-44-120-22.ngrok.io',]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),
