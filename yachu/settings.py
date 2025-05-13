@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from pathlib import Path
 from django.urls import reverse_lazy
@@ -408,3 +409,9 @@ EMAIL_HOST_USER = 'biratexpo2025@gmail.com'
 EMAIL_HOST_PASSWORD = 'bokk emuw glri hybr'
 
 DEFAULT_FROM_EMAIL = 'Birat Expo 2025 <biratexpo2025@gmail.com>'
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
+}
