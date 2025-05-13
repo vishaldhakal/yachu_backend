@@ -84,14 +84,15 @@ class LoginView(generics.GenericAPIView):
 
 class OrganizationFilter(FilterSet):
     name = CharFilter(field_name='name', lookup_expr='icontains')
-    transaction_type = CharFilter(
-        field_name='transaction_type', lookup_expr='icontains')
-    balance_gt = CharFilter(field_name='balance', lookup_expr='gte')
-    balance_lt = CharFilter(field_name='balance', lookup_expr='lte')
+    person_in_charge = CharFilter(
+        field_name='person_in_charge', lookup_expr='icontains')
+    phone_number = CharFilter(
+        field_name='phone_number', lookup_expr='icontains')
+    address = CharFilter(field_name='address', lookup_expr='icontains')
 
     class Meta:
         model = Organization
-        fields = ['name', 'transaction_type', 'balance_gt', 'balance_lt']
+        fields = ['name', 'person_in_charge', 'phone_number', 'address']
 
 
 class OrganizationListCreateView(generics.ListCreateAPIView):

@@ -10,8 +10,8 @@ class UserAdmin(ModelAdmin):
 
 
 class OrganizationAdmin(ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
+    list_display = ('name', 'person_in_charge', 'phone_number', 'address')
+    search_fields = ('name', 'person_in_charge')
 
 
 class ProfileAdmin(ModelAdmin):
