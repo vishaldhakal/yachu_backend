@@ -33,6 +33,11 @@ class RegisterView(generics.CreateAPIView):
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
+        refresh['user_id'] = user.id
+        refresh['username'] = user.username
+        refresh['email'] = user.email
+        refresh['phone_number'] = user.phone_number
+        refresh['address'] = user.address
 
         headers = self.get_success_headers(serializer.data)
         return Response({
