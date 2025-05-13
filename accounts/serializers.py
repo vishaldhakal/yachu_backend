@@ -1,8 +1,41 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, Profile, Organization
 
-class CustomUserSerializer(serializers.ModelSerializer):
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organization
+        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address', 'transaction_type',
+                  'balance', 'remarks', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+
+
+class OrganizationSmallSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Organization
+        fields = ['id', 'name', 'person_in_charge',
+                  'phone_number', 'transaction_type', 'balance']
+
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['id', 'username', 'email', 'password',
+                  'phone_number', 'address']
+        extra_kwargs = {'password': {'write_only': True}}
 
+
+class LoginSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'password']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['id', 'user', 'balance']

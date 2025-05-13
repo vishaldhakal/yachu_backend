@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'django_filters',
     'drf_multiple_model',
     'tinymce',
     'home',
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'solo',
     'corsheaders',
     'baliyo',
+    'finance_management',
 ]
 
 MIDDLEWARE = [
@@ -368,6 +371,12 @@ UNFOLD = {
             },
         ],
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 """ # DRF Settings
