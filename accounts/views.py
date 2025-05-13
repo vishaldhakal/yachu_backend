@@ -65,6 +65,11 @@ class LoginView(generics.GenericAPIView):
         if user:
             serializer = UserSerializer(user)
             refresh = RefreshToken.for_user(user)
+            refresh['user_id'] = user.id
+            refresh['username'] = user.username
+            refresh['email'] = user.email
+            refresh['phone_number'] = user.phone_number
+            refresh['address'] = user.address
 
             return Response({
                 'user': serializer.data,
