@@ -15,21 +15,6 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
-        # Get the organization
-        organization = validated_data['organization']
-
-        # Check if transaction is RECEIVED and organization is RECEIVABLE
-        if (validated_data['transaction_type'] == 'RECEIVED' and
-                organization.transaction_type == 'RECEIVABLE'):
-            organization.balance -= validated_data['amount']
-            organization.save()
-        elif (validated_data['transaction_type'] == 'PAID' and
-              organization.transaction_type == 'PAYABLE'):
-            organization.balance -= validated_data['amount']
-            organization.save()
-        else:
-            raise serializers.ValidationError(
-                "Transaction type must match organization type: RECEIVED for RECEIVABLE organizations, PAID for PAYABLE organizations")
 
         # Create the finance record
         return super().create(validated_data)

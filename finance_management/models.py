@@ -5,8 +5,10 @@ from accounts.models import Organization
 
 class FinanceRecord(models.Model):
     TRANSACTION_TYPE = [
-        ('RECEIVED', 'Received'),
-        ('PAID', 'Paid'),
+        ('Receivable', 'Receivable'),
+        ('Payable', 'Payable'),
+        ('Received', 'Received'),
+        ('Paid', 'Paid'),
     ]
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     transaction_type = models.CharField(

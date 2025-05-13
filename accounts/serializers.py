@@ -5,8 +5,8 @@ from .models import CustomUser, Profile, Organization
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address', 'transaction_type',
-                  'balance', 'remarks', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
+                  'remarks', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
 
@@ -14,8 +14,7 @@ class OrganizationSmallSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'person_in_charge',
-                  'phone_number', 'transaction_type', 'balance']
+        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address']
 
 
 class UserSerializer(serializers.ModelSerializer):
