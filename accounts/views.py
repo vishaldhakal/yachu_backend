@@ -99,4 +99,4 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = OrganizationFilter
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]

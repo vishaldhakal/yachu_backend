@@ -1,8 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, NumberFilter, CharFilter
-from django.utils import timezone
-from datetime import timedelta
 from .models import FinanceRecord
 from .serializers import FinanceRecordListSerializer, FinanceRecordSerializer
 
@@ -29,7 +27,7 @@ class FinanceRecordFilter(FilterSet):
 class FinanceRecordListCreateView(generics.ListCreateAPIView):
     queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = FinanceRecordFilter
 
