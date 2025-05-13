@@ -101,3 +101,9 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = OrganizationFilter
     permission_classes = [IsAuthenticated]
+
+
+class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
+    permission_classes = [IsAuthenticated]
