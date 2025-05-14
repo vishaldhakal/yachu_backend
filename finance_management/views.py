@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, NumberFilter, CharFilter
@@ -42,5 +43,14 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
 
 
 class FinanceRecordDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
     permission_classes = [IsAuthenticated]
+
+
+class FinanceRecordDueDateView(generics.ListAPIView):
+    serializer_class = FinanceRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FinanceRecord.objects.filter(due_date__lte=datetime.now())
