@@ -1,9 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter
 from .models import FinanceRecord
 from .serializers import FinanceRecordListSerializer, FinanceRecordSerializer
+from rest_framework.response import Response
+from rest_framework import status
+from django.db.models import Sum
 
 # Create your views here.
 
@@ -54,4 +57,22 @@ class FinanceRecordDueDateView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return FinanceRecord.objects.filter(due_date__lte=datetime.now())
+        # Calculate the date 7 days from now
+        date_limit = datetime.now() + timedelta(days=7)
+        return FinanceRecord.objects.filter(
+            due_date__lte=date_limit,
+            transaction_type__in=['Receivable', 'Payable']
+        )
+
+
+class FinanceRecordTotalView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        totals = {
+            'total_receivable': FinanceRecord.objects.filter(transaction_type='Receivable').aggregate(Sum('amount'))['amount__sum'] or 0,
+            'total_payable': FinanceRecord.objects.filter(transaction_type='Payable').aggregate(Sum('amount'))['amount__sum'] or 0,
+            'total_received': FinanceRecord.objects.filter(transaction_type='Received').aggregate(Sum('amount'))['amount__sum'] or 0,
+            'total_paid': FinanceRecord.objects.filter(transaction_type='Paid').aggregate(Sum('amount'))['amount__sum'] or 0,
+        }
+        return Response(totals, status=status.HTTP_200_OK)
