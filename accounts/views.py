@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, OrganizationSerializer, UserSerializer, ProfileSerializer
+from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, ProfileSerializer
 from .models import CustomUser, Organization, Profile
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import FilterSet, CharFilter, NumberFilter, DjangoFilterBackend
@@ -107,3 +107,8 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return OrganizationDetailSerializer
+        return OrganizationSerializer

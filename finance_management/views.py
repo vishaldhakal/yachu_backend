@@ -1,7 +1,7 @@
 from datetime import datetime
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, NumberFilter, CharFilter
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter
 from .models import FinanceRecord
 from .serializers import FinanceRecordListSerializer, FinanceRecordSerializer
 
@@ -31,6 +31,7 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = FinanceRecordFilter
+    search_fields = ['organization__name', 'transaction_type']
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

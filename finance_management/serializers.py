@@ -28,3 +28,11 @@ class FinanceRecordListSerializer(serializers.ModelSerializer):
         fields = ['id', 'organization', 'transaction_type',
                   'amount', 'remarks', 'due_date', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
+
+
+class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinanceRecord
+        fields = ['id', 'transaction_type', 'amount',
+                  'remarks', 'due_date', 'created_at', 'updated_at']
