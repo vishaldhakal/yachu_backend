@@ -11,7 +11,7 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinanceRecord
         fields = ['id', 'organization', 'transaction_type',
-                  'amount', 'remarks', 'created_at', 'updated_at']
+                  'amount', 'remarks', 'due_date', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
@@ -26,5 +26,5 @@ class FinanceRecordListSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinanceRecord
         fields = ['id', 'organization', 'transaction_type',
-                  'amount', 'remarks', 'created_at', 'updated_at']
+                  'amount', 'remarks', 'due_date', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
