@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate, TruncWeek, TruncMonth, TruncYear
+from rest_framework.filters import SearchFilter
 
 # Create your views here.
 
@@ -33,7 +34,7 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
     queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = FinanceRecordFilter
     search_fields = ['organization__name', 'transaction_type']
 
