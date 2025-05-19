@@ -6,7 +6,8 @@ from .models import FinanceRecord
 from .serializers import FinanceRecordListSerializer, FinanceRecordSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Sum
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncDate, TruncWeek, TruncMonth, TruncYear
 
 # Create your views here.
 
@@ -76,3 +77,71 @@ class FinanceRecordTotalView(generics.GenericAPIView):
             'total_paid': FinanceRecord.objects.filter(transaction_type='Paid').aggregate(Sum('amount'))['amount__sum'] or 0,
         }
         return Response(totals, status=status.HTTP_200_OK)
+
+
+class TransactionSummaryFilter(FilterSet):
+    filter_type = CharFilter(method='filter_by_date_grouping')
+    transaction_type = CharFilter(
+        field_name='transaction_type', lookup_expr='exact')
+
+    def filter_by_date_grouping(self, queryset, name, value):
+        if value == 'daily':
+            return queryset.annotate(period=TruncDate('created_at'))
+        elif value == 'weekly':
+            return queryset.annotate(period=TruncWeek('created_at'))
+        elif value == 'monthly':
+            return queryset.annotate(period=TruncMonth('created_at'))
+        elif value == 'yearly':
+            return queryset.annotate(period=TruncYear('created_at'))
+        return queryset
+
+    class Meta:
+        model = FinanceRecord
+        fields = ['filter_type', 'transaction_type']
+
+
+class TransactionSummaryView(generics.ListAPIView):
+    queryset = FinanceRecord.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TransactionSummaryFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        filter_type = request.query_params.get('filter_type', 'daily')
+        transaction_type = request.query_params.get('transaction_type', 'all')
+
+        # Apply date grouping first
+        if filter_type == 'daily':
+            queryset = queryset.annotate(period=TruncDate('created_at'))
+        elif filter_type == 'weekly':
+            queryset = queryset.annotate(period=TruncWeek('created_at'))
+        elif filter_type == 'monthly':
+            queryset = queryset.annotate(period=TruncMonth('created_at'))
+        elif filter_type == 'yearly':
+            queryset = queryset.annotate(period=TruncYear('created_at'))
+
+        # Apply transaction type filter
+        if transaction_type != 'all':
+            queryset = queryset.filter(transaction_type=transaction_type)
+
+        # Now group by period and calculate aggregates
+        queryset = queryset.values('period').annotate(
+            total_amount=Sum('amount'),
+            count=Count('id')
+        ).order_by('period')
+
+        # Format the response
+        response_data = {
+            'filter': filter_type,
+            'transaction_type': transaction_type,
+            'summary': [
+                {
+                    'period': item['period'].strftime('%Y-%m-%d'),
+                    'total_amount': float(item['total_amount']),
+                    'count': item['count']
+                }
+                for item in queryset
+            ]
+        }
+
+        return Response(response_data)

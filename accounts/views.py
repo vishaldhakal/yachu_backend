@@ -16,35 +16,56 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
-        # Create a mutable copy of the request data
-        data = request.data.copy()
-        # Extract password from request data
-        password = data.get('password', None)
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            # Create a mutable copy of the request data
+            data = request.data.copy()
+            # Extract password from request data
+            password = data.get('password', None)
 
-        # Create user with hashed password
-        user = serializer.save()
-        user.set_password(password)
-        user.save()
+            if not password:
+                return Response({
+                    'error': 'Password is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create a profile for the new user
-        Profile.objects.create(user=user)
+            if not data.get('username'):
+                return Response({
+                    'error': 'Username is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            if CustomUser.objects.filter(username=data.get('username')).exists():
+                return Response({
+                    'error': 'Username already exists'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Generate tokens
-        refresh = RefreshToken.for_user(user)
-        refresh['user_id'] = user.id
-        refresh['username'] = user.username
-        refresh['email'] = user.email
-        refresh['phone_number'] = user.phone_number
-        refresh['address'] = user.address
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
 
-        headers = self.get_success_headers(serializer.data)
-        return Response({
-            'user': serializer.data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED, headers=headers)
+            # Create user with hashed password
+            user = serializer.save()
+            user.set_password(password)
+            user.save()
+
+            # Create a profile for the new user
+            Profile.objects.create(user=user)
+
+            # Generate tokens
+            refresh = RefreshToken.for_user(user)
+            refresh['user_id'] = user.id
+            refresh['username'] = user.username
+            refresh['email'] = user.email
+            refresh['phone_number'] = user.phone_number
+            refresh['address'] = user.address
+
+            headers = self.get_success_headers(serializer.data)
+            return Response({
+                'user': serializer.data,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED, headers=headers)
+
+        except Exception as e:
+            return Response({
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class LoginView(generics.GenericAPIView):
