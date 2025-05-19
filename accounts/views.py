@@ -75,7 +75,7 @@ class LoginView(generics.GenericAPIView):
                 'user': serializer.data,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-            })
+            }, status=status.HTTP_200_OK)
 
         return Response({
             'error': 'Invalid credentials'
