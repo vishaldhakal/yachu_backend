@@ -53,6 +53,11 @@ class FinanceRecordDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FinanceRecordSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return FinanceRecordListSerializer
+        return FinanceRecordSerializer
+
 
 class FinanceRecordDueDateView(generics.ListAPIView):
     serializer_class = FinanceRecordSerializer
