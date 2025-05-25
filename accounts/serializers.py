@@ -9,7 +9,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'remarks', 'created_at', 'updated_at']
+                  'remarks', 'opening_balance', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
 
@@ -39,7 +39,7 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'remarks',
+                  'remarks', 'opening_balance',
                   'total_receivable', 'total_payable', 'total_received', 'total_paid', 'balance']
         read_only_fields = ['created_at', 'updated_at']
 
