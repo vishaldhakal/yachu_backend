@@ -31,8 +31,9 @@ class FinanceRecordListSerializer(serializers.ModelSerializer):
 
 
 class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
+    organization = OrganizationSmallSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'transaction_type', 'amount',
-                  'remarks', 'due_date', 'created_at', 'updated_at']
+        fields = ['id', 'organization', 'transaction_type', 'amount',
+                  'remarks', 'due_date', 'created_at']

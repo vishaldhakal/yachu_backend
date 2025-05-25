@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter
 from .models import FinanceRecord
-from .serializers import FinanceRecordListSerializer, FinanceRecordSerializer
+from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum, Count
@@ -144,6 +144,33 @@ class TransactionSummaryView(generics.ListAPIView):
                 }
                 for item in queryset
             ]
+        }
+
+        return Response(response_data)
+
+
+class FinanceRecordReminderView(generics.ListAPIView):
+    serializer_class = FinanceRecordBalanceSerializer
+
+    def get_queryset(self):
+        # Calculate the date 7 days from now
+        date_limit = datetime.now() + timedelta(days=7)
+        return FinanceRecord.objects.filter(
+            due_date__lte=date_limit,
+            transaction_type__in=['Receivable', 'Payable']
+            # Order by due date to show most urgent ones first
+        ).order_by('due_date')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Add additional context about the reminder
+        response_data = {
+            'reminder_date': datetime.now().strftime('%Y-%m-%d'),
+            'due_within_days': 7,
+            'total_records': queryset.count(),
+            'records': serializer.data
         }
 
         return Response(response_data)
