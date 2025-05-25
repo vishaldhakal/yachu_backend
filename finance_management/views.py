@@ -9,6 +9,7 @@ from rest_framework import status
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate, TruncWeek, TruncMonth, TruncYear
 from rest_framework.filters import SearchFilter
+from django.db import models
 
 # Create your views here.
 
@@ -114,7 +115,6 @@ class TransactionSummaryView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         filter_type = request.query_params.get('filter_type', 'daily')
-        transaction_type = request.query_params.get('transaction_type', 'all')
 
         # Apply date grouping first
         if filter_type == 'daily':
@@ -126,25 +126,21 @@ class TransactionSummaryView(generics.ListAPIView):
         elif filter_type == 'yearly':
             queryset = queryset.annotate(period=TruncYear('created_at'))
 
-        # Apply transaction type filter
-        if transaction_type != 'all':
-            queryset = queryset.filter(transaction_type=transaction_type)
-
-        # Now group by period and calculate aggregates
+        # Now group by period and calculate money in/out
         queryset = queryset.values('period').annotate(
-            total_amount=Sum('amount'),
-            count=Count('id')
+            money_in=Sum('amount', filter=models.Q(
+                transaction_type='Received')),
+            money_out=Sum('amount', filter=models.Q(transaction_type='Paid'))
         ).order_by('period')
 
         # Format the response
         response_data = {
             'filter': filter_type,
-            'transaction_type': transaction_type,
             'summary': [
                 {
                     'period': item['period'].strftime('%Y-%m-%d'),
-                    'total_amount': float(item['total_amount']),
-                    'count': item['count']
+                    'money_in': float(item['money_in'] or 0),
+                    'money_out': float(item['money_out'] or 0)
                 }
                 for item in queryset
             ]
