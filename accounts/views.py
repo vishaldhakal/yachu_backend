@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, ProfileSerializer
+from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer
 from .models import CustomUser, Organization, Profile
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import FilterSet, CharFilter, NumberFilter, DjangoFilterBackend
+from django_filters.rest_framework import FilterSet, CharFilter, DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+
 # Create your views here.
 
 
@@ -119,9 +121,10 @@ class OrganizationFilter(FilterSet):
 class OrganizationListCreateView(generics.ListCreateAPIView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = OrganizationFilter
     permission_classes = [IsAuthenticated]
+    search_fields = ['name']
 
 
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
