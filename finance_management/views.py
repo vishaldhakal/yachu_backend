@@ -174,3 +174,12 @@ class FinanceRecordReminderView(generics.ListAPIView):
         }
 
         return Response(response_data)
+
+
+class RecentRecordView(generics.ListAPIView):
+    serializer_class = FinanceRecordListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FinanceRecord.objects.all().order_by('-created_at')[:10]
+    
