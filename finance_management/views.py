@@ -114,7 +114,7 @@ class TransactionSummaryView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        filter_type = request.query_params.get('filter_type', 'daily')
+        filter_type = request.query_params.get('filter', 'daily')
 
         # Apply date grouping first
         if filter_type == 'daily':
