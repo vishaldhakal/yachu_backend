@@ -6,10 +6,11 @@ from .models import FinanceRecord
 from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Sum, Count
+from django.db.models import Sum
 from django.db.models.functions import TruncDate, TruncWeek, TruncMonth, TruncYear
 from rest_framework.filters import SearchFilter
 from django.db import models
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -31,6 +32,12 @@ class FinanceRecordFilter(FilterSet):
                   'date_after', 'date_before']
 
 
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
 class FinanceRecordListCreateView(generics.ListCreateAPIView):
     queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
@@ -38,6 +45,7 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = FinanceRecordFilter
     search_fields = ['organization__name', 'transaction_type']
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -182,4 +190,3 @@ class RecentRecordView(generics.ListAPIView):
 
     def get_queryset(self):
         return FinanceRecord.objects.all().order_by('-created_at')[:10]
-    
