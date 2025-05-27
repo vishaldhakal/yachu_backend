@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FinanceRecordDueDateView, FinanceRecordListCreateView, FinanceRecordDetailView, FinanceRecordTotalView, RecentRecordView, TransactionSummaryView, FinanceRecordReminderView
+from .views import FinanceRecordDueDateView, FinanceRecordListCreateView, FinanceRecordDetailView, FinanceRecordTotalView, OrganizationFinanceRecordReminderView, RecentRecordView, TransactionSummaryView, FinanceRecordReminderView, OrganizationTransactionSummaryView, StockListCreateView, StockDetailView
 
 urlpatterns = [
     path('records/', FinanceRecordListCreateView.as_view(),
@@ -16,4 +16,13 @@ urlpatterns = [
          name='finance-record-reminder'),
     path('recent-records/', RecentRecordView.as_view(),
          name='recent-record'),
+    path('organization/<int:organization_id>/transaction-summary/',
+         OrganizationTransactionSummaryView.as_view(),
+         name='organization-transaction-summary'),
+    path('organization/<int:organization_id>/reminder/',
+         OrganizationFinanceRecordReminderView.as_view(), name='organization-reminders'),
+    path('stocks/', StockListCreateView.as_view(),
+         name='stock-list-create'),
+    path('stocks/<int:pk>/', StockDetailView.as_view(),
+         name='stock-detail'),
 ]

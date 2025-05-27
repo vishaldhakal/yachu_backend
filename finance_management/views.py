@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter
-from .models import FinanceRecord
-from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer
+from .models import FinanceRecord, Stock
+from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer, StockSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum
@@ -21,15 +21,18 @@ class FinanceRecordFilter(FilterSet):
         field_name='organization__id', lookup_expr='icontains')
     date_after = DateTimeFilter(field_name='created_at', lookup_expr='gte')
     date_before = DateTimeFilter(field_name='created_at', lookup_expr='lte')
-
-    # Filter by transaction type
+    payment_method = CharFilter(
+        field_name='payment_method', lookup_expr='icontains')
     transaction_type = CharFilter(
         field_name='transaction_type', lookup_expr='icontains')
+    department = CharFilter(
+        field_name='department__name', lookup_expr='icontains')
+    date = DateTimeFilter(field_name='created_at', lookup_expr='icontains')
 
     class Meta:
         model = FinanceRecord
-        fields = ['organization', 'transaction_type',
-                  'date_after', 'date_before']
+        fields = ['organization', 'transaction_type', 'department',
+                  'date_after', 'date_before', 'payment_method', 'date']
 
 
 class CustomPagination(PageNumberPagination):
@@ -41,7 +44,7 @@ class CustomPagination(PageNumberPagination):
 class FinanceRecordListCreateView(generics.ListCreateAPIView):
     queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = FinanceRecordFilter
     search_fields = ['organization__name', 'transaction_type']
@@ -190,3 +193,83 @@ class RecentRecordView(generics.ListAPIView):
 
     def get_queryset(self):
         return FinanceRecord.objects.all().order_by('-created_at')[:10]
+
+
+class OrganizationTransactionSummaryView(generics.ListAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TransactionSummaryFilter
+
+    def list(self, request, organization_id, *args, **kwargs):
+        queryset = FinanceRecord.objects.filter(
+            organization_id=organization_id)
+        filter_type = request.query_params.get('filter', 'daily')
+
+        # Apply date grouping
+        if filter_type == 'daily':
+            queryset = queryset.annotate(period=TruncDate('created_at'))
+        elif filter_type == 'weekly':
+            queryset = queryset.annotate(period=TruncWeek('created_at'))
+        elif filter_type == 'monthly':
+            queryset = queryset.annotate(period=TruncMonth('created_at'))
+        elif filter_type == 'yearly':
+            queryset = queryset.annotate(period=TruncYear('created_at'))
+
+        # Group by period and calculate money in/out
+        queryset = queryset.values('period').annotate(
+            money_in=Sum('amount', filter=models.Q(
+                transaction_type='Received')),
+            money_out=Sum('amount', filter=models.Q(transaction_type='Paid'))
+        ).order_by('period')
+
+        # Format the response
+        response_data = {
+            'filter': filter_type,
+            'summary': [
+                {
+                    'period': item['period'].strftime('%Y-%m-%d'),
+                    'money_in': float(item['money_in'] or 0),
+                    'money_out': float(item['money_out'] or 0)
+                }
+                for item in queryset
+            ]
+        }
+
+        return Response(response_data)
+
+
+class StockListCreateView(generics.ListCreateAPIView):
+    queryset = Stock.objects.all()
+    serializer_class = StockSerializer
+
+
+class StockDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Stock.objects.all()
+    serializer_class = StockSerializer
+
+
+class OrganizationFinanceRecordReminderView(generics.ListAPIView):
+    serializer_class = FinanceRecordBalanceSerializer
+
+    def get_queryset(self):
+        organization_id = self.kwargs.get('organization_id')
+        # Calculate the date 7 days from now
+        date_limit = datetime.now() + timedelta(days=7)
+        return FinanceRecord.objects.filter(
+            organization_id=organization_id,
+            due_date__lte=date_limit,
+            transaction_type__in=['Receivable', 'Payable']
+        ).order_by('due_date')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Add additional context about the reminder
+        response_data = {
+            'reminder_date': datetime.now().strftime('%Y-%m-%d'),
+            'due_within_days': 7,
+            'total_records': queryset.count(),
+            'records': serializer.data
+        }
+
+        return Response(response_data)

@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer
-from .models import CustomUser, Organization, Profile
+from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, DepartmentSerializer
+from .models import CustomUser, Organization, Profile, Department
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import FilterSet, CharFilter, DjangoFilterBackend
 from rest_framework.filters import SearchFilter
@@ -123,7 +123,7 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = OrganizationFilter
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     search_fields = ['name']
 
 
@@ -136,3 +136,8 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return OrganizationDetailSerializer
         return OrganizationSerializer
+
+
+class DepartmentListCreateView(generics.ListCreateAPIView):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer

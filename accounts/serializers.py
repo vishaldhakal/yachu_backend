@@ -1,7 +1,13 @@
 from rest_framework import serializers
 
-from .models import CustomUser, Profile, Organization
+from .models import CustomUser, Profile, Organization, Department
 from django.db.models import Sum
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['id', 'name', 'description']
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -9,7 +15,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'remarks', 'opening_balance', 'created_at', 'updated_at']
+                  'remarks', 'opening_balance', 'vat_number', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
 
@@ -39,7 +45,7 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'remarks', 'opening_balance',
+                  'remarks', 'opening_balance', 'vat_number',
                   'total_receivable', 'total_payable', 'total_received', 'total_paid', 'balance']
         read_only_fields = ['created_at', 'updated_at']
 
@@ -48,14 +54,15 @@ class OrganizationSmallSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address']
+        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
+                  'vat_number', 'opening_balance', 'remarks']
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'username', 'email', 'password',
-                  'phone_number', 'address']
+                  'phone_number', 'address', 'opening_balance']
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -71,4 +78,4 @@ class LoginSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'balance']
+        fields = ['id', 'user', 'profile_picture']
