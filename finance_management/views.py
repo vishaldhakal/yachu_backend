@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter, DateFilter
 from .models import FinanceRecord, Stock
 from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer, StockSerializer
 from rest_framework.response import Response
@@ -13,7 +13,7 @@ from django.db import models
 from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
-
+    
 
 class FinanceRecordFilter(FilterSet):
     # Filter by date range
@@ -27,12 +27,13 @@ class FinanceRecordFilter(FilterSet):
         field_name='transaction_type', lookup_expr='icontains')
     department = CharFilter(
         field_name='department__name', lookup_expr='icontains')
-    date = DateTimeFilter(field_name='created_at', lookup_expr='icontains')
+    date = DateFilter(field_name='created_at', lookup_expr='icontains')
+    due_date = DateFilter(field_name='due_date', lookup_expr='icontains')
 
     class Meta:
         model = FinanceRecord
         fields = ['organization', 'transaction_type', 'department',
-                  'date_after', 'date_before', 'payment_method', 'date']
+                  'date_after', 'date_before', 'payment_method', 'date', 'due_date']
 
 
 class CustomPagination(PageNumberPagination):
