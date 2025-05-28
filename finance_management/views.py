@@ -27,7 +27,8 @@ class FinanceRecordFilter(FilterSet):
         field_name='transaction_type', lookup_expr='icontains')
     department = CharFilter(
         field_name='department__name', lookup_expr='icontains')
-    date = DateTimeFilter(field_name='created_at', lookup_expr='icontains')
+    date = DateTimeFilter(field_name='created_at', lookup_expr='icontains',
+                          format='%Y-%m-%d')
 
     class Meta:
         model = FinanceRecord
