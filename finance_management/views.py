@@ -370,7 +370,6 @@ class InvoiceListCreateView(generics.ListCreateAPIView):
     filterset_class = InvoiceFilter
     search_fields = ['invoice_number', 'customer_name']
 
-    @override
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return InvoiceSmallSerializer
