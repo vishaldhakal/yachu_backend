@@ -274,8 +274,10 @@ TINYMCE_DEFAULT_CONFIG = {
     }""",
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
-
-CSRF_TRUSTED_ORIGINS = ['https://4963-110-44-120-22.ngrok.io',]
+CORS_ALLOWED_ORIGINS = [
+    "https://develops-syracuse-brunette-leaving.trycloudflare.com",
+]
+CSRF_TRUSTED_ORIGINS = ['https://develops-syracuse-brunette-leaving.trycloudflare.com']
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),

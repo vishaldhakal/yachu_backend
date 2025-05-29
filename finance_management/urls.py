@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FinanceRecordDueDateView, FinanceRecordListCreateView, FinanceRecordDetailView, FinanceRecordTotalView, OrganizationFinanceRecordReminderView, RecentRecordView, TransactionSummaryView, FinanceRecordReminderView, OrganizationTransactionSummaryView, StockListCreateView, StockDetailView
+from .views import FinanceRecordDueDateView, FinanceRecordListCreateView, FinanceRecordDetailView, FinanceRecordTotalView, OrganizationFinanceRecordReminderView, RecentRecordView, TransactionSummaryView, FinanceRecordReminderView, OrganizationTransactionSummaryView, StockListCreateView, StockDetailView, TagListCreateView, TagRetrieveUpdateDestroyView, InvoiceListCreateView, InvoiceDetailView
 
 urlpatterns = [
     path('records/', FinanceRecordListCreateView.as_view(),
@@ -25,4 +25,10 @@ urlpatterns = [
          name='stock-list-create'),
     path('stocks/<int:pk>/', StockDetailView.as_view(),
          name='stock-detail'),
+    path('tags/', TagListCreateView.as_view(),
+         name='tag-list-create'),
+    path('tags/<int:pk>/', TagRetrieveUpdateDestroyView.as_view(),
+         name='tag-detail'),
+    path('invoices/', InvoiceListCreateView.as_view(), name='invoice-list-create'),
+    path('invoices/<int:pk>/', InvoiceDetailView.as_view(), name='invoice-detail'),
 ]

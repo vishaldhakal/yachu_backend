@@ -123,8 +123,9 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     serializer_class = OrganizationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = OrganizationFilter
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     search_fields = ['name']
+    
 
 
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -141,3 +142,9 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
 class DepartmentListCreateView(generics.ListCreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+
+    def get_queryset(self):
+        department_id = self.request.query_params.get('department_id')
+        if department_id:
+            return Department.objects.filter(id=department_id)
+        return Department.objects.all()
