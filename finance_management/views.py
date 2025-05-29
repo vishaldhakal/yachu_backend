@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from typing import override
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter, DateFilter
