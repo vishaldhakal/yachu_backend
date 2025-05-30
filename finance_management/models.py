@@ -100,7 +100,7 @@ class Invoice(models.Model):
     account_number = models.CharField(max_length=50, null=True, blank=True)
 
     # Signature
-    signature = models.ImageField(
+    signature = models.FileField(
         upload_to='invoice_signatures/', null=True, blank=True)
 
     # Timestamps
