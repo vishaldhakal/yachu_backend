@@ -275,9 +275,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://develops-syracuse-brunette-leaving.trycloudflare.com",
+    "https://commander-stages-bridges-conventions.trycloudflare.com",
 ]
-CSRF_TRUSTED_ORIGINS = ['https://develops-syracuse-brunette-leaving.trycloudflare.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://commander-stages-bridges-conventions.trycloudflare.com']
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),

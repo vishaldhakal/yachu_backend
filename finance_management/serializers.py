@@ -78,19 +78,24 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'bill_from_name', 'bill_from_address', 'bill_from_email', 'bill_from_phone',
             'bill_to_name', 'bill_to_address', 'bill_to_email', 'bill_to_phone',
             'invoice_number', 'invoice_date', 'due_date', 'currency', 'logo',
-            'discount', 'tax', 'total_amount', 'additional_notes', 'payment_terms',
+            'discount', 'vat', 'total_amount', 'additional_notes', 'payment_terms',
             'bank_name', 'account_name', 'account_number', 'signature',
             'items', 'status'
         ]
 
+    def validate_items(self, items):
+        if not items:
+            raise serializers.ValidationError("At least one item is required")
+        return items
+
     def create(self, validated_data):
         items_data = validated_data.pop('items')
+
+        # Create the invoice
         invoice = Invoice.objects.create(**validated_data)
 
+        # Create invoice items
         for item_data in items_data:
-            # Calculate amount if not provided
-            if 'amount' not in item_data:
-                item_data['amount'] = item_data['quantity'] * item_data['rate']
             InvoiceItem.objects.create(invoice=invoice, **item_data)
 
         return invoice
@@ -110,10 +115,6 @@ class InvoiceSerializer(serializers.ModelSerializer):
 
             # Create new items
             for item_data in items_data:
-                # Calculate amount if not provided
-                if 'amount' not in item_data:
-                    item_data['amount'] = item_data['quantity'] * \
-                        item_data['rate']
                 InvoiceItem.objects.create(invoice=instance, **item_data)
 
         return instance

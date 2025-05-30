@@ -64,7 +64,8 @@ class Invoice(models.Model):
         ('Paid', 'Paid'),
         ('Overdue', 'Overdue'),
     ]
-    status = models.CharField(max_length=10, choices=STATUS,null=True,blank=True)
+    status = models.CharField(
+        max_length=10, choices=STATUS, null=True, blank=True)
     # Bill From Information
     bill_from_name = models.CharField(max_length=255)
     bill_from_address = models.TextField(null=True, blank=True)
@@ -87,8 +88,9 @@ class Invoice(models.Model):
 
     # Financial Details
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    vat = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
 
     # Additional Information
     additional_notes = models.TextField(blank=True, null=True)
