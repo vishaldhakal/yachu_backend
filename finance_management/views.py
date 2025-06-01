@@ -437,6 +437,7 @@ class InvoiceListCreateView(generics.ListCreateAPIView):
                 'due_date': request.data.get('due_date'),
                 'currency': request.data.get('currency'),
                 'discount': request.data.get('discount'),
+                'discount_type': request.data.get('discount_type'),
                 'vat': request.data.get('vat'),
                 'total_amount': request.data.get('total_amount'),
                 'additional_notes': request.data.get('additional_notes'),
@@ -490,7 +491,7 @@ class InvoiceDetailView(generics.RetrieveUpdateDestroyAPIView):
                 'bill_from_name', 'bill_from_address', 'bill_from_email', 'bill_from_phone',
                 'bill_to_name', 'bill_to_address', 'bill_to_email', 'bill_to_phone',
                 'invoice_number', 'invoice_date', 'due_date', 'currency', 'discount',
-                'vat', 'total_amount', 'additional_notes', 'payment_terms',
+                'discount_type', 'vat', 'total_amount', 'additional_notes', 'payment_terms',
                 'bank_name', 'account_name', 'account_number', 'status'
             ]
 

@@ -78,7 +78,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'bill_from_name', 'bill_from_address', 'bill_from_email', 'bill_from_phone',
             'bill_to_name', 'bill_to_address', 'bill_to_email', 'bill_to_phone',
             'invoice_number', 'invoice_date', 'due_date', 'currency', 'logo',
-            'discount', 'vat', 'total_amount', 'additional_notes', 'payment_terms',
+            'discount', 'discount_type', 'vat', 'total_amount', 'additional_notes', 'payment_terms',
             'bank_name', 'account_name', 'account_number', 'signature',
             'items', 'status'
         ]

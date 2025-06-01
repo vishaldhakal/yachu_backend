@@ -88,6 +88,9 @@ class Invoice(models.Model):
 
     # Financial Details
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount_type = models.CharField(max_length=10, choices=[
+                                    ('Percentage', 'Percentage'),
+                                    ('Amount', 'Amount')], default='Percentage')
     vat = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_amount = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
