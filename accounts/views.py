@@ -59,7 +59,6 @@ class RegisterView(generics.CreateAPIView):
 
             headers = self.get_success_headers(serializer.data)
             return Response({
-                'user': serializer.data,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED, headers=headers)
@@ -86,7 +85,6 @@ class LoginView(generics.GenericAPIView):
         user = authenticate(username=username, password=password)
 
         if user:
-            serializer = UserSerializer(user)
             refresh = RefreshToken.for_user(user)
             refresh['user_id'] = user.id
             refresh['username'] = user.username
@@ -95,7 +93,6 @@ class LoginView(generics.GenericAPIView):
             refresh['address'] = user.address
 
             return Response({
-                'user': serializer.data,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_200_OK)
@@ -125,7 +122,6 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     filterset_class = OrganizationFilter
     permission_classes = [IsAuthenticated]
     search_fields = ['name']
-    
 
 
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):

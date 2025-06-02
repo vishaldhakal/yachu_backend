@@ -305,6 +305,8 @@ class OrganizationTransactionSummaryView(generics.ListAPIView):
 class StockListCreateView(generics.ListCreateAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['product_name', 'product_code']
 
     def get_queryset(self):
         department_id = self.request.query_params.get('department_id')
