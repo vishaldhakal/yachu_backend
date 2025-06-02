@@ -22,7 +22,8 @@ class FinanceRecord(models.Model):
         ('Cash', 'Cash'),
         ('Bank', 'Bank')
     ]
-
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, null=True, blank=True)
     transaction_type = models.CharField(

@@ -83,7 +83,7 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Automatically set the organization and user
-        serializer.save()
+        serializer.save(user=self.request.user)
 
 
 class FinanceRecordDetailView(generics.RetrieveUpdateDestroyAPIView):

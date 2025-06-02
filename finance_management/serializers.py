@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import FinanceRecord, Department, Stock, Tag, Invoice, InvoiceItem
-from accounts.serializers import OrganizationSmallSerializer, DepartmentSerializer
-from accounts.models import Organization
+from accounts.serializers import OrganizationSmallSerializer, DepartmentSerializer, UserSerializer
+from accounts.models import Organization, CustomUser
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -17,10 +17,12 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         queryset=Department.objects.all(), required=False)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True, required=False)
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all(), required=False)
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'organization', 'transaction_type', 'department',
+        fields = ['id', 'user', 'organization', 'transaction_type', 'department',
                   'amount', 'payment_method', 'remarks', 'due_date', 'tags', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
@@ -34,10 +36,11 @@ class FinanceRecordListSerializer(serializers.ModelSerializer):
     organization = OrganizationSmallSerializer()
     department = DepartmentSerializer()
     tags = TagSerializer(many=True, read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'organization', 'transaction_type', 'department',
+        fields = ['id', 'user', 'organization', 'transaction_type', 'department',
                   'amount', 'payment_method', 'remarks', 'due_date', 'tags', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
@@ -46,10 +49,11 @@ class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
     organization = OrganizationSmallSerializer()
     department = DepartmentSerializer()
     tags = TagSerializer(many=True, read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'organization', 'transaction_type', 'department',
+        fields = ['id', 'user', 'organization', 'transaction_type', 'department',
                   'amount', 'payment_method', 'remarks', 'due_date', 'tags', 'created_at', 'updated_at']
 
 
