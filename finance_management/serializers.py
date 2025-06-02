@@ -62,6 +62,15 @@ class StockSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class StockListSerializer(serializers.ModelSerializer):
+    department = DepartmentSerializer()
+
+    class Meta:
+        model = Stock
+        fields = ['id', 'product_name', 'product_code', 'quantity',
+                  'unit', 'price', 'department', 'created_at', 'updated_at']
+
+
 class InvoiceItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceItem

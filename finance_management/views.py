@@ -3,7 +3,7 @@ from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter, DateFilter
 from .models import FinanceRecord, Stock, Tag, Invoice
-from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer, InvoiceSmallSerializer, StockSerializer, TagSerializer, InvoiceSerializer
+from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer, InvoiceSmallSerializer, StockSerializer, TagSerializer, InvoiceSerializer, StockListSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum
@@ -313,6 +313,11 @@ class StockListCreateView(generics.ListCreateAPIView):
         if department_id:
             return Stock.objects.filter(department_id=department_id)
         return Stock.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return StockListSerializer
+        return StockSerializer
 
 
 class StockDetailView(generics.RetrieveUpdateDestroyAPIView):
