@@ -142,9 +142,3 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
 class DepartmentListCreateView(generics.ListCreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-
-    def get_queryset(self):
-        department_id = self.request.query_params.get('department_id')
-        if department_id:
-            return Department.objects.filter(id=department_id)
-        return Department.objects.all()
