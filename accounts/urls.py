@@ -10,5 +10,7 @@ urlpatterns = [
          name='organization-detail'),
     path('finance-departments/', DepartmentListCreateView.as_view(),
          name='department-list-create'),
+    path('finance-departments/<int:pk>/', DepartmentDetailView.as_view(),
+         name='department-detail'),
 
 ]
