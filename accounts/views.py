@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, DepartmentSerializer
-from .models import CustomUser, Organization, Profile, Department
+from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, DepartmentSerializer, OrganizationContactsSerializer
+from .models import CustomUser, Organization, Profile, Department, OrganizationContacts
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import FilterSet, CharFilter, DjangoFilterBackend
 from rest_framework.filters import SearchFilter
@@ -101,6 +101,13 @@ class LoginView(generics.GenericAPIView):
             'error': 'Invalid credentials'
         }, status=status.HTTP_401_UNAUTHORIZED)
 
+class OrganizationContactsListCreateView(generics.ListCreateAPIView):
+    queryset = OrganizationContacts.objects.all()
+    serializer_class = OrganizationContactsSerializer
+
+class OrganizationContactsDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = OrganizationContacts.objects.all()
+    serializer_class = OrganizationContactsSerializer
 
 class OrganizationFilter(FilterSet):
     name = CharFilter(field_name='name', lookup_expr='icontains')
@@ -123,11 +130,17 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     search_fields = ['name']
 
+    def get_queryset(self):
+        return Organization.objects.prefetch_related('contacts').all()
+
 
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Organization.objects.prefetch_related('contacts').all()
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

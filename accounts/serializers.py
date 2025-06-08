@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import CustomUser, Profile, Organization, Department
+from .models import CustomUser, Profile, Organization, Department, OrganizationContacts
 from django.db.models import Sum
 
 
@@ -10,13 +10,69 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description']
 
 
+class OrganizationContactsSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all(),
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = OrganizationContacts
+        fields = ['id', 'organization', 'name',
+                  'phone_number', 'email', 'position']
+
+
 class OrganizationSerializer(serializers.ModelSerializer):
+    contacts = OrganizationContactsSerializer(
+        many=True, required=False)
 
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'remarks', 'opening_balance', 'vat_number', 'created_at', 'updated_at']
+                  'remarks', 'opening_balance', 'vat_number', 'contacts', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
+
+    def create(self, validated_data):
+        contacts_data = validated_data.pop('contacts', [])
+        organization = Organization.objects.create(**validated_data)
+        for contact_data in contacts_data:
+            OrganizationContacts.objects.create(
+                organization=organization, **contact_data)
+        return organization
+
+    def update(self, instance, validated_data):
+        contacts_data = validated_data.pop('contacts', None)
+
+        # Update organization fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Handle contacts
+        if contacts_data is not None:
+            # Get existing contacts
+            existing_contacts = {
+                contact.id: contact for contact in instance.contacts.all()}
+
+            # Process each contact in the request
+            for contact_data in contacts_data:
+                contact_id = contact_data.get('id')
+
+                if contact_id and contact_id in existing_contacts:
+                    # Update existing contact
+                    contact = existing_contacts[contact_id]
+                    for attr, value in contact_data.items():
+                        setattr(contact, attr, value)
+                    contact.save()
+                    # Remove from existing_contacts dict to track which ones were updated
+                    del existing_contacts[contact_id]
+                else:
+                    # Create new contact
+                    OrganizationContacts.objects.create(
+                        organization=instance, **contact_data)
+
+        return instance
 
 
 class OrganizationDetailSerializer(serializers.ModelSerializer):
@@ -25,6 +81,7 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
     total_received = serializers.SerializerMethodField()
     total_paid = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
+    contacts = OrganizationContactsSerializer(many=True, read_only=True)
 
     def get_balance(self, obj):
         from finance_management.serializers import FinanceRecordBalanceSerializer
@@ -46,7 +103,7 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
                   'remarks', 'opening_balance', 'vat_number',
-                  'total_receivable', 'total_payable', 'total_received', 'total_paid', 'balance']
+                  'total_receivable', 'total_payable', 'total_received', 'total_paid', 'balance', 'contacts']
         read_only_fields = ['created_at', 'updated_at']
 
 

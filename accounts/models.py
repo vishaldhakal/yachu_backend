@@ -14,9 +14,21 @@ class Department(models.Model):
         return self.name
 
 
+class OrganizationContacts(models.Model):
+    organization = models.ForeignKey(
+        "Organization", on_delete=models.CASCADE, related_name='contacts')
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=10)
+    email = models.EmailField(null=True, blank=True)
+    position = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Organization(models.Model):
-
     name = models.CharField(max_length=100)
     person_in_charge = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=10, null=True, blank=True)

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import CustomUser, Organization, Profile,Department
-from unfold.admin import ModelAdmin
+from .models import CustomUser, Organization, Profile, Department, OrganizationContacts
+from unfold.admin import ModelAdmin, TabularInline
 
 
 class UserAdmin(ModelAdmin):
@@ -14,9 +14,17 @@ class DepartmentAdmin(ModelAdmin):
     list_display = ('name', 'description')
     search_fields = ('name', 'description')
 
+
+class OrganizationContactsInline(TabularInline):
+    model = OrganizationContacts
+    extra = 1
+    tab = True
+
+
 class OrganizationAdmin(ModelAdmin):
     list_display = ('name', 'person_in_charge', 'phone_number', 'address')
     search_fields = ('name', 'person_in_charge')
+    inlines = [OrganizationContactsInline]
 
 
 class ProfileAdmin(ModelAdmin):
