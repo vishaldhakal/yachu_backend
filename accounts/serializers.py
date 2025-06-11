@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from .models import CustomUser, Profile, Organization, Department, OrganizationContacts
+from .models import CustomUser, Profile, Organization, Department, OrganizationContacts, Project, ProjectNotes, ProjectReminder
 from django.db.models import Sum
+from finance_management.models import FinanceRecord
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -23,14 +24,31 @@ class OrganizationContactsSerializer(serializers.ModelSerializer):
                   'phone_number', 'email', 'position']
 
 
+class ProjectSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all(),
+        write_only=True,
+        required=False
+    )
+    organization_name = serializers.CharField(
+        source='organization.name', read_only=True)
+    organization_id  = serializers.PrimaryKeyRelatedField(
+        source='organization.id', read_only=True)
+
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'slug', 'organization', 'organization_name', 'organization_id']
+
+
 class OrganizationSerializer(serializers.ModelSerializer):
     contacts = OrganizationContactsSerializer(
         many=True, required=False)
+    projects = ProjectSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'remarks', 'opening_balance', 'vat_number', 'contacts', 'created_at', 'updated_at']
+                  'remarks', 'opening_balance', 'vat_number', 'contacts', 'projects', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
@@ -82,28 +100,44 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
     total_paid = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
     contacts = OrganizationContactsSerializer(many=True, read_only=True)
+    projects = ProjectSerializer(many=True, read_only=True)
 
     def get_balance(self, obj):
         from finance_management.serializers import FinanceRecordBalanceSerializer
-        return FinanceRecordBalanceSerializer(obj.financerecord_set.all(), many=True).data
+        # Get all finance records from all projects of this organization
+        finance_records = FinanceRecord.objects.filter(
+            project__organization=obj)
+        return FinanceRecordBalanceSerializer(finance_records, many=True).data
 
     def get_total_receivable(self, obj):
-        return obj.financerecord_set.filter(transaction_type='Receivable').aggregate(Sum('amount'))['amount__sum'] or 0
+        return FinanceRecord.objects.filter(
+            project__organization=obj,
+            transaction_type='Receivable'
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     def get_total_payable(self, obj):
-        return obj.financerecord_set.filter(transaction_type='Payable').aggregate(Sum('amount'))['amount__sum'] or 0
+        return FinanceRecord.objects.filter(
+            project__organization=obj,
+            transaction_type='Payable'
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     def get_total_received(self, obj):
-        return obj.financerecord_set.filter(transaction_type='Received').aggregate(Sum('amount'))['amount__sum'] or 0
+        return FinanceRecord.objects.filter(
+            project__organization=obj,
+            transaction_type='Received'
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     def get_total_paid(self, obj):
-        return obj.financerecord_set.filter(transaction_type='Paid').aggregate(Sum('amount'))['amount__sum'] or 0
+        return FinanceRecord.objects.filter(
+            project__organization=obj,
+            transaction_type='Paid'
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     class Meta:
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
                   'remarks', 'opening_balance', 'vat_number',
-                  'total_receivable', 'total_payable', 'total_received', 'total_paid', 'balance', 'contacts']
+                  'total_receivable', 'total_payable', 'total_received', 'total_paid', 'balance', 'contacts', 'projects']
         read_only_fields = ['created_at', 'updated_at']
 
 
@@ -113,6 +147,52 @@ class OrganizationSmallSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
                   'vat_number', 'opening_balance', 'remarks']
+
+
+class ProjectNotesSerializer(serializers.ModelSerializer):
+    project = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(),
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = ProjectNotes
+        fields = ['id', 'project', 'notes']
+
+
+class ProjectReminderSerializer(serializers.ModelSerializer):
+    project = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(),
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = ProjectReminder
+        fields = ['id', 'project', 'title',
+                  'description', 'type', 'date', 'is_completed']
+
+class ProjectReminderDetailSerializer(serializers.ModelSerializer):
+    project = ProjectSerializer()
+
+    class Meta:
+        model = ProjectReminder
+        fields = ['id', 'project', 'title',
+                  'description', 'type', 'date', 'is_completed']
+
+
+class ProjectDetailSerializer(serializers.ModelSerializer):
+    organization = OrganizationSmallSerializer()
+    project_notes = ProjectNotesSerializer(
+        source='notes', many=True, read_only=True)
+    project_reminders = ProjectReminderSerializer(
+        source='reminders', many=True, read_only=True)
+
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'slug', 'organization',
+                  'project_notes', 'project_reminders']
 
 
 class UserSerializer(serializers.ModelSerializer):

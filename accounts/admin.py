@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Organization, Profile, Department, OrganizationContacts
+from .models import CustomUser, Organization, Profile, Department, OrganizationContacts, Project, ProjectNotes, ProjectReminder
 from unfold.admin import ModelAdmin, TabularInline
 
 
@@ -21,10 +21,31 @@ class OrganizationContactsInline(TabularInline):
     tab = True
 
 
+class ProjectNotesInline(TabularInline):
+    model = ProjectNotes
+    extra = 1
+    tab = True
+
+class ProjectReminderInline(TabularInline):
+    model = ProjectReminder
+    extra = 1
+    tab = True
+
+class ProjectAdmin(ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name', 'organization')
+    inlines = [ProjectNotesInline, ProjectReminderInline]
+
+class ProjectInline(TabularInline):
+    model = Project
+    extra = 1
+    tab = True
+
+
 class OrganizationAdmin(ModelAdmin):
     list_display = ('name', 'person_in_charge', 'phone_number', 'address')
     search_fields = ('name', 'person_in_charge')
-    inlines = [OrganizationContactsInline]
+    inlines = [OrganizationContactsInline, ProjectInline]
 
 
 class ProfileAdmin(ModelAdmin):
@@ -36,3 +57,6 @@ admin.site.register(CustomUser, UserAdmin)
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Department, DepartmentAdmin)
+admin.site.register(Project, ProjectAdmin)
+
+

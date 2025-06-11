@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LoginView, OrganizationListCreateView, OrganizationDetailView, DepartmentListCreateView, DepartmentDetailView, OrganizationContactsListCreateView, OrganizationContactsDetailView
+from .views import RegisterView, LoginView, OrganizationListCreateView, OrganizationDetailView, DepartmentListCreateView, DepartmentDetailView, OrganizationContactsListCreateView, OrganizationContactsDetailView, ProjectListCreateView, ProjectDetailView, ProjectNotesListCreateView, ProjectNotesDetailView, ProjectReminderListCreateView, ProjectReminderDetailView, UpdateReminderView, ProjectReminderView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -16,5 +16,21 @@ urlpatterns = [
          name='organization-contacts-list-create'),
     path('organization-contacts/<int:pk>/', OrganizationContactsDetailView.as_view(),
          name='organization-contacts-detail'),
+    path('projects/', ProjectListCreateView.as_view(),
+         name='project-list-create'),
+    path('projects/<slug:slug>/', ProjectDetailView.as_view(),
+         name='project-detail'),
+    path('notes/', ProjectNotesListCreateView.as_view(),
+         name='project-notes-list-create'),
+    path('notes/<int:pk>/', ProjectNotesDetailView.as_view(),
+         name='project-notes-detail'),
+    path('project-reminders/', ProjectReminderListCreateView.as_view(),
+         name='project-reminders-list-create'),
+    path('project/reminders/', ProjectReminderView.as_view(),
+         name='project-reminders'),
+    path('project-reminders/<int:pk>/', ProjectReminderDetailView.as_view(),
+         name='project-reminders-detail'),
+    path('project-reminders/<int:id>/complete/', UpdateReminderView.as_view(),
+         name='project-reminders-complete'),
 
 ]

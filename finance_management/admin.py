@@ -6,9 +6,9 @@ from unfold.admin import ModelAdmin, TabularInline
 
 
 class FinanceRecordAdmin(ModelAdmin):
-    list_display = ('organization', 'transaction_type',
+    list_display = ('project', 'transaction_type',
                     'amount', 'created_at', 'updated_at')
-    search_fields = ('organization__name',)
+    search_fields = ('project__name',)
 
 
 class StockAdmin(ModelAdmin):

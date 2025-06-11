@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateTimeFilter, CharFilter, DateFilter
-from .models import FinanceRecord, Stock, Tag, Invoice
-from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer, InvoiceSmallSerializer, StockSerializer, TagSerializer, InvoiceSerializer, StockListSerializer
+from .models import FinanceRecord, Stock, Invoice, Project
+from .serializers import FinanceRecordBalanceSerializer, FinanceRecordListSerializer, FinanceRecordSerializer, InvoiceSmallSerializer, StockSerializer, InvoiceSerializer, StockListSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum
@@ -17,26 +17,10 @@ from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 # Create your views here.
 
 
-class TagFilter(FilterSet):
-    name = CharFilter(field_name='name', lookup_expr='icontains')
-
-
-class TagListCreateView(generics.ListCreateAPIView):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = TagFilter
-
-
-class TagRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-
-
 class FinanceRecordFilter(FilterSet):
     # Filter by date range
     organization = CharFilter(
-        field_name='organization__id', lookup_expr='icontains')
+        field_name='project__organization__id', lookup_expr='exact')
     date_after = DateTimeFilter(field_name='created_at', lookup_expr='gte')
     date_before = DateTimeFilter(field_name='created_at', lookup_expr='lte')
     payment_method = CharFilter(
@@ -47,11 +31,12 @@ class FinanceRecordFilter(FilterSet):
         field_name='department__name', lookup_expr='icontains')
     date = DateFilter(field_name='created_at', lookup_expr='icontains')
     due_date = DateFilter(field_name='due_date', lookup_expr='icontains')
+    project = CharFilter(field_name='project__slug', lookup_expr='icontains')
 
     class Meta:
         model = FinanceRecord
         fields = ['organization', 'transaction_type', 'department',
-                  'date_after', 'date_before', 'payment_method', 'date', 'due_date']
+                  'date_after', 'date_before', 'payment_method', 'date', 'due_date', 'project']
 
 
 class CustomPagination(PageNumberPagination):
@@ -63,10 +48,10 @@ class CustomPagination(PageNumberPagination):
 class FinanceRecordListCreateView(generics.ListCreateAPIView):
     queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = FinanceRecordFilter
-    search_fields = ['organization__name', 'transaction_type']
+    search_fields = ['project__organization__name', 'transaction_type', 'project__name']
     pagination_class = CustomPagination
 
     def get_serializer_class(self):
@@ -83,7 +68,9 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Automatically set the organization and user
-        serializer.save(user=self.request.user)
+        project_slug=self.request.data.get('project_slug')
+        project=Project.objects.get(slug=project_slug)
+        serializer.save(user=self.request.user, project=project)
 
 
 class FinanceRecordDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -263,7 +250,7 @@ class OrganizationTransactionSummaryView(generics.ListAPIView):
 
     def list(self, request, organization_id, *args, **kwargs):
         queryset = FinanceRecord.objects.filter(
-            organization_id=organization_id)
+            project__organization_id=organization_id)
         department_id = self.request.query_params.get('department_id')
         if department_id:
             queryset = queryset.filter(department_id=department_id)
@@ -335,13 +322,13 @@ class OrganizationFinanceRecordReminderView(generics.ListAPIView):
         department_id = self.request.query_params.get('department_id')
         if department_id:
             return FinanceRecord.objects.filter(
-                organization_id=organization_id,
+                project__organization_id=organization_id,
                 due_date__lte=date_limit,
                 transaction_type__in=['Receivable', 'Payable'],
                 department_id=department_id
             ).order_by('due_date')
         return FinanceRecord.objects.filter(
-            organization_id=organization_id,
+            project__organization_id=organization_id,
             due_date__lte=date_limit,
             transaction_type__in=['Receivable', 'Payable']
         ).order_by('due_date')

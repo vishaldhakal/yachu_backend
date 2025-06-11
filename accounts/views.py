@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, DepartmentSerializer, OrganizationContactsSerializer
-from .models import CustomUser, Organization, Profile, Department, OrganizationContacts
+from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, DepartmentSerializer, OrganizationContactsSerializer, ProjectSerializer, ProjectDetailSerializer, ProjectNotesSerializer, ProjectReminderSerializer, ProjectReminderDetailSerializer
+from .models import CustomUser, Organization, Profile, Department, OrganizationContacts, Project, ProjectNotes, ProjectReminder
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import FilterSet, CharFilter, DjangoFilterBackend
 from rest_framework.filters import SearchFilter
@@ -101,13 +101,16 @@ class LoginView(generics.GenericAPIView):
             'error': 'Invalid credentials'
         }, status=status.HTTP_401_UNAUTHORIZED)
 
+
 class OrganizationContactsListCreateView(generics.ListCreateAPIView):
     queryset = OrganizationContacts.objects.all()
     serializer_class = OrganizationContactsSerializer
 
+
 class OrganizationContactsDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = OrganizationContacts.objects.all()
     serializer_class = OrganizationContactsSerializer
+
 
 class OrganizationFilter(FilterSet):
     name = CharFilter(field_name='name', lookup_expr='icontains')
@@ -156,3 +159,103 @@ class DepartmentListCreateView(generics.ListCreateAPIView):
 class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+
+
+class ProjectFilter(FilterSet):
+    organization = CharFilter(
+        field_name='organization_id', lookup_expr='exact')
+    name = CharFilter(field_name='name', lookup_expr='icontains')
+
+    class Meta:
+        model = Project
+        fields = ['organization', 'name']
+
+
+class ProjectListCreateView(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = ProjectFilter
+    search_fields = ['name']
+
+
+class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    lookup_field = 'slug'
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ProjectDetailSerializer
+        return ProjectSerializer
+
+
+class ProjectNotesFilter(FilterSet):
+    project = CharFilter(field_name='project__slug', lookup_expr='icontains')
+
+    class Meta:
+        model = ProjectNotes
+        fields = ['project']
+
+
+class ProjectNotesListCreateView(generics.ListCreateAPIView):
+    queryset = ProjectNotes.objects.all()
+    serializer_class = ProjectNotesSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProjectNotesFilter
+
+    def perform_create(self, serializer):
+        project_slug = self.request.data.get('project_slug')
+        project = Project.objects.get(slug=project_slug)
+        serializer.save(user=self.request.user, project=project)
+
+
+class ProjectNotesDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProjectNotes.objects.all()
+    serializer_class = ProjectNotesSerializer
+
+
+class ProjectReminderFilter(FilterSet):
+    project = CharFilter(field_name='project__slug', lookup_expr='icontains')
+
+    class Meta:
+        model = ProjectReminder
+        fields = ['project']
+
+
+class ProjectReminderListCreateView(generics.ListCreateAPIView):
+    queryset = ProjectReminder.objects.all()
+    serializer_class = ProjectReminderSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProjectReminderFilter
+
+    def perform_create(self, serializer):
+        project_slug = self.request.data.get('project_slug')
+        project = Project.objects.get(slug=project_slug)
+        serializer.save(user=self.request.user, project=project)
+
+
+class ProjectReminderView(generics.ListAPIView):
+    queryset = ProjectReminder.objects.filter(is_completed=False)
+    serializer_class = ProjectReminderDetailSerializer
+
+
+class ProjectReminderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProjectReminder.objects.all()
+    serializer_class = ProjectReminderSerializer
+
+
+class UpdateReminderView(generics.UpdateAPIView):
+    queryset = ProjectReminder.objects.all()
+    serializer_class = ProjectReminderSerializer
+    lookup_field = 'id'
+
+    def perform_update(self, serializer):
+        reminder = self.kwargs.get('id')
+        if reminder:
+            reminder = ProjectReminder.objects.get(id=reminder)
+            reminder.is_completed = not reminder.is_completed
+            reminder.save()
+            return Response({
+                'message': 'Reminder updated successfully'
+            }, status=status.HTTP_200_OK)

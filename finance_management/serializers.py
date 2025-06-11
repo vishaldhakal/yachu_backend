@@ -1,60 +1,57 @@
 from rest_framework import serializers
-from .models import FinanceRecord, Department, Stock, Tag, Invoice, InvoiceItem
-from accounts.serializers import OrganizationSmallSerializer, DepartmentSerializer, UserSerializer
-from accounts.models import Organization, CustomUser
+from .models import FinanceRecord, Department, Stock,Invoice, InvoiceItem
+from accounts.serializers import DepartmentSerializer, UserSerializer, ProjectSerializer
+from accounts.models import CustomUser, Project
 
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['id', 'name']
 
 
 class FinanceRecordSerializer(serializers.ModelSerializer):
-    organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all(), required=False)
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all(), required=False)
-    tags = serializers.PrimaryKeyRelatedField(
-        queryset=Tag.objects.all(), many=True, required=False)
     user = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all(), required=False)
-
+    project_slug = serializers.CharField(write_only=True)
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'organization', 'transaction_type', 'department',
-                  'amount', 'payment_method', 'remarks', 'due_date', 'tags', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'project', 'transaction_type', 'department',
+                  'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at', 'project_slug']
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
 
         # Create the finance record
         return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        project_slug = validated_data.pop('project_slug', None)
+        if project_slug:
+            project = Project.objects.get(slug=project_slug)
+            instance.project = project
+        # Update the finance record
+        return super().update(instance, validated_data)
 
 
 class FinanceRecordListSerializer(serializers.ModelSerializer):
-    organization = OrganizationSmallSerializer()
     department = DepartmentSerializer()
-    tags = TagSerializer(many=True, read_only=True)
     user = UserSerializer()
+    project = ProjectSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'organization', 'transaction_type', 'department',
-                  'amount', 'payment_method', 'remarks', 'due_date', 'tags', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'project', 'transaction_type', 'department',
+                  'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
 
 class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
-    organization = OrganizationSmallSerializer()
     department = DepartmentSerializer()
-    tags = TagSerializer(many=True, read_only=True)
     user = UserSerializer()
+    project = ProjectSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'organization', 'transaction_type', 'department',
-                  'amount', 'payment_method', 'remarks', 'due_date', 'tags', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'project', 'transaction_type', 'department',
+                  'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at']
 
 
 class StockSerializer(serializers.ModelSerializer):
