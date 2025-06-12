@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from .models import FinanceRecord, Department, Stock,Invoice, InvoiceItem
+from .models import FinanceRecord, Department, Stock, Invoice, InvoiceItem
 from accounts.serializers import DepartmentSerializer, UserSerializer, ProjectSerializer
 from accounts.models import CustomUser, Project
-
 
 
 class FinanceRecordSerializer(serializers.ModelSerializer):
@@ -11,6 +10,7 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all(), required=False)
     project_slug = serializers.CharField(write_only=True)
+
     class Meta:
         model = FinanceRecord
         fields = ['id', 'user', 'project', 'transaction_type', 'department',
@@ -18,10 +18,15 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
+        # Remove project_slug from validated_data
+        project_slug = validated_data.pop('project_slug', None)
+        if project_slug:
+            project = Project.objects.get(slug=project_slug)
+            validated_data['project'] = project
 
         # Create the finance record
         return super().create(validated_data)
-    
+
     def update(self, instance, validated_data):
         project_slug = validated_data.pop('project_slug', None)
         if project_slug:
