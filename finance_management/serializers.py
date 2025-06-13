@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import FinanceRecord, Department, Stock, Invoice, InvoiceItem
-from accounts.serializers import DepartmentSerializer, UserSerializer, ProjectSerializer
-from accounts.models import CustomUser, Project
+from accounts.serializers import DepartmentSerializer, UserSerializer, ProjectSerializer, OrganizationSerializer
+from accounts.models import CustomUser, Project, Organization
 
 
 class FinanceRecordSerializer(serializers.ModelSerializer):
@@ -9,11 +9,13 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         queryset=Department.objects.all(), required=False)
     user = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all(), required=False)
+    organization = serializers.PrimaryKeyRelatedField(
+        queryset=Organization.objects.all(), required=False, allow_null=True)
     project_slug = serializers.CharField(write_only=True)
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'project', 'transaction_type', 'department',
+        fields = ['id', 'user', 'organization', 'project', 'transaction_type', 'department',
                   'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at', 'project_slug']
         read_only_fields = ['created_at', 'updated_at']
 
@@ -39,11 +41,12 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
 class FinanceRecordListSerializer(serializers.ModelSerializer):
     department = DepartmentSerializer()
     user = UserSerializer()
+    organization = OrganizationSerializer()
     project = ProjectSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'project', 'transaction_type', 'department',
+        fields = ['id', 'user', 'organization', 'project', 'transaction_type', 'department',
                   'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
@@ -51,11 +54,12 @@ class FinanceRecordListSerializer(serializers.ModelSerializer):
 class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
     department = DepartmentSerializer()
     user = UserSerializer()
+    organization = OrganizationSerializer()
     project = ProjectSerializer()
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'project', 'transaction_type', 'department',
+        fields = ['id', 'user', 'organization', 'project', 'transaction_type', 'department',
                   'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at']
 
 

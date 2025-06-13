@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import Department, CustomUser, Project
+from accounts.models import Department, CustomUser, Project, Organization
 
 # Create your models here.
 
@@ -17,6 +17,8 @@ class FinanceRecord(models.Model):
     ]
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, null=True, blank=True)
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, null=True, blank=True)
     transaction_type = models.CharField(

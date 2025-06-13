@@ -48,7 +48,7 @@ class CustomPagination(PageNumberPagination):
 class FinanceRecordListCreateView(generics.ListCreateAPIView):
     queryset = FinanceRecord.objects.all().order_by('-created_at')
     serializer_class = FinanceRecordSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = FinanceRecordFilter
     search_fields = ['project__organization__name', 'transaction_type', 'project__name']
