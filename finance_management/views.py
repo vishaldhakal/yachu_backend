@@ -68,9 +68,15 @@ class FinanceRecordListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         # Automatically set the organization and user
-        project_slug=self.request.data.get('project_slug')
-        project=Project.objects.get(slug=project_slug)
-        serializer.save(user=self.request.user, project=project)
+        project_slug = self.request.data.get('project_slug')
+        if project_slug:
+            try:
+                project = Project.objects.get(slug=project_slug)
+                serializer.save(user=self.request.user, project=project)
+            except Project.DoesNotExist:
+                serializer.save(user=self.request.user)
+        else:
+            serializer.save(user=self.request.user)
 
 
 class FinanceRecordDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -306,6 +312,12 @@ class StockListCreateView(generics.ListCreateAPIView):
             return StockListSerializer
         return StockSerializer
 
+    def perform_create(self, serializer):
+        # Handle optional product_code
+        if not serializer.validated_data.get('product_code'):
+            serializer.validated_data['product_code'] = None
+        serializer.save()
+
 
 class StockDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Stock.objects.all()
@@ -374,7 +386,6 @@ class InvoiceFilter(FilterSet):
 class InvoiceListCreateView(generics.ListCreateAPIView):
     queryset = Invoice.objects.all().order_by('-created_at')
     serializer_class = InvoiceSerializer
-    # permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     pagination_class = CustomPagination
     filterset_class = InvoiceFilter

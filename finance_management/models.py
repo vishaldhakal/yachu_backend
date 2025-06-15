@@ -41,7 +41,7 @@ class Stock(models.Model):
     department = models.ForeignKey(
         Department, on_delete=models.CASCADE, null=True, blank=True)
     product_name = models.CharField(max_length=100)
-    product_code = models.CharField(max_length=100)
+    product_code = models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
     remarks = models.TextField(blank=True, null=True)

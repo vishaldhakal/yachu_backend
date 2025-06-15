@@ -6,12 +6,14 @@ from accounts.models import CustomUser, Project, Organization
 
 class FinanceRecordSerializer(serializers.ModelSerializer):
     department = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(), required=False)
+        queryset=Department.objects.all(), required=False, allow_null=True)
     user = serializers.PrimaryKeyRelatedField(
-        queryset=CustomUser.objects.all(), required=False)
+        queryset=CustomUser.objects.all(), required=False, allow_null=True)
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all(), required=False, allow_null=True)
-    project_slug = serializers.CharField(write_only=True)
+    project = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(), required=False, allow_null=True)
+    project_slug = serializers.CharField(write_only=True, required=False, allow_null=True)
 
     class Meta:
         model = FinanceRecord
@@ -23,8 +25,11 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         # Remove project_slug from validated_data
         project_slug = validated_data.pop('project_slug', None)
         if project_slug:
-            project = Project.objects.get(slug=project_slug)
-            validated_data['project'] = project
+            try:
+                project = Project.objects.get(slug=project_slug)
+                validated_data['project'] = project
+            except Project.DoesNotExist:
+                pass
 
         # Create the finance record
         return super().create(validated_data)
@@ -32,8 +37,11 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         project_slug = validated_data.pop('project_slug', None)
         if project_slug:
-            project = Project.objects.get(slug=project_slug)
-            instance.project = project
+            try:
+                project = Project.objects.get(slug=project_slug)
+                instance.project = project
+            except Project.DoesNotExist:
+                pass
         # Update the finance record
         return super().update(instance, validated_data)
 
@@ -66,6 +74,7 @@ class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
 class StockSerializer(serializers.ModelSerializer):
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all(), required=False, allow_null=True)
+    product_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Stock

@@ -10,8 +10,6 @@ urlpatterns = [
     path('api/', include('home.urls')),
     path('api/', include('about.urls')),
     path('api/', include('accounts.urls')),
-    path('api/', include('koshiinvest.urls')),
-    path('api/', include('ntc.urls')),
     path('api/', include('orders.urls')),
     path('api/', include('finance_management.urls')),
     path('summernote/', include('django_summernote.urls')),

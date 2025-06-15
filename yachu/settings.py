@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     'about',
     'blog',
     'orders',
-    'ntc',
-    'koshiinvest',
     'django_summernote',
     'solo',
     'corsheaders',

@@ -44,6 +44,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     contacts = OrganizationContactsSerializer(
         many=True, required=False)
     projects = ProjectSerializer(many=True, read_only=True)
+    person_in_charge = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    opening_balance = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default=0)
 
     class Meta:
         model = Organization
@@ -53,6 +55,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         contacts_data = validated_data.pop('contacts', [])
+        # Ensure opening_balance has a default value if not provided
+        if 'opening_balance' not in validated_data:
+            validated_data['opening_balance'] = 0
         organization = Organization.objects.create(**validated_data)
         for contact_data in contacts_data:
             OrganizationContacts.objects.create(
