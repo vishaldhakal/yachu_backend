@@ -13,7 +13,7 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         queryset=Organization.objects.all(), required=False, allow_null=True)
     project = serializers.PrimaryKeyRelatedField(
         queryset=Project.objects.all(), required=False, allow_null=True)
-    project_slug = serializers.CharField(write_only=True, required=False, allow_null=True)
+    project_slug = serializers.CharField(write_only=True, required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = FinanceRecord
@@ -21,10 +21,18 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
                   'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at', 'project_slug']
         read_only_fields = ['created_at', 'updated_at']
 
+    def validate_project_slug(self, value):
+        if value and value.strip():
+            try:
+                Project.objects.get(slug=value)
+            except Project.DoesNotExist:
+                raise serializers.ValidationError("Project with this slug does not exist")
+        return value
+
     def create(self, validated_data):
         # Remove project_slug from validated_data
         project_slug = validated_data.pop('project_slug', None)
-        if project_slug:
+        if project_slug and project_slug.strip():
             try:
                 project = Project.objects.get(slug=project_slug)
                 validated_data['project'] = project
@@ -36,7 +44,7 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         project_slug = validated_data.pop('project_slug', None)
-        if project_slug:
+        if project_slug and project_slug.strip():
             try:
                 project = Project.objects.get(slug=project_slug)
                 instance.project = project

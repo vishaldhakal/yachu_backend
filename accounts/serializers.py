@@ -53,11 +53,26 @@ class OrganizationSerializer(serializers.ModelSerializer):
                   'remarks', 'opening_balance', 'vat_number', 'contacts', 'projects', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
+    def validate_opening_balance(self, value):
+        try:
+            if value is None or value == '':
+                return 0
+            return float(value)
+        except (TypeError, ValueError):
+            return 0
+
     def create(self, validated_data):
         contacts_data = validated_data.pop('contacts', [])
-        # Ensure opening_balance has a default value if not provided
-        if 'opening_balance' not in validated_data:
+        # Ensure opening_balance has a default value if not provided or invalid
+        opening_balance = validated_data.get('opening_balance')
+        if opening_balance is None or opening_balance == '':
             validated_data['opening_balance'] = 0
+        else:
+            try:
+                validated_data['opening_balance'] = float(opening_balance)
+            except (TypeError, ValueError):
+                validated_data['opening_balance'] = 0
+
         organization = Organization.objects.create(**validated_data)
         for contact_data in contacts_data:
             OrganizationContacts.objects.create(
@@ -66,6 +81,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         contacts_data = validated_data.pop('contacts', None)
+
+        # Handle opening_balance
+        opening_balance = validated_data.get('opening_balance')
+        if opening_balance is not None:
+            try:
+                validated_data['opening_balance'] = float(opening_balance)
+            except (TypeError, ValueError):
+                validated_data['opening_balance'] = 0
 
         # Update organization fields
         for attr, value in validated_data.items():
