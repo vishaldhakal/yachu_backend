@@ -32,20 +32,23 @@ class ProjectSerializer(serializers.ModelSerializer):
     )
     organization_name = serializers.CharField(
         source='organization.name', read_only=True)
-    organization_id  = serializers.PrimaryKeyRelatedField(
+    organization_id = serializers.PrimaryKeyRelatedField(
         source='organization.id', read_only=True)
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'slug', 'organization', 'organization_name', 'organization_id']
+        fields = ['id', 'name', 'slug', 'organization',
+                  'organization_name', 'organization_id']
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
     contacts = OrganizationContactsSerializer(
         many=True, required=False)
     projects = ProjectSerializer(many=True, read_only=True)
-    person_in_charge = serializers.CharField(required=False, allow_null=True, allow_blank=True)
-    opening_balance = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default=0)
+    person_in_charge = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True)
+    opening_balance = serializers.DecimalField(
+        max_digits=10, decimal_places=2, required=False, default=0)
 
     class Meta:
         model = Organization
@@ -134,30 +137,30 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
         from finance_management.serializers import FinanceRecordBalanceSerializer
         # Get all finance records from all projects of this organization
         finance_records = FinanceRecord.objects.filter(
-            project__organization=obj)
+            organization=obj)
         return FinanceRecordBalanceSerializer(finance_records, many=True).data
 
     def get_total_receivable(self, obj):
         return FinanceRecord.objects.filter(
-            project__organization=obj,
+            organization=obj,
             transaction_type='Receivable'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     def get_total_payable(self, obj):
         return FinanceRecord.objects.filter(
-            project__organization=obj,
+            organization=obj,
             transaction_type='Payable'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     def get_total_received(self, obj):
         return FinanceRecord.objects.filter(
-            project__organization=obj,
+            organization=obj,
             transaction_type='Received'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
     def get_total_paid(self, obj):
         return FinanceRecord.objects.filter(
-            project__organization=obj,
+            organization=obj,
             transaction_type='Paid'
         ).aggregate(Sum('amount'))['amount__sum'] or 0
 
@@ -200,6 +203,7 @@ class ProjectReminderSerializer(serializers.ModelSerializer):
         model = ProjectReminder
         fields = ['id', 'project', 'title',
                   'description', 'type', 'date', 'is_completed']
+
 
 class ProjectReminderDetailSerializer(serializers.ModelSerializer):
     project = ProjectSerializer()
