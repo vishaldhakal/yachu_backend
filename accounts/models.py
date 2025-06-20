@@ -42,22 +42,24 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class Project(models.Model):
     organization = models.ForeignKey(
         "Organization", on_delete=models.CASCADE, related_name='projects')
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100,blank=True,null=True)
+    slug = models.SlugField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.name
+
 
 class ProjectNotes(models.Model):
     user = models.ForeignKey(
@@ -67,9 +69,10 @@ class ProjectNotes(models.Model):
     notes = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.notes
+
 
 class ProjectReminder(models.Model):
     TYPE = [
@@ -90,7 +93,7 @@ class ProjectReminder(models.Model):
     is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.title
 

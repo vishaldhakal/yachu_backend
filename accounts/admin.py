@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import CustomUser, Organization, Profile, Department, OrganizationContacts, Project, ProjectNotes, ProjectReminder
 from unfold.admin import ModelAdmin, TabularInline
+from tinymce.widgets import TinyMCE
+from django.db import models
 
 
 class UserAdmin(ModelAdmin):
@@ -26,18 +28,24 @@ class ProjectNotesInline(TabularInline):
     extra = 1
     tab = True
 
+
 class ProjectReminderInline(TabularInline):
     model = ProjectReminder
     extra = 1
     tab = True
+
 
 class ProjectAdmin(ModelAdmin):
     list_display = ('name',)
     search_fields = ('name', 'organization')
     inlines = [ProjectNotesInline, ProjectReminderInline]
 
+
 class ProjectInline(TabularInline):
     model = Project
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE(mce_attrs={'width': 800, 'height': 300})},
+    }
     extra = 1
     tab = True
 
@@ -58,5 +66,3 @@ admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Department, DepartmentAdmin)
 admin.site.register(Project, ProjectAdmin)
-
-

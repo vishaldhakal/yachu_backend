@@ -11,6 +11,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description']
 
 
+class DepartmentSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['id', 'name']
+
+
 class OrganizationContactsSerializer(serializers.ModelSerializer):
     organization = serializers.PrimaryKeyRelatedField(
         queryset=Organization.objects.all(),
@@ -38,7 +44,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'name', 'slug', 'organization',
-                  'organization_name', 'organization_id']
+                  'organization_name', 'organization_id', 'description']
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -124,6 +130,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return instance
 
 
+class ProjectSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'slug']
+
+
 class OrganizationDetailSerializer(serializers.ModelSerializer):
     total_receivable = serializers.SerializerMethodField()
     total_payable = serializers.SerializerMethodField()
@@ -131,7 +143,7 @@ class OrganizationDetailSerializer(serializers.ModelSerializer):
     total_paid = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
     contacts = OrganizationContactsSerializer(many=True, read_only=True)
-    projects = ProjectSerializer(many=True, read_only=True)
+    projects = ProjectSmallSerializer(many=True, read_only=True)
 
     def get_balance(self, obj):
         from finance_management.serializers import FinanceRecordBalanceSerializer
@@ -176,8 +188,7 @@ class OrganizationSmallSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'person_in_charge', 'phone_number', 'address',
-                  'vat_number', 'opening_balance', 'remarks']
+        fields = ['id', 'name']
 
 
 class ProjectNotesSerializer(serializers.ModelSerializer):
@@ -224,7 +235,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'name', 'slug', 'organization',
-                  'project_notes', 'project_reminders']
+                  'project_notes', 'project_reminders', 'description']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -233,6 +244,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'password',
                   'phone_number', 'address', 'opening_balance']
         extra_kwargs = {'password': {'write_only': True}}
+
+
+class UserSmallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'phone_number', 'address']
 
 
 class UserListSerializer(serializers.ModelSerializer):

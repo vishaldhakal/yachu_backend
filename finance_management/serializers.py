@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import FinanceRecord, Department, Stock, Invoice, InvoiceItem
-from accounts.serializers import DepartmentSerializer, UserSerializer, ProjectSerializer, OrganizationSerializer
+from accounts.serializers import DepartmentSerializer, DepartmentSmallSerializer, OrganizationSmallSerializer, UserSerializer, ProjectSerializer, OrganizationSerializer, UserSmallSerializer
 from accounts.models import CustomUser, Project, Organization
 
 
@@ -13,7 +13,8 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         queryset=Organization.objects.all(), required=False, allow_null=True)
     project = serializers.PrimaryKeyRelatedField(
         queryset=Project.objects.all(), required=False, allow_null=True)
-    project_slug = serializers.CharField(write_only=True, required=False, allow_null=True, allow_blank=True)
+    project_slug = serializers.CharField(
+        write_only=True, required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = FinanceRecord
@@ -26,7 +27,8 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
             try:
                 Project.objects.get(slug=value)
             except Project.DoesNotExist:
-                raise serializers.ValidationError("Project with this slug does not exist")
+                raise serializers.ValidationError(
+                    "Project with this slug does not exist")
         return value
 
     def create(self, validated_data):
@@ -55,9 +57,9 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
 
 
 class FinanceRecordListSerializer(serializers.ModelSerializer):
-    department = DepartmentSerializer()
-    user = UserSerializer()
-    organization = OrganizationSerializer()
+    department = DepartmentSmallSerializer()
+    user = UserSmallSerializer()
+    organization = OrganizationSmallSerializer()
     project = ProjectSerializer()
 
     class Meta:
@@ -82,7 +84,8 @@ class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
 class StockSerializer(serializers.ModelSerializer):
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all(), required=False, allow_null=True)
-    product_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    product_code = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Stock
