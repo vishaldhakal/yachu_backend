@@ -73,3 +73,12 @@ class Commission(models.Model):
         if not self.amount:
             self.amount = self.order.total_amount * (self.seller.commission_rate / 100)
         super().save(*args, **kwargs)
+
+
+class Tracking(models.Model):
+    details = models.TextField(blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.details}"

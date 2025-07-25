@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Seller, OrderProduct, Order, Commission
+from .models import Seller, OrderProduct, Order, Commission,Tracking
 from home.models import Product
 from home.serializers import ProductSerializer, ProductSmallSerializer
 
@@ -55,3 +55,8 @@ class CommissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commission
         fields = ['id', 'seller', 'order', 'amount', 'paid', 'created_at']
+
+class TrackingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tracking
+        fields = ['id', 'details', 'created_at', 'updated_at']

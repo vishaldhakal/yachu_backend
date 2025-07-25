@@ -9,4 +9,6 @@ urlpatterns = [
     path('orders/<int:pk>/', views.OrderRetrieveUpdateDestroyView.as_view(), name='order-detail'),
     path('commissions/', views.CommissionListView.as_view(), name='commission-list'),
     path('commissions/<int:pk>/', views.CommissionRetrieveUpdateView.as_view(), name='commission-detail'),
+    path('tracking/', views.TrackingListCreateView.as_view(), name='tracking-list-create'),
+    path('tracking/<int:pk>/', views.TrackingRetrieveUpdateDestroyView.as_view(), name='tracking-detail'),
 ]

@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import OrderSerializer, CommissionSerializer, SellerSerializer, ProductSerializer
-from .models import Order, Product, Seller, Commission
-from rest_framework.permissions import IsAuthenticated
+from .serializers import OrderSerializer, CommissionSerializer, SellerSerializer, ProductSerializer, TrackingSerializer
+from .models import Order, Product, Seller, Commission,Tracking
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from accounts.models import CustomUser
 
 # Create your views here.
@@ -103,3 +103,14 @@ class ProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
+
+
+class TrackingListCreateView(ListCreateAPIView):
+    queryset = Tracking.objects.all()
+    serializer_class = TrackingSerializer
+    permission_classes = [AllowAny]
+
+class TrackingRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    queryset = Tracking.objects.all()
+    serializer_class = TrackingSerializer
+    permission_classes = [AllowAny]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Seller, OrderProduct, Order, Commission
+from .models import Seller, OrderProduct, Order, Commission,Tracking
 
 @admin.register(Seller)
 class SellerAdmin(ModelAdmin):
@@ -38,3 +38,14 @@ class CommissionAdmin(ModelAdmin):
     list_display = ('seller', 'order', 'amount', 'paid', 'created_at')
     list_filter = ('paid', 'seller')
     search_fields = ('seller__user__username', 'order__full_name')
+
+
+@admin.register(Tracking)
+class TrackingAdmin(ModelAdmin):
+    list_display = ('details', 'created_at', 'updated_at')
+    search_fields = ('details',)
+    list_filter = ('created_at', 'updated_at')
+    ordering = ('-created_at',)
+    readonly_fields = ('created_at', 'updated_at')
+    list_per_page = 10
+    list_max_show_all = 100
