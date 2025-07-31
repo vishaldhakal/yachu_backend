@@ -1,71 +1,82 @@
-from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery,Banners,Product,Member,FileSchema,FormData
+from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery, Banners, Product, Member, FileSchema, FormData
 from rest_framework import serializers
 
+
 class SiteConfigurationSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = SiteConfiguration
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = SiteConfiguration
+        fields = '__all__'
+        depth = 2
+
 
 class FAQCategorySerializer(serializers.ModelSerializer):
-   class Meta:
-      model = FAQCategory
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = FAQCategory
+        fields = '__all__'
+        depth = 2
+
 
 class FAQSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = FAQ
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = FAQ
+        fields = '__all__'
+        depth = 2
+
 
 class DepartmentSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = Department
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = Department
+        fields = '__all__'
+        depth = 2
+
 
 class TeamMemberSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = TeamMember
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = TeamMember
+        fields = '__all__'
+        depth = 1
+
 
 class TestimonialSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = Testimonial
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = Testimonial
+        fields = '__all__'
+        depth = 2
+
 
 class ImageGallerySerializer(serializers.ModelSerializer):
-   class Meta:
-      model = ImageGallery
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = ImageGallery
+        fields = '__all__'
+        depth = 2
+
 
 class VideoGallerySerializer(serializers.ModelSerializer):
 
-   class Meta:
-      model = VideoGallery
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = VideoGallery
+        fields = '__all__'
+        depth = 2
+
 
 class BannersSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = Banners
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = Banners
+        fields = '__all__'
+        depth = 2
+
 
 class ProductSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = Product
-      fields = '__all__'
-      depth = 2
+    class Meta:
+        model = Product
+        fields = '__all__'
+        depth = 2
+
 
 class ProductSmallSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = Product
-      fields = ['id', 'title', 'price']
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'price', 'image1']
 
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -73,10 +84,12 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Member
         fields = ['id', 'name', 'email']
 
+
 class FileSchemaSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileSchema
         fields = ['id', 'file']
+
 
 class FormDataSerializer(serializers.ModelSerializer):
     members = MemberSerializer(many=True)
@@ -84,7 +97,8 @@ class FormDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormData
-        fields = ['id', 'team_name', 'team_description', 'members', 'robot_name', 'robot_description', 'robot_photos']
+        fields = ['id', 'team_name', 'team_description', 'members',
+                  'robot_name', 'robot_description', 'robot_photos']
 
     def create(self, validated_data):
         members_data = validated_data.pop('members')

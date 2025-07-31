@@ -3,15 +3,53 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import OrderSerializer, CommissionSerializer, SellerSerializer, ProductSerializer, TrackingSerializer
-from .models import Order, Product, Seller, Commission,Tracking
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from .models import Order, Product, Seller, Commission, Tracking
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from accounts.models import CustomUser
+from django_filters import rest_framework as django_filters
+from rest_framework import filters as rest_filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
+
 
 # Create your views here.
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class OrderFilter(django_filters.FilterSet):
+    franchise = django_filters.CharFilter(
+        field_name='franchise__slug', lookup_expr='exact')
+    order_status = django_filters.CharFilter(
+        field_name='order_status', lookup_expr='icontains')
+    date_gte = django_filters.DateFilter(
+        field_name='created_at', lookup_expr='gte')
+    date_lte = django_filters.DateFilter(
+        field_name='created_at', lookup_expr='lte')
+
+    class Meta:
+        model = Order
+        fields = ['franchise', 'order_status', 'date_gte', 'date_lte']
+
 
 class OrderListCreateView(ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend,
+                       rest_filters.SearchFilter, rest_filters.OrderingFilter]
+    filterset_class = OrderFilter
+    search_fields = ['full_name', 'phone_number', 'email']
+    ordering = ['-created_at', 'created_at']
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        franchise_slug = self.request.query_params.get('franchise')
+        if franchise_slug:
+            return Order.objects.filter(franchise__slug=franchise_slug)
+        return Order.objects.all()
 
     def create(self, request, *args, **kwargs):
         try:
@@ -44,6 +82,7 @@ class OrderListCreateView(ListCreateAPIView):
 
             # Create the modified data dictionary
             modified_data = {
+                'franchise': request.data.get('franchise'),
                 'full_name': request.data.get('full_name'),
                 'email': request.data.get('email'),
                 'phone_number': request.data.get('phone_number'),
@@ -64,51 +103,52 @@ class OrderListCreateView(ListCreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class OrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
 
-    def perform_update(self, serializer):
-        order = serializer.save()
-        commission = Commission.objects.get(order=order)
-        commission.amount = order.total_amount * (order.seller.commission_rate / 100)
-        commission.save()
 
 class CommissionListView(ListAPIView):
     queryset = Commission.objects.all()
     serializer_class = CommissionSerializer
-    permission_classes = [IsAuthenticated]
+    
+
 
 class CommissionRetrieveUpdateView(RetrieveUpdateAPIView):
     queryset = Commission.objects.all()
     serializer_class = CommissionSerializer
-    permission_classes = [IsAuthenticated]
+    
+
 
 class SellerListCreateView(ListCreateAPIView):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
-    permission_classes = [IsAuthenticated]
+    
+
 
 class SellerRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
-    permission_classes = [IsAuthenticated]
+    
+
 
 class ProductListCreateView(ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+
 class ProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
+    
 
 
 class TrackingListCreateView(ListCreateAPIView):
     queryset = Tracking.objects.all()
     serializer_class = TrackingSerializer
     permission_classes = [AllowAny]
+
 
 class TrackingRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = Tracking.objects.all()

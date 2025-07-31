@@ -1,6 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Seller, OrderProduct, Order, Commission,Tracking
+from .models import Seller, OrderProduct, Order, Commission, Tracking
+
 
 @admin.register(Seller)
 class SellerAdmin(ModelAdmin):
@@ -12,10 +13,12 @@ class OrderProductInline(TabularInline):
     model = OrderProduct
     extra = 1
 
+
 @admin.register(Order)
 class OrderAdmin(ModelAdmin):
     inlines = [OrderProductInline]
-    list_display = ('full_name', 'phone_number', 'total_amount', 'order_status', 'created_at')
+    list_display = ('full_name', 'phone_number',
+                    'total_amount', 'order_status', 'created_at')
     list_filter = ('order_status',)
     search_fields = ('full_name', 'phone_number')
 
@@ -25,13 +28,6 @@ class OrderAdmin(ModelAdmin):
         if is_new:
             obj.save()  # Save again to ensure related objects can be created
 
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.save()
-        formset.save_m2m()
-        form.instance.total_amount = sum(op.get_total_price() for op in form.instance.order_products.all()) + form.instance.delivery_charge
-        form.instance.save()
 
 @admin.register(Commission)
 class CommissionAdmin(ModelAdmin):

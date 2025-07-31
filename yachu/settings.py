@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'baliyo',
     'finance_management',
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -273,10 +274,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://composed-carries-politicians-bass.trycloudflare.com",
+    "https://experienced-sufficient-instrument-automatic.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://composed-carries-politicians-bass.trycloudflare.com']
+    'https://experienced-sufficient-instrument-automatic.trycloudflare.com']
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),

@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from .models import Author, Category, Tag, Post,Event
+from .models import Author, Category, Tag, Post, Event
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from bs4 import BeautifulSoup
+
 
 class HTMLField(serializers.CharField):
     def to_representation(self, value):
@@ -11,16 +12,18 @@ class HTMLField(serializers.CharField):
     def to_internal_value(self, data):
         return data
 
+
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = '__all__'
-        depth = 2
+
 
 class CategorySmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('category_name',)
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,10 +31,12 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 2
 
+
 class TagSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('tag_name',)
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,12 +47,13 @@ class TagSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     blog_content = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
         fields = '__all__'
         depth = 2
         ordering = ['-created_at']
-    
+
     def get_blog_content(self, obj):
         html_string = obj.blog_content
         soup = BeautifulSoup(html_string, 'html.parser')
@@ -57,6 +63,22 @@ class PostSerializer(serializers.ModelSerializer):
         updated_html_string = str(soup)
         return mark_safe(updated_html_string)
 
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    franchise = serializers.CharField(
+        write_only=True, required=False, allow_blank=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True)
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all())
+    author = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())
+
+    class Meta:
+        model = Post
+        fields = '__all__'
+        ordering = ['-created_at']
+
+
 class PostSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -64,11 +86,13 @@ class PostSmallSerializer(serializers.ModelSerializer):
         depth = 1
         ordering = ['-created_at']
 
+
 class PostSlugSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('slug',)
         depth = 1
+
 
 class EventSerializer(serializers.ModelSerializer):
     event_description = HTMLField()
