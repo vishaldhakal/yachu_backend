@@ -8,10 +8,13 @@ from .serializers import (
     BlogCategorySerializer, BlogTagSerializer, BlogSmallSerializer, OurPartnerSerializer, ServiceSmallSerializer, TestimonialSmallSerializer, GallerySerializer
 )
 from rest_framework.pagination import PageNumberPagination
-from django.core.mail import send_mail
+import resend
 from django.template.loader import render_to_string
-from django.conf import settings
 from rest_framework import status
+from django.conf import settings
+
+# Configure Resend with API key from settings
+resend.api_key = settings.RESEND_API_KEY
 
 # Create your views here.
 
@@ -128,7 +131,7 @@ class ContactListCreateView(generics.ListCreateAPIView):
             context = {
                 'name': contact.name,
                 'email': contact.email,
-                'phone': contact.phone,
+                'phone': contact.phone or 'Not provided',
                 'message': contact.message,
                 'date': contact.created_at.strftime("%B %d, %Y"),
                 'time': contact.created_at.strftime("%I:%M %p")
@@ -138,16 +141,27 @@ class ContactListCreateView(generics.ListCreateAPIView):
             html_message = render_to_string(
                 'emails/contact_notification.html', context)
 
-            # Send email
-            send_mail(
-                subject=f'New Contact Form Submission from {contact.name}',
-                message=f'New contact form submission received from {contact.name}',
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[settings.EMAIL_HOST_USER],
-                html_message=html_message
-            )
+            try:
+                # Send email using Resend
+                params = {
+                    "from": f"BaliyoVenturesContactForm <BaliyoVentures@gmail.com>",
+                    "to": ["Baliyoventures@gmail.com"],
+                    "subject": f'New Contact Form Submission from {contact.name}',
+                    "html": html_message,
+                    "reply_to": contact.email
+                }
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                resend.Emails.send(params)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            except Exception as e:
+                # Log the error and still return success to the user
+                print(f"Error sending email via Resend: {str(e)}")
+                return Response(
+                    {"detail": "Contact form submitted but there was an error sending the notification."},
+                    status=status.HTTP_201_CREATED
+                )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
