@@ -12,9 +12,12 @@ import resend
 from django.template.loader import render_to_string
 from rest_framework import status
 from django.conf import settings
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Configure Resend with API key from settings
-resend.api_key = settings.RESEND_API_KEY
+resend.api_key = os.getenv('RESEND_API_KEY')
 
 # Create your views here.
 
