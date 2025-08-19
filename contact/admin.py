@@ -4,8 +4,8 @@ from unfold.admin import ModelAdmin
 # Register your models here.
 
 class ContactAdmin(ModelAdmin):
-    list_display = ('full_name', 'email', 'phone', 'message', 'created_at', 'updated_at')
-    list_filter = ('created_at', 'updated_at')
+    list_display = ('full_name', 'email', 'phone', 'message', 'created_at')
+    list_filter = ('created_at')
     search_fields = ('full_name','phone')
     ordering = ('-created_at',)
 
