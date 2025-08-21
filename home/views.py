@@ -146,6 +146,7 @@ class ProductListCreate(generics.ListCreateAPIView):
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_field = 'slug'
 
 
 class FormDataListCreateView(generics.ListCreateAPIView):

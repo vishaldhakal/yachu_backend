@@ -274,10 +274,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://experienced-sufficient-instrument-automatic.trycloudflare.com",
+    "https://latina-trail-yards-encyclopedia.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://experienced-sufficient-instrument-automatic.trycloudflare.com']
+    'https://latina-trail-yards-encyclopedia.trycloudflare.com']
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),

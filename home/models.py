@@ -2,6 +2,7 @@ from django.db import models
 from solo.models import SingletonModel
 from tinymce import models as tinymce_models
 from about.models import Franchise
+from django.utils.text import slugify
 
 
 class SiteConfiguration(SingletonModel):
@@ -134,6 +135,7 @@ class VideoGallery(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=255, null=True, blank=True)
     description = tinymce_models.HTMLField(blank=True)
     price = models.FloatField()
     image1 = models.FileField()
@@ -144,6 +146,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Member(models.Model):
