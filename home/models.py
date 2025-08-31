@@ -137,6 +137,7 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=255, null=True, blank=True)
     description = tinymce_models.HTMLField(blank=True)
+    order = models.IntegerField(null=True, blank=True)
     price = models.FloatField()
     image1 = models.FileField()
     image2 = models.FileField(blank=True, null=True)
@@ -150,6 +151,9 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+    
+    class Meta:
+        ordering = ('order', 'title',)
 
 
 class Member(models.Model):

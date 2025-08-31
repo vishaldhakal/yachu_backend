@@ -139,7 +139,7 @@ class BannersDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProductListCreate(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('order')
     serializer_class = ProductSerializer
 
 
