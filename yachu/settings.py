@@ -1,6 +1,7 @@
-from datetime import timedelta
 import os
+from datetime import timedelta
 from pathlib import Path
+
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
@@ -15,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s$io6_xls$2hgu)%n(8w8&4pfiw0-vzju-ow!^b(2h2*wc!m3i'
+SECRET_KEY = "django-insecure-s$io6_xls$2hgu)%n(8w8&4pfiw0-vzju-ow!^b(2h2*wc!m3i"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -26,66 +27,66 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',
-    'django.contrib.admin',
-    'accounts',  # Make sure this is here
-    'unfold.contrib.filters',
-    'unfold.contrib.forms',
-    'ckeditor',
-    'ckeditor_uploader',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'django_filters',
-    'drf_multiple_model',
-    'tinymce',
-    'home',
-    'about',
-    'blog',
-    'orders',
-    'django_summernote',
-    'solo',
-    'corsheaders',
-    'baliyo',
-    'finance_management',
-    'contact',
+    "unfold",
+    "django.contrib.admin",
+    "accounts",  # Make sure this is here
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
+    "ckeditor",
+    "ckeditor_uploader",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "django_filters",
+    "drf_multiple_model",
+    "tinymce",
+    "home",
+    "about",
+    "blog",
+    "orders",
+    "django_summernote",
+    "solo",
+    "corsheaders",
+    "baliyo",
+    "finance_management",
+    "contact",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'yachu.urls'
+ROOT_URLCONF = "yachu.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [Path(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [Path(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
 
-WSGI_APPLICATION = 'yachu.wsgi.application'
+WSGI_APPLICATION = "yachu.wsgi.application"
 
 
 # Database
@@ -98,7 +99,7 @@ WSGI_APPLICATION = 'yachu.wsgi.application'
     }
 } """
 
-DATABASES = {
+""" DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "yachu",
@@ -107,28 +108,37 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "",
     }
+} """
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "UYRyR2HdDIK2cN3fGZQu098MMgWGmg8ie6s1daJhNoh5WR5zMFlMjnzu4uPYVdAB",
+        "HOST": "c4g04s8kwwkc8c844g4so048",
+        "PORT": "5432",
+    }
 }
-
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -136,9 +146,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Asia/Kathmandu'
+TIME_ZONE = "Asia/Kathmandu"
 
 USE_I18N = True
 
@@ -151,16 +161,16 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = []
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = Path(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = Path(BASE_DIR, "media")
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
@@ -219,28 +229,57 @@ JAZZMIN_SETTINGS = {
 }
 
 SUMMERNOTE_CONFIG = {
-    'summernote': {
-        'width': '100%',
-        'toolbar': [
-            ['style', ['style',]],
-            ['font', ['fontname', 'fontsize', 'bold',
-                      'italic', 'strikethrough', 'clear',]],
-            ['color', ['forecolor', 'backcolor', ]],
-            ['para', ['ul', 'ol', 'height']],
-            ['insert', ['link']],
-            ['misc', ['picture', 'fullscreen', 'codeview', 'print', 'help', ]],
+    "summernote": {
+        "width": "100%",
+        "toolbar": [
+            [
+                "style",
+                [
+                    "style",
+                ],
+            ],
+            [
+                "font",
+                [
+                    "fontname",
+                    "fontsize",
+                    "bold",
+                    "italic",
+                    "strikethrough",
+                    "clear",
+                ],
+            ],
+            [
+                "color",
+                [
+                    "forecolor",
+                    "backcolor",
+                ],
+            ],
+            ["para", ["ul", "ol", "height"]],
+            ["insert", ["link"]],
+            [
+                "misc",
+                [
+                    "picture",
+                    "fullscreen",
+                    "codeview",
+                    "print",
+                    "help",
+                ],
+            ],
         ],
-        'fontNames': ['Roboto'],
+        "fontNames": ["Roboto"],
     }
 }
-SUMMERNOTE_THEME = 'bs4'
+SUMMERNOTE_THEME = "bs4"
 
 TINYMCE_DEFAULT_CONFIG = {
     "height": "780",
     "width": "780",
     "entity_encoding": "raw",
     "menubar": "file edit view insert format tools table help",
-    "plugins": 'print preview paste importcss searchreplace autolink autosave save code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap emoticons quickbars',
+    "plugins": "print preview paste importcss searchreplace autolink autosave save code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap emoticons quickbars",
     "toolbar": "fullscreen preview | undo redo | bold italic forecolor backcolor | formatselect | image link | "
     "alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | fontsizeselect "
     "emoticons | ",
@@ -276,8 +315,7 @@ TINYMCE_DEFAULT_CONFIG = {
 CORS_ALLOWED_ORIGINS = [
     "https://latina-trail-yards-encyclopedia.trycloudflare.com",
 ]
-CSRF_TRUSTED_ORIGINS = [
-    'https://latina-trail-yards-encyclopedia.trycloudflare.com']
+CSRF_TRUSTED_ORIGINS = ["https://latina-trail-yards-encyclopedia.trycloudflare.com"]
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),
@@ -304,7 +342,6 @@ UNFOLD = {
                     },
                 ],
             },
-
             {
                 "title": _("Blog and Event"),
                 "separator": True,
@@ -328,7 +365,9 @@ UNFOLD = {
                     {
                         "title": _("Site Configuration"),
                         "icon": "list",  # Supported icon set: https://fonts.google.com/icons
-                        "link": reverse_lazy("admin:home_siteconfiguration_change", args=[1]),
+                        "link": reverse_lazy(
+                            "admin:home_siteconfiguration_change", args=[1]
+                        ),
                     },
                     {
                         "title": _("FAQ"),
@@ -377,8 +416,8 @@ UNFOLD = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
 
@@ -403,17 +442,17 @@ REST_FRAMEWORK = {
 # DEFAULT_FROM_EMAIL = 'Baliyo Ventures <info@baliyoventures.com>'
 # SERVER_EMAIL = 'info@baliyoventures.com'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'biratexpo2025@gmail.com'
-EMAIL_HOST_PASSWORD = 'bokk emuw glri hybr'
+EMAIL_HOST_USER = "biratexpo2025@gmail.com"
+EMAIL_HOST_PASSWORD = "bokk emuw glri hybr"
 
-DEFAULT_FROM_EMAIL = 'Birat Expo 2025 <biratexpo2025@gmail.com>'
+DEFAULT_FROM_EMAIL = "Birat Expo 2025 <biratexpo2025@gmail.com>"
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
 }
