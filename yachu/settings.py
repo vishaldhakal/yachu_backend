@@ -114,11 +114,13 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres",
-        "PASSWORD": "EIlxPrBQ7Wa9ECwcFrSevT7B25v8Rx4PzKIpyvK017ulurA3LZM6QuKCWSCIQrgT",
-        "HOST": "sk8sscw884oo40ggs8k4cg0o",
+        "PASSWORD": "VDReM8nPT9Uit7H65P4k3bBWytyja5TdHKm6EUUPlg7QKiDW7I1OylNUjLXbuNB0",
+        "HOST": "n4k4csc8cws0c8wksck8cw0c",
         "PORT": "5432",
     }
 }
+
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
 
