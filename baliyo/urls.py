@@ -49,5 +49,8 @@ urlpatterns = [
     # Gallery URLs
     path('gallery/', views.GalleryListCreateView.as_view(), name='gallery-list-create'),
     path('gallery/<int:pk>/', views.GalleryDetailView.as_view(), name='gallery-detail'),
+
+    # TestResendView
+    path('test-resend/', views.TestResendView.as_view(), name='test-resend'),
 ]
 

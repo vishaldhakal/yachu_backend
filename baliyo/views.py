@@ -174,8 +174,8 @@ class ContactListCreateView(generics.ListCreateAPIView):
             try:
                 # Send email using Resend
                 params = {
-                    "from": "BaliyoVenturesContactForm <BaliyoVentures@gmail.com>",
-                    "to": ["Baliyoventures@gmail.com"],
+                    "from": "BaliyoVenturesContactForm <baliyoventures@gmail.com>",
+                    "to": ["baliyoventures@gmail.com"],
                     "subject": f"New Contact Form Submission from {contact.name}",
                     "html": html_message,
                     "reply_to": contact.email,
@@ -313,3 +313,31 @@ class GalleryListCreateView(generics.ListCreateAPIView):
 class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Gallery.objects.all()
     serializer_class = GallerySerializer
+
+
+from rest_framework.views import APIView
+
+
+class TestResendView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            # Send email using Resend
+            params = {
+                "from": "BaliyoVenturesContactForm <contact@baliyoventures.com>",
+                "to": "ratish.shakya149@gmail.com",
+                "subject": "Test Email from BaliyoVentures",
+                "html": "This is a test email sent using Resend.",
+            }
+
+            resend.Emails.send(params)
+            return Response(
+                {"detail": "Email sent successfully"}, status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            # Log the error and still return success to the user
+            print(f"Error sending email via Resend: {str(e)}")
+            return Response(
+                {"detail": "Failed to send email"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
