@@ -14,13 +14,9 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:Fe0SR7u6xTc6SVUxcVn063NlTk6A3Hmnb3aKrvkBBOgYuWPKNNg3gZ9U9eduFeMl@w0oco4oswgsw004ggosg88wc:5432/postgres
       - DEBUG=False
-    depends_on:
-      db:
-        condition: service_healthy
 
 
 
 volumes:
-  postgres_data:
   static_volume:
   media_volume:
