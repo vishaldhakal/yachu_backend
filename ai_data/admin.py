@@ -1,8 +1,8 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import AiData
+from .models import AIData
 
 # Register your models here.
 
-admin.site.register(AiData, ModelAdmin)
+admin.site.register(AIData, ModelAdmin)
