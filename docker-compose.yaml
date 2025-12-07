@@ -1,4 +1,4 @@
-# docker-compose.yml
+# docker-compose.prod.yml
 version: '3.8'
 
 services:
@@ -6,16 +6,11 @@ services:
     build: .
     command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 yachu.wsgi:application"
     volumes:
-      - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     expose:
       - "8000"
-    environment:
-      - DATABASE_URL=postgres://postgres:Fe0SR7u6xTc6SVUxcVn063NlTk6A3Hmnb3aKrvkBBOgYuWPKNNg3gZ9U9eduFeMl@w0oco4oswgsw004ggosg88wc:5432/postgres
-      - DEBUG=False
-
-
+    # DATABASE_URL will be provided by Coolify automatically
 
 volumes:
   static_volume:
