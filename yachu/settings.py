@@ -315,7 +315,10 @@ TINYMCE_DEFAULT_CONFIG = {
 CORS_ALLOWED_ORIGINS = [
     "https://latina-trail-yards-encyclopedia.trycloudflare.com",
 ]
-CSRF_TRUSTED_ORIGINS = ["https://latina-trail-yards-encyclopedia.trycloudflare.com"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://latina-trail-yards-encyclopedia.trycloudflare.com",
+    "https://www.yachu.baliyoventures.com",
+]
 
 UNFOLD = {
     "SITE_HEADER": _("Yachu Admin"),
