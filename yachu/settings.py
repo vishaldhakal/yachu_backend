@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     "finance_management",
     "contact",
     "ai_data",
-    "api_keys",  # API Key Rotation System
+    "api_keys",
+    "price_guess",
 ]
 
 MIDDLEWARE = [

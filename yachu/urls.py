@@ -18,6 +18,7 @@ urlpatterns = [
     path("api/baliyo/", include("baliyo.urls")),
     path("api/", include("ai_data.urls")),
     path("api/", include("api_keys.urls")),  # API Key Rotation System
+    path("api/", include("price_guess.urls")),
 ]
 
 if settings.DEBUG:
