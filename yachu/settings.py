@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "finance_management",
     "contact",
     "ai_data",
+    "api_keys",  # API Key Rotation System
 ]
 
 MIDDLEWARE = [
@@ -107,6 +108,7 @@ WSGI_APPLICATION = "yachu.wsgi.application"
         "PORT": "",
     }
 } """
+# coolify database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
