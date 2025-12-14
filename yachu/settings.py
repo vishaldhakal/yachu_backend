@@ -320,6 +320,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://latina-trail-yards-encyclopedia.trycloudflare.com",
     "https://www.yachu.baliyoventures.com",
+    "https://yachu.baliyoventures.com",
 ]
 
 UNFOLD = {
