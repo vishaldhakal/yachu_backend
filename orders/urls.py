@@ -1,14 +1,42 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
-    path('sellers/', views.SellerListCreateView.as_view(), name='seller-list-create'),
-    path('sellers/<int:pk>/', views.SellerRetrieveUpdateDestroyView.as_view(), name='seller-detail'),
-
-    path('orders/', views.OrderListCreateView.as_view(), name='order-list-create'),
-    path('orders/<int:pk>/', views.OrderRetrieveUpdateDestroyView.as_view(), name='order-detail'),
-    path('commissions/', views.CommissionListView.as_view(), name='commission-list'),
-    path('commissions/<int:pk>/', views.CommissionRetrieveUpdateView.as_view(), name='commission-detail'),
-    path('tracking/', views.TrackingListCreateView.as_view(), name='tracking-list-create'),
-    path('tracking/<int:pk>/', views.TrackingRetrieveUpdateDestroyView.as_view(), name='tracking-detail'),
+    path("sellers/", views.SellerListCreateView.as_view(), name="seller-list-create"),
+    path(
+        "sellers/<int:pk>/",
+        views.SellerRetrieveUpdateDestroyView.as_view(),
+        name="seller-detail",
+    ),
+    path("orders/", views.OrderListCreateView.as_view(), name="order-list-create"),
+    path(
+        "orders/<int:pk>/",
+        views.OrderRetrieveUpdateDestroyView.as_view(),
+        name="order-detail",
+    ),
+    path("commissions/", views.CommissionListView.as_view(), name="commission-list"),
+    path(
+        "commissions/<int:pk>/",
+        views.CommissionRetrieveUpdateView.as_view(),
+        name="commission-detail",
+    ),
+    path(
+        "tracking/", views.TrackingListCreateView.as_view(), name="tracking-list-create"
+    ),
+    path(
+        "tracking/<int:pk>/",
+        views.TrackingRetrieveUpdateDestroyView.as_view(),
+        name="tracking-detail",
+    ),
+    path(
+        "instant-order/",
+        views.InstantOrderListCreateView.as_view(),
+        name="instant-order-list-create",
+    ),
+    path(
+        "instant-order/<int:pk>/",
+        views.InstantOrderRetrieveUpdateDestroyView.as_view(),
+        name="instant-order-detail",
+    ),
 ]
