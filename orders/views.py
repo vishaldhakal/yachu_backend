@@ -170,6 +170,15 @@ class TrackingRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class InstantOrderListCreateView(ListCreateAPIView):
     queryset = InstantOrder.objects.all()
     serializer_class = InstantOrderSerializer
+    pagination_class = CustomPagination
+    filter_backends = [
+        DjangoFilterBackend,
+        rest_filters.SearchFilter,
+        rest_filters.OrderingFilter,
+    ]
+    search_fields = ["name", "phone_number"]
+    ordering = ["-created_at"]
+    ordering_fields = ["created_at", "name"]
 
 
 class InstantOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
