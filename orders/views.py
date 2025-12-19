@@ -167,6 +167,15 @@ class TrackingRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
 
+class InstantOrderFilter(django_filters.FilterSet):
+    date_gte = django_filters.DateFilter(field_name="created_at", lookup_expr="gte")
+    date_lte = django_filters.DateFilter(field_name="created_at", lookup_expr="lte")
+
+    class Meta:
+        model = InstantOrder
+        fields = ["date_gte", "date_lte"]
+
+
 class InstantOrderListCreateView(ListCreateAPIView):
     queryset = InstantOrder.objects.all()
     serializer_class = InstantOrderSerializer
@@ -176,6 +185,7 @@ class InstantOrderListCreateView(ListCreateAPIView):
         rest_filters.SearchFilter,
         rest_filters.OrderingFilter,
     ]
+    filterset_class = InstantOrderFilter
     search_fields = ["name", "phone_number"]
     ordering = ["-created_at"]
     ordering_fields = ["created_at", "name"]

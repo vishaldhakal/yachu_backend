@@ -116,4 +116,4 @@ class TrackingSerializer(serializers.ModelSerializer):
 class InstantOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstantOrder
-        fields = ["id", "name", "phone_number", "address"]
+        fields = ["id", "name", "phone_number", "address", "created_at", "updated_at"]
