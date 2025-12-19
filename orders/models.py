@@ -102,6 +102,7 @@ class InstantOrder(models.Model):
     name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=20)
     address = models.CharField(max_length=200)
+    quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
