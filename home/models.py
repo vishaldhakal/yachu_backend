@@ -1,18 +1,18 @@
 from django.db import models
+from django.utils.text import slugify
 from solo.models import SingletonModel
 from tinymce import models as tinymce_models
+
 from about.models import Franchise
-from django.utils.text import slugify
 
 
 class SiteConfiguration(SingletonModel):
-    meta_title = models.CharField(
-        max_length=200, default="Meta Title Landing Page")
-    meta_description = models.TextField(
-        default="Meta Description Landing Page")
+    meta_title = models.CharField(max_length=200, default="Meta Title Landing Page")
+    meta_description = models.TextField(default="Meta Description Landing Page")
     hero_title = models.CharField(max_length=328, default="Title")
     hero_section_subtitle = models.TextField(
-        default="Discover The Best Hiking Trails And Bee-Watching Spots On Your Next Adventure. Book A Trip Now")
+        default="Discover The Best Hiking Trails And Bee-Watching Spots On Your Next Adventure. Book A Trip Now"
+    )
     hero_section_image = models.FileField(blank=True)
     about_founder = tinymce_models.HTMLField(blank=True)
     message_from_ceo = tinymce_models.HTMLField(blank=True)
@@ -55,14 +55,16 @@ class Department(models.Model):
 
 class TeamMember(models.Model):
     franchise = models.ForeignKey(
-        Franchise, on_delete=models.CASCADE, blank=True, null=True)
+        Franchise, on_delete=models.CASCADE, blank=True, null=True
+    )
     order = models.IntegerField(blank=True)
     name = models.CharField(max_length=200, blank=True)
     role = models.CharField(max_length=200, blank=True)
     photo = models.FileField(blank=True, null=True)
     about = tinymce_models.HTMLField(blank=True)
     department = models.ForeignKey(
-        Department, on_delete=models.DO_NOTHING, blank=True, null=True)
+        Department, on_delete=models.DO_NOTHING, blank=True, null=True
+    )
     email = models.CharField(max_length=200, blank=True, null=True)
     facebook = models.URLField(max_length=200, blank=True, null=True)
     instagram = models.URLField(max_length=200, blank=True, null=True)
@@ -71,15 +73,17 @@ class TeamMember(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = (
+            "order",
+            "name",
+        )
+
     def __str__(self) -> str:
         return self.name
 
-    class Meta:
-        ordering = ('order', 'name',)
-
 
 class Testimonial(models.Model):
-
     SOURCE_CHOICES = (
         ("In Person", "In Person"),
         ("Facebook", "Facebook"),
@@ -93,8 +97,7 @@ class Testimonial(models.Model):
     after = models.FileField(blank=True)
     role = models.CharField(max_length=200, blank=True)
     title = models.CharField(max_length=500, blank=True)
-    source = models.CharField(
-        max_length=200, choices=SOURCE_CHOICES, default="Others")
+    source = models.CharField(max_length=200, choices=SOURCE_CHOICES, default="Others")
     review = models.TextField(blank=True)
     rating = models.FloatField(default=5)
 
@@ -144,6 +147,13 @@ class Product(models.Model):
     image3 = models.FileField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    only_bhumi = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = (
+            "order",
+            "title",
+        )
 
     def __str__(self):
         return self.title
@@ -151,9 +161,6 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
-    
-    class Meta:
-        ordering = ('order', 'title',)
 
 
 class Member(models.Model):
@@ -164,12 +171,13 @@ class Member(models.Model):
 class FormData(models.Model):
     team_name = models.CharField(max_length=100)
     team_description = models.TextField()
-    members = models.ManyToManyField(Member, related_name='form_data')
+    members = models.ManyToManyField(Member, related_name="form_data")
     robot_name = models.CharField(max_length=100)
     robot_description = models.TextField()
     robot_photos = models.ManyToManyField(
-        'FileSchema', related_name='form_data', blank=True)
+        "FileSchema", related_name="form_data", blank=True
+    )
 
 
 class FileSchema(models.Model):
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to="uploads/")

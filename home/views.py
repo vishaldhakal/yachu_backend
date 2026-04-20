@@ -1,23 +1,48 @@
-from django.shortcuts import render, HttpResponse
-from rest_framework import status
+from django.core.mail import send_mail
+from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.core.mail import send_mail, EmailMultiAlternatives
-from datetime import datetime
-from datetime import date
 
 from about.models import Franchise
-from .models import SiteConfiguration, FAQCategory, FAQ, Department, TeamMember, Testimonial, ImageGallery, VideoGallery, Banners, Product, FormData
-from .serializers import SiteConfigurationSerializer, FAQCategorySerializer, FAQSerializer, DepartmentSerializer, TeamMemberSerializer, TestimonialSerializer, ImageGallerySerializer, VideoGallerySerializer, BannersSerializer, ProductSerializer, FormDataSerializer
-from rest_framework import generics
+
+from .models import (
+    FAQ,
+    Banners,
+    Department,
+    FAQCategory,
+    FormData,
+    ImageGallery,
+    Product,
+    SiteConfiguration,
+    TeamMember,
+    Testimonial,
+    VideoGallery,
+)
+from .serializers import (
+    BannersSerializer,
+    DepartmentSerializer,
+    FAQCategorySerializer,
+    FAQSerializer,
+    FormDataSerializer,
+    ImageGallerySerializer,
+    ProductSerializer,
+    SiteConfigurationSerializer,
+    TeamMemberSerializer,
+    TestimonialSerializer,
+    VideoGallerySerializer,
+)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def send_email(request):
     data = request.data
-    send_mail(data['subject'], data['message'],
-              "info@yetihikes.com", ['vishaldhakal96@gmail.com'])
-    return Response({'message': 'Email sent successfully'})
+    send_mail(
+        data["subject"],
+        data["message"],
+        "info@yetihikes.com",
+        ["vishaldhakal96@gmail.com"],
+    )
+    return Response({"message": "Email sent successfully"})
 
 
 class SiteConfigurationListCreate(generics.ListCreateAPIView):
@@ -65,19 +90,19 @@ class TeamMemberListCreate(generics.ListCreateAPIView):
     serializer_class = TeamMemberSerializer
 
     def get_queryset(self):
-        franchise_slug = self.request.query_params.get('franchise')
+        franchise_slug = self.request.query_params.get("franchise")
         if franchise_slug:
             return TeamMember.objects.filter(franchise__slug=franchise_slug)
         return TeamMember.objects.all()
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        franchise_slug = data.get('franchise')
+        franchise_slug = data.get("franchise")
 
         if isinstance(franchise_slug, list):
             franchise_slug = franchise_slug[0] if franchise_slug else None
 
-        data.pop('franchise', None)
+        data.pop("franchise", None)
 
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
@@ -86,7 +111,10 @@ class TeamMemberListCreate(generics.ListCreateAPIView):
                     franchise = Franchise.objects.get(slug=franchise_slug)
                     serializer.save(franchise=franchise)
                 except Franchise.DoesNotExist:
-                    return Response({"error": "Franchise not found"}, status=status.HTTP_404_NOT_FOUND)
+                    return Response(
+                        {"error": "Franchise not found"},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
             else:
                 serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -139,14 +167,19 @@ class BannersDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProductListCreate(generics.ListCreateAPIView):
-    queryset = Product.objects.all().order_by('order')
     serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        product_param = self.request.query_params.get("product")
+        if product_param == "all":
+            return Product.objects.all().order_by("order")
+        return Product.objects.filter(only_bhumi=False).order_by("order")
 
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'slug'
+    lookup_field = "slug"
 
 
 class FormDataListCreateView(generics.ListCreateAPIView):
