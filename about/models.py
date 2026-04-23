@@ -1,6 +1,6 @@
 from django.db import models
-from tinymce import models as tinymce_models
 from django.utils.text import slugify
+from tinymce import models as tinymce_models
 
 
 class Franchise(models.Model):

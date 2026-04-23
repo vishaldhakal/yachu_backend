@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import (
     Blog,
@@ -153,6 +154,13 @@ class ContactListCreateView(generics.ListCreateAPIView):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
+    def get_queryset(self):
+        queryset = Contact.objects.all()
+        company_name = self.request.query_params.get("company", None)
+        if company_name:
+            queryset = queryset.filter(company=company_name)
+        return queryset
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -163,6 +171,7 @@ class ContactListCreateView(generics.ListCreateAPIView):
                 "name": contact.name,
                 "email": contact.email,
                 "phone": contact.phone or "Not provided",
+                "company": contact.company or "baliyoventures",
                 "message": contact.message,
                 "date": contact.created_at.strftime("%B %d, %Y"),
                 "time": contact.created_at.strftime("%I:%M %p"),
@@ -172,10 +181,17 @@ class ContactListCreateView(generics.ListCreateAPIView):
             html_message = render_to_string("emails/contact_notification.html", context)
 
             try:
+                # Determine recipient based on company
+                company_name = contact.company.lower() if contact.company else ""
+                if "baliyotechnologies" in company_name:
+                    to_email = "baliyotechnologies@gmail.com"
+                else:
+                    to_email = "baliyoventures@gmail.com"
+
                 # Send email using Resend
                 params = {
-                    "from": "BaliyoVenturesContactForm <baliyoventures@gmail.com>",
-                    "to": ["baliyoventures@gmail.com"],
+                    "from": "Baliyo Contact Form <contact@baliyoventures.com>",
+                    "to": [to_email],
                     "subject": f"New Contact Form Submission from {contact.name}",
                     "html": html_message,
                     "reply_to": contact.email,
@@ -313,9 +329,6 @@ class GalleryListCreateView(generics.ListCreateAPIView):
 class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Gallery.objects.all()
     serializer_class = GallerySerializer
-
-
-from rest_framework.views import APIView
 
 
 class TestResendView(APIView):

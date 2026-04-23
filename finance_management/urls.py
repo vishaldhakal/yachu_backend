@@ -1,32 +1,67 @@
 from django.urls import path
-from .views import FinanceRecordDueDateView, FinanceRecordListCreateView, FinanceRecordDetailView, FinanceRecordTotalView, OrganizationFinanceRecordReminderView, RecentRecordView, TransactionSummaryView, FinanceRecordReminderView, OrganizationTransactionSummaryView, StockListCreateView, StockDetailView, InvoiceListCreateView, InvoiceDetailView, InvoiceStatisticsView
+
+from .views import (
+    FinanceRecordDetailView,
+    FinanceRecordDueDateView,
+    FinanceRecordListCreateView,
+    FinanceRecordReminderView,
+    FinanceRecordTotalView,
+    InvoiceDetailView,
+    InvoiceListCreateView,
+    InvoiceStatisticsView,
+    OrganizationFinanceRecordReminderView,
+    OrganizationTransactionSummaryView,
+    RecentRecordView,
+    StockDetailView,
+    StockListCreateView,
+    TransactionSummaryView,
+)
 
 urlpatterns = [
-    path('records/', FinanceRecordListCreateView.as_view(),
-         name='finance-record-list-create'),
-    path('records/<int:pk>/', FinanceRecordDetailView.as_view(),
-         name='finance-record-detail'),
-    path('records/due-date/', FinanceRecordDueDateView.as_view(),
-         name='finance-record-due-date'),
-    path('records/total/', FinanceRecordTotalView.as_view(),
-         name='finance-record-total'),
-    path('summary/transactions/', TransactionSummaryView.as_view(),
-         name='transaction-summary'),
-    path('reminder/', FinanceRecordReminderView.as_view(),
-         name='finance-record-reminder'),
-    path('recent-records/', RecentRecordView.as_view(),
-         name='recent-record'),
-    path('organization/<int:organization_id>/transaction-summary/',
-         OrganizationTransactionSummaryView.as_view(),
-         name='organization-transaction-summary'),
-    path('organization/<int:organization_id>/reminder/',
-         OrganizationFinanceRecordReminderView.as_view(), name='organization-reminders'),
-    path('stocks/', StockListCreateView.as_view(),
-         name='stock-list-create'),
-    path('stocks/<int:pk>/', StockDetailView.as_view(),
-         name='stock-detail'),
-    path('invoices/', InvoiceListCreateView.as_view(), name='invoice-list-create'),
-    path('invoices/<int:pk>/', InvoiceDetailView.as_view(), name='invoice-detail'),
-    path('invoices/statistics/', InvoiceStatisticsView.as_view(),
-         name='invoice-statistics'),
+    path(
+        "records/",
+        FinanceRecordListCreateView.as_view(),
+        name="finance-record-list-create",
+    ),
+    path(
+        "records/<int:pk>/",
+        FinanceRecordDetailView.as_view(),
+        name="finance-record-detail",
+    ),
+    path(
+        "records/due-date/",
+        FinanceRecordDueDateView.as_view(),
+        name="finance-record-due-date",
+    ),
+    path(
+        "records/total/", FinanceRecordTotalView.as_view(), name="finance-record-total"
+    ),
+    path(
+        "summary/transactions/",
+        TransactionSummaryView.as_view(),
+        name="transaction-summary",
+    ),
+    path(
+        "reminder/", FinanceRecordReminderView.as_view(), name="finance-record-reminder"
+    ),
+    path("recent-records/", RecentRecordView.as_view(), name="recent-record"),
+    path(
+        "organization/<int:organization_id>/transaction-summary/",
+        OrganizationTransactionSummaryView.as_view(),
+        name="organization-transaction-summary",
+    ),
+    path(
+        "organization/<int:organization_id>/reminder/",
+        OrganizationFinanceRecordReminderView.as_view(),
+        name="organization-reminders",
+    ),
+    path("stocks/", StockListCreateView.as_view(), name="stock-list-create"),
+    path("stocks/<int:pk>/", StockDetailView.as_view(), name="stock-detail"),
+    path("invoices/", InvoiceListCreateView.as_view(), name="invoice-list-create"),
+    path("invoices/<int:pk>/", InvoiceDetailView.as_view(), name="invoice-detail"),
+    path(
+        "invoices/statistics/",
+        InvoiceStatisticsView.as_view(),
+        name="invoice-statistics",
+    ),
 ]

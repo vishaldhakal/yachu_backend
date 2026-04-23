@@ -1,36 +1,79 @@
 from django.urls import path
-from .views import RegisterView, LoginView, OrganizationListCreateView, OrganizationDetailView, DepartmentListCreateView, DepartmentDetailView, OrganizationContactsListCreateView, OrganizationContactsDetailView, ProjectListCreateView, ProjectDetailView, ProjectNotesListCreateView, ProjectNotesDetailView, ProjectReminderListCreateView, ProjectReminderDetailView, UpdateReminderView, ProjectReminderView
+
+from .views import (
+    DepartmentDetailView,
+    DepartmentListCreateView,
+    LoginView,
+    OrganizationContactsDetailView,
+    OrganizationContactsListCreateView,
+    OrganizationDetailView,
+    OrganizationListCreateView,
+    ProjectDetailView,
+    ProjectListCreateView,
+    ProjectNotesDetailView,
+    ProjectNotesListCreateView,
+    ProjectReminderDetailView,
+    ProjectReminderListCreateView,
+    ProjectReminderView,
+    RegisterView,
+    UpdateReminderView,
+)
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='register'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('organizations/', OrganizationListCreateView.as_view(),
-         name='organization-list-create'),
-    path('organizations/<int:pk>/', OrganizationDetailView.as_view(),
-         name='organization-detail'),
-    path('finance-departments/', DepartmentListCreateView.as_view(),
-         name='department-list-create'),
-    path('finance-departments/<int:pk>/', DepartmentDetailView.as_view(),
-         name='department-detail'),
-    path('organization-contacts/', OrganizationContactsListCreateView.as_view(),
-         name='organization-contacts-list-create'),
-    path('organization-contacts/<int:pk>/', OrganizationContactsDetailView.as_view(),
-         name='organization-contacts-detail'),
-    path('projects/', ProjectListCreateView.as_view(),
-         name='project-list-create'),
-    path('projects/<slug:slug>/', ProjectDetailView.as_view(),
-         name='project-detail'),
-    path('notes/', ProjectNotesListCreateView.as_view(),
-         name='project-notes-list-create'),
-    path('notes/<int:pk>/', ProjectNotesDetailView.as_view(),
-         name='project-notes-detail'),
-    path('project-reminders/', ProjectReminderListCreateView.as_view(),
-         name='project-reminders-list-create'),
-    path('project/reminders/', ProjectReminderView.as_view(),
-         name='project-reminders'),
-    path('project-reminders/<int:pk>/', ProjectReminderDetailView.as_view(),
-         name='project-reminders-detail'),
-    path('project-reminders/<int:id>/complete/', UpdateReminderView.as_view(),
-         name='project-reminders-complete'),
-
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", LoginView.as_view(), name="login"),
+    path(
+        "organizations/",
+        OrganizationListCreateView.as_view(),
+        name="organization-list-create",
+    ),
+    path(
+        "organizations/<int:pk>/",
+        OrganizationDetailView.as_view(),
+        name="organization-detail",
+    ),
+    path(
+        "finance-departments/",
+        DepartmentListCreateView.as_view(),
+        name="department-list-create",
+    ),
+    path(
+        "finance-departments/<int:pk>/",
+        DepartmentDetailView.as_view(),
+        name="department-detail",
+    ),
+    path(
+        "organization-contacts/",
+        OrganizationContactsListCreateView.as_view(),
+        name="organization-contacts-list-create",
+    ),
+    path(
+        "organization-contacts/<int:pk>/",
+        OrganizationContactsDetailView.as_view(),
+        name="organization-contacts-detail",
+    ),
+    path("projects/", ProjectListCreateView.as_view(), name="project-list-create"),
+    path("projects/<slug:slug>/", ProjectDetailView.as_view(), name="project-detail"),
+    path(
+        "notes/", ProjectNotesListCreateView.as_view(), name="project-notes-list-create"
+    ),
+    path(
+        "notes/<int:pk>/", ProjectNotesDetailView.as_view(), name="project-notes-detail"
+    ),
+    path(
+        "project-reminders/",
+        ProjectReminderListCreateView.as_view(),
+        name="project-reminders-list-create",
+    ),
+    path("project/reminders/", ProjectReminderView.as_view(), name="project-reminders"),
+    path(
+        "project-reminders/<int:pk>/",
+        ProjectReminderDetailView.as_view(),
+        name="project-reminders-detail",
+    ),
+    path(
+        "project-reminders/<int:id>/complete/",
+        UpdateReminderView.as_view(),
+        name="project-reminders-complete",
+    ),
 ]

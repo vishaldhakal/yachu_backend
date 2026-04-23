@@ -1,26 +1,54 @@
 from rest_framework import serializers
-from .models import FinanceRecord, Department, Stock, Invoice, InvoiceItem
-from accounts.serializers import DepartmentSerializer, DepartmentSmallSerializer, OrganizationSmallSerializer, UserSerializer, ProjectSerializer, OrganizationSerializer, UserSmallSerializer
-from accounts.models import CustomUser, Project, Organization
+
+from accounts.models import CustomUser, Organization, Project
+from accounts.serializers import (
+    DepartmentSerializer,
+    DepartmentSmallSerializer,
+    OrganizationSerializer,
+    OrganizationSmallSerializer,
+    ProjectSerializer,
+    UserSerializer,
+    UserSmallSerializer,
+)
+
+from .models import Department, FinanceRecord, Invoice, InvoiceItem, Stock
 
 
 class FinanceRecordSerializer(serializers.ModelSerializer):
     department = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(), required=False, allow_null=True)
+        queryset=Department.objects.all(), required=False, allow_null=True
+    )
     user = serializers.PrimaryKeyRelatedField(
-        queryset=CustomUser.objects.all(), required=False, allow_null=True)
+        queryset=CustomUser.objects.all(), required=False, allow_null=True
+    )
     organization = serializers.PrimaryKeyRelatedField(
-        queryset=Organization.objects.all(), required=False, allow_null=True)
+        queryset=Organization.objects.all(), required=False, allow_null=True
+    )
     project = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), required=False, allow_null=True)
+        queryset=Project.objects.all(), required=False, allow_null=True
+    )
     project_slug = serializers.CharField(
-        write_only=True, required=False, allow_null=True, allow_blank=True)
+        write_only=True, required=False, allow_null=True, allow_blank=True
+    )
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'organization', 'project', 'transaction_type', 'department',
-                  'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at', 'project_slug']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = [
+            "id",
+            "user",
+            "organization",
+            "project",
+            "transaction_type",
+            "department",
+            "amount",
+            "payment_method",
+            "remarks",
+            "due_date",
+            "created_at",
+            "updated_at",
+            "project_slug",
+        ]
+        read_only_fields = ["created_at", "updated_at"]
 
     def validate_project_slug(self, value):
         if value and value.strip():
@@ -28,16 +56,17 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
                 Project.objects.get(slug=value)
             except Project.DoesNotExist:
                 raise serializers.ValidationError(
-                    "Project with this slug does not exist")
+                    "Project with this slug does not exist"
+                )
         return value
 
     def create(self, validated_data):
         # Remove project_slug from validated_data
-        project_slug = validated_data.pop('project_slug', None)
+        project_slug = validated_data.pop("project_slug", None)
         if project_slug and project_slug.strip():
             try:
                 project = Project.objects.get(slug=project_slug)
-                validated_data['project'] = project
+                validated_data["project"] = project
             except Project.DoesNotExist:
                 pass
 
@@ -45,7 +74,7 @@ class FinanceRecordSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        project_slug = validated_data.pop('project_slug', None)
+        project_slug = validated_data.pop("project_slug", None)
         if project_slug and project_slug.strip():
             try:
                 project = Project.objects.get(slug=project_slug)
@@ -64,9 +93,21 @@ class FinanceRecordListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'organization', 'project', 'transaction_type', 'department',
-                  'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = [
+            "id",
+            "user",
+            "organization",
+            "project",
+            "transaction_type",
+            "department",
+            "amount",
+            "payment_method",
+            "remarks",
+            "due_date",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["created_at", "updated_at"]
 
 
 class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
@@ -77,19 +118,33 @@ class FinanceRecordBalanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FinanceRecord
-        fields = ['id', 'user', 'organization', 'project', 'transaction_type', 'department',
-                  'amount', 'payment_method', 'remarks', 'due_date', 'created_at', 'updated_at']
+        fields = [
+            "id",
+            "user",
+            "organization",
+            "project",
+            "transaction_type",
+            "department",
+            "amount",
+            "payment_method",
+            "remarks",
+            "due_date",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class StockSerializer(serializers.ModelSerializer):
     department = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(), required=False, allow_null=True)
+        queryset=Department.objects.all(), required=False, allow_null=True
+    )
     product_code = serializers.CharField(
-        required=False, allow_null=True, allow_blank=True)
+        required=False, allow_null=True, allow_blank=True
+    )
 
     class Meta:
         model = Stock
-        fields = '__all__'
+        fields = "__all__"
 
 
 class StockListSerializer(serializers.ModelSerializer):
@@ -97,14 +152,23 @@ class StockListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stock
-        fields = ['id', 'product_name', 'product_code', 'quantity',
-                  'price', 'remarks', 'department', 'created_at', 'updated_at']
+        fields = [
+            "id",
+            "product_name",
+            "product_code",
+            "quantity",
+            "price",
+            "remarks",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class InvoiceItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceItem
-        fields = ['name', 'description', 'quantity', 'rate', 'amount']
+        fields = ["name", "description", "quantity", "rate", "amount"]
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
@@ -113,13 +177,32 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
-            'id',
-            'bill_from_name', 'bill_from_address', 'bill_from_email', 'bill_from_phone',
-            'bill_to_name', 'bill_to_address', 'bill_to_email', 'bill_to_phone',
-            'invoice_number', 'invoice_date', 'due_date', 'currency', 'logo',
-            'discount', 'discount_type', 'vat', 'total_amount', 'additional_notes', 'payment_terms',
-            'bank_name', 'account_name', 'account_number', 'signature',
-            'items', 'status'
+            "id",
+            "bill_from_name",
+            "bill_from_address",
+            "bill_from_email",
+            "bill_from_phone",
+            "bill_to_name",
+            "bill_to_address",
+            "bill_to_email",
+            "bill_to_phone",
+            "invoice_number",
+            "invoice_date",
+            "due_date",
+            "currency",
+            "logo",
+            "discount",
+            "discount_type",
+            "vat",
+            "total_amount",
+            "additional_notes",
+            "payment_terms",
+            "bank_name",
+            "account_name",
+            "account_number",
+            "signature",
+            "items",
+            "status",
         ]
 
     def validate_items(self, items):
@@ -128,7 +211,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         return items
 
     def create(self, validated_data):
-        items_data = validated_data.pop('items')
+        items_data = validated_data.pop("items")
 
         # Create the invoice
         invoice = Invoice.objects.create(**validated_data)
@@ -140,7 +223,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         return invoice
 
     def update(self, instance, validated_data):
-        items_data = validated_data.pop('items', None)
+        items_data = validated_data.pop("items", None)
 
         # Update invoice fields
         for attr, value in validated_data.items():
@@ -162,5 +245,12 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class InvoiceSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
-        fields = ['id', 'invoice_number', 'bill_to_name',
-                  'invoice_date', 'due_date', 'total_amount', 'status']
+        fields = [
+            "id",
+            "invoice_number",
+            "bill_to_name",
+            "invoice_date",
+            "due_date",
+            "total_amount",
+            "status",
+        ]
