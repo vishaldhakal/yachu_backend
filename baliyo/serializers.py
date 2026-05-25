@@ -31,12 +31,15 @@ class ProjectSmallSerializer(serializers.ModelSerializer):
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    projects = ProjectSmallSerializer(many=True, read_only=True)
+    projects = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
-        # fields = '__all__'
         exclude = ["created_at", "updated_at"]
+
+    def get_projects(self, obj):
+        projects = obj.projects.all().order_by("-created_at")
+        return ProjectSmallSerializer(projects, many=True).data
 
 
 class ServiceSmallSerializer(serializers.ModelSerializer):

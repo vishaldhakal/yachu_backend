@@ -92,7 +92,7 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = Project.objects.all()
+        queryset = Project.objects.all().order_by("-created_at")
         category_slug = self.request.query_params.get("category", None)
         if category_slug:
             queryset = queryset.filter(category__slug=category_slug)
