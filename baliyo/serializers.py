@@ -17,6 +17,8 @@ from .models import (
 
 
 class ProjectSmallSerializer(serializers.ModelSerializer):
+    thumbnail_image = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
         fields = [
@@ -28,6 +30,16 @@ class ProjectSmallSerializer(serializers.ModelSerializer):
             "meta_description",
             "meta_title",
         ]
+
+    def get_thumbnail_image(self, obj):
+        request = self.context.get("request")
+
+        if obj.thumbnail_image:
+            if request:
+                return request.build_absolute_uri(obj.thumbnail_image.url)
+            return obj.thumbnail_image.url
+
+        return None
 
 
 class ServiceSerializer(serializers.ModelSerializer):
