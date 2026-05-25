@@ -114,9 +114,12 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
 
         # Get similar projects from same category
-        similar_projects = Project.objects.filter(category=instance.category).exclude(
-            id=instance.id
-        )[:3]
+        similar_projects = (
+            Project.objects
+            .filter(category__in=instance.category.all())
+            .exclude(id=instance.id)
+            .distinct()[:3]
+        )
 
         # Serialize similar projects
         similar_projects_data = ProjectSmallSerializer(similar_projects, many=True).data

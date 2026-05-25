@@ -61,6 +61,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
+    category = ServiceSmallSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
