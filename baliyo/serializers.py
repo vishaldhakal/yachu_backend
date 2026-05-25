@@ -51,7 +51,8 @@ class ServiceSerializer(serializers.ModelSerializer):
 
     def get_projects(self, obj):
         projects = obj.projects.all().order_by("-created_at")
-        return ProjectSmallSerializer(projects, many=True).data
+
+        return ProjectSmallSerializer(projects, many=True, context=self.context).data
 
 
 class ServiceSmallSerializer(serializers.ModelSerializer):
