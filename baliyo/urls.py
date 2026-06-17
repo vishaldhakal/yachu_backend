@@ -91,6 +91,17 @@ urlpatterns = [
     # Gallery URLs
     path("gallery/", views.GalleryListCreateView.as_view(), name="gallery-list-create"),
     path("gallery/<int:pk>/", views.GalleryDetailView.as_view(), name="gallery-detail"),
+    # LeaveForm URLs
+    path(
+        "leave-forms/",
+        views.LeaveFormListCreateView.as_view(),
+        name="leave-form-list-create",
+    ),
+    path(
+        "leave-forms/<int:pk>/",
+        views.LeaveFormDetailView.as_view(),
+        name="leave-form-detail",
+    ),
     # TestResendView
     path("test-resend/", views.TestResendView.as_view(), name="test-resend"),
 ]

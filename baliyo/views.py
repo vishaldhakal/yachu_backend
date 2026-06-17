@@ -15,6 +15,7 @@ from .models import (
     Faq,
     Gallery,
     Image,
+    LeaveForm,
     OurPartner,
     Project,
     Service,
@@ -31,6 +32,7 @@ from .serializers import (
     GallerySerializer,
     GallerySmallSerializer,
     ImageSerializer,
+    LeaveFormSerializer,
     OurPartnerSerializer,
     ProjectSerializer,
     ProjectSmallSerializer,
@@ -332,6 +334,16 @@ class GalleryListCreateView(generics.ListCreateAPIView):
 class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Gallery.objects.all()
     serializer_class = GallerySerializer
+
+
+class LeaveFormListCreateView(generics.ListCreateAPIView):
+    queryset = LeaveForm.objects.all()
+    serializer_class = LeaveFormSerializer
+
+
+class LeaveFormDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = LeaveForm.objects.all()
+    serializer_class = LeaveFormSerializer
 
 
 class TestResendView(APIView):

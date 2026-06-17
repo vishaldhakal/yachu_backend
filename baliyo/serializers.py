@@ -8,6 +8,7 @@ from .models import (
     Faq,
     Gallery,
     Image,
+    LeaveForm,
     OurPartner,
     Project,
     Service,
@@ -202,3 +203,9 @@ class GallerySmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gallery
         fields = ["id", "title", "media", "media_type", "media_alt_description"]
+
+
+class LeaveFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaveForm
+        fields = "__all__"

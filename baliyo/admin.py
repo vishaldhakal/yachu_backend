@@ -12,6 +12,7 @@ from .models import (
     Faq,
     Gallery,
     Image,
+    LeaveForm,
     OurPartner,
     Project,
     Service,
@@ -109,3 +110,18 @@ class OurPartnerAdmin(ModelAdmin):
 @admin.register(Gallery)
 class GalleryAdmin(ModelAdmin):
     list_display = ["title", "media_type", "created_at", "updated_at"]
+
+
+@admin.register(LeaveForm)
+class LeaveFormAdmin(ModelAdmin):
+    list_display = [
+        "employee_name",
+        "reason_of_leave",
+        "days",
+        "leave_from_date",
+        "leave_to_date",
+        "approved_by",
+        "created_at",
+    ]
+    list_filter = ["reason_of_leave", "approved_by"]
+    search_fields = ["employee_name", "employee_email", "brief_reason"]

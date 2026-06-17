@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Leave Request</title>
+    <!--[if mso]>
+    <style type="text/css">
+        body, table, td { font-family: Arial, sans-serif !important; }
+    </style>
+    <![endif]-->
+</head>
+<body style="font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; color: #333333; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f5f7; padding: 40px 10px;">
+        <tr>
+            <td align="center">
+                <!-- Inner Container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; background-color: #ffffff; border: 1px solid #e1e4e8; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                    <!-- Top Gold Header Accent Bar -->
+                    <tr>
+                        <td height="4" style="background: linear-gradient(to right, #d97706, #f59e0b); line-height: 4px; font-size: 1px;">&nbsp;</td>
+                    </tr>
+                    
+                    <!-- Header Section -->
+                    <tr>
+                        <td style="padding: 35px 40px 20px 40px; text-align: center;">
+                            <div style="display: inline-block; padding: 6px 14px; background-color: #fef3c7; border-radius: 20px; margin-bottom: 12px;">
+                                <span style="font-size: 11px; font-weight: 700; color: #b45309; letter-spacing: 1.2px; text-transform: uppercase;">Baliyo</span>
+                            </div>
+                            <h1 style="font-size: 24px; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.3px;">New Leave Request</h1>
+                            <p style="font-size: 14px; color: #6b7280; margin: 6px 0 0 0;">A leave application has been submitted and is awaiting review.</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 10px 40px 30px 40px;">
+                            
+                            <!-- Employee Details Card -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e5e7eb;">
+                                <tr>
+                                    <td style="padding: 18px;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <!-- Avatar Circle -->
+                                                <td width="48" valign="top" style="padding-right: 12px;">
+                                                    <div style="width: 40px; height: 40px; background-color: #f59e0b; border-radius: 50%; text-align: center; line-height: 40px; color: #ffffff; font-weight: 700; font-size: 16px; text-transform: uppercase;">
+                                                        {{ employee_name|slice:":1" }}
+                                                    </div>
+                                                </td>
+                                                <!-- Details -->
+                                                <td>
+                                                    <div style="font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 2px;">{{ employee_name }}</div>
+                                                    <div style="font-size: 13px; color: #4b5563; margin-bottom: 2px;">{{ employee_email }}</div>
+                                                    <div style="font-size: 13px; color: #4b5563;">📞 {{ employee_contact_number }}</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Leave Meta Details -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 25px;">
+                                <tr>
+                                    <!-- Reason Badge -->
+                                    <td width="50%" valign="top" style="padding-right: 10px;">
+                                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600;">Reason of Leave</div>
+                                        <div style="display: inline-block; padding: 6px 12px; background-color: {% if reason_of_leave|lower == 'sick' %}#fef2f2{% elif reason_of_leave|lower == 'paid' %}#ecfdf5{% else %}#eff6ff{% endif %}; color: {% if reason_of_leave|lower == 'sick' %}#991b1b{% elif reason_of_leave|lower == 'paid' %}#065f46{% else %}#1e40af{% endif %}; font-size: 13px; font-weight: 700; border-radius: 6px; text-transform: capitalize; text-align: center; border: 1px solid {% if reason_of_leave|lower == 'sick' %}#fca5a5{% elif reason_of_leave|lower == 'paid' %}#a7f3d0{% else %}#bfdbfe{% endif %};">
+                                            {{ reason_of_leave }}
+                                        </div>
+                                    </td>
+                                    <!-- Duration Pill -->
+                                    <td width="50%" valign="top" style="padding-left: 10px;">
+                                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600;">Duration</div>
+                                        <div style="font-size: 14px; font-weight: 600; color: #111827; padding-top: 4px;">
+                                            <span style="font-size: 18px; font-weight: 700; color: #b45309; vertical-align: middle;">{{ days }}</span>
+                                            <span style="font-size: 13px; color: #4b5563; font-weight: 500; vertical-align: middle;"> day(s)</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Date Range -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e5e7eb;">
+                                <tr>
+                                    <td style="padding: 14px 18px; text-align: center;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td width="42%" align="center">
+                                                    <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">From Date</div>
+                                                    <div style="font-size: 13px; font-weight: 600; color: #111827;">{{ leave_from_date }}</div>
+                                                </td>
+                                                <td width="16%" align="center">
+                                                    <span style="font-size: 16px; color: #b45309;">➔</span>
+                                                </td>
+                                                <td width="42%" align="center">
+                                                    <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">To Date</div>
+                                                    <div style="font-size: 13px; font-weight: 600; color: #111827;">{{ leave_to_date }}</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Approved By -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 25px;">
+                                <tr>
+                                    <td>
+                                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600;">Notified/Approved To</div>
+                                        <div style="font-size: 13px; font-weight: 600; color: #111827; background-color: #f9fafb; padding: 10px 16px; border-radius: 6px; border: 1px solid #e5e7eb; display: inline-block; text-transform: capitalize;">
+                                            👤 {{ approved_by }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Brief Reason -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 25px;">
+                                <tr>
+                                    <td>
+                                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; font-weight: 600;">Brief Reason & Details</div>
+                                        <div style="font-size: 13px; line-height: 1.5; color: #374151; background-color: #f9fafb; border-left: 3px solid #d97706; padding: 12px 16px; border-radius: 0 6px 6px 0; white-space: pre-line; min-height: 50px;">{{ brief_reason }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Timestamp -->
+                            <div style="text-align: right; font-size: 11px; color: #9ca3af; font-style: italic; margin-top: 25px;">
+                                Submitted on {{ date }} at {{ time }}
+                            </div>
+                            
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer Section -->
+                    <tr>
+                        <td style="padding: 22px 40px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center;">
+                            <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">This is an automated notification from Baliyo Ventures.</p>
+                            <p style="font-size: 12px; color: #9ca3af; margin: 0;">&copy; {% now "Y" %} Baliyo Ventures. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

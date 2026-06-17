@@ -1,6 +1,13 @@
-from django.db import models
-from django.utils.text import slugify
+import os
 
+import resend
+from django.db import models
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.text import slugify
+from dotenv import load_dotenv
+
+load_dotenv()
 # Create your models here.
 
 
@@ -211,3 +218,77 @@ class Gallery(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class LeaveForm(models.Model):
+    CHOICES = (
+        ("paid", "Paid"),
+        ("sick", "Sick"),
+        ("unpaid", "Unpaid"),
+        ("weekly", "Weekly"),
+        ("other", "Other"),
+    )
+    APPROVED_BY_CHOICES = (
+        ("Anil Singh", "Anil Singh"),
+        ("Prithvi Chaudhary", "Prithvi Chaudhary"),
+        ("Manav Khadka", "Manav Khadka"),
+        ("Sapana Dhakal", "Sapana Dhakal"),
+    )
+    employee_name = models.CharField(max_length=255)
+    employee_contact_number = models.CharField(max_length=255)
+    employee_email = models.CharField(max_length=255)
+    reason_of_leave = models.CharField(max_length=255, choices=CHOICES)
+    brief_reason = models.TextField()
+    days = models.IntegerField()
+    leave_from_date = models.DateField()
+    leave_to_date = models.DateField()
+    approved_by = models.CharField(max_length=255, choices=APPROVED_BY_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.employee_name
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            try:
+                resend.api_key = os.getenv("RESEND_API_KEY")
+
+                # Get current date and time
+                now = timezone.localtime(timezone.now())
+                context = {
+                    "employee_name": self.employee_name,
+                    "employee_email": self.employee_email,
+                    "employee_contact_number": self.employee_contact_number,
+                    "reason_of_leave": self.reason_of_leave,
+                    "brief_reason": self.brief_reason,
+                    "days": self.days,
+                    "leave_from_date": self.leave_from_date.strftime("%B %d, %Y")
+                    if self.leave_from_date
+                    else "",
+                    "leave_to_date": self.leave_to_date.strftime("%B %d, %Y")
+                    if self.leave_to_date
+                    else "",
+                    "approved_by": self.approved_by,
+                    "date": now.strftime("%B %d, %Y"),
+                    "time": now.strftime("%I:%M %p"),
+                }
+
+                html_message = render_to_string(
+                    "emails/leave_notification.html", context
+                )
+
+                params = {
+                    "from": "Baliyo Leave Form <contact@baliyoventures.com>",
+                    "to": ["ratish.shakya149@gmail.com", "bdevil149@gmail.com"],
+                    "subject": f"New Leave Request from {self.employee_name}",
+                    "html": html_message,
+                    "reply_to": self.employee_email,
+                }
+
+                resend.Emails.send(params)
+            except Exception as e:
+                # Log the error so database save is not blocked if email sending fails
+                print(f"Error sending leave notification email: {str(e)}")
