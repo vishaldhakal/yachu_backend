@@ -283,7 +283,11 @@ class LeaveForm(models.Model):
 
                 params = {
                     "from": "Baliyo Leave Form <contact@baliyoventures.com>",
-                    "to": ["baliyoventures@gmail.com", "baliyotechnologies@gmail.com"],
+                    "to": [
+                        "baliyoventures@gmail.com",
+                        "baliyotechnologies@gmail.com",
+                        "sapanachaudhary456@gmail.com",
+                    ],
                     "subject": f"New Leave Request from {self.employee_name}",
                     "html": html_message,
                     "reply_to": self.employee_email,
