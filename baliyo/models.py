@@ -5,9 +5,10 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.text import slugify
-from dotenv import load_dotenv
 
-load_dotenv()
+# from dotenv import load_dotenv
+
+# load_dotenv()
 # Create your models here.
 
 
@@ -282,7 +283,7 @@ class LeaveForm(models.Model):
 
                 params = {
                     "from": "Baliyo Leave Form <contact@baliyoventures.com>",
-                    "to": ["ratish.shakya149@gmail.com", "bdevil149@gmail.com"],
+                    "to": ["baliyoventures@gmail.com", "baliyotechnologies@gmail.com"],
                     "subject": f"New Leave Request from {self.employee_name}",
                     "html": html_message,
                     "reply_to": self.employee_email,
