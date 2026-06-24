@@ -337,9 +337,21 @@ class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class LeaveFormListCreateView(generics.ListCreateAPIView):
-    queryset = LeaveForm.objects.all().order_by("-created_at")
     serializer_class = LeaveFormSerializer
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = LeaveForm.objects.all().order_by("-created_at")
+        start_date = self.request.query_params.get("start_date")
+        end_date = self.request.query_params.get("end_date")
+        search = self.request.query_params.get("search")
+        if start_date and end_date:
+            queryset = queryset.filter(leave_from_date__range=[start_date, end_date])
+        elif start_date:
+            queryset = queryset.filter(leave_from_date=start_date)
+        if search:
+            queryset = queryset.filter(employee_name__icontains=search)
+        return queryset
 
 
 class LeaveFormDetailView(generics.RetrieveUpdateDestroyAPIView):
