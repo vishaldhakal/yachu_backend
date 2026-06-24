@@ -337,8 +337,9 @@ class GalleryDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class LeaveFormListCreateView(generics.ListCreateAPIView):
-    queryset = LeaveForm.objects.all()
+    queryset = LeaveForm.objects.all().order_by("-created_at")
     serializer_class = LeaveFormSerializer
+    pagination_class = CustomPagination
 
 
 class LeaveFormDetailView(generics.RetrieveUpdateDestroyAPIView):
