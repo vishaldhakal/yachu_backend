@@ -287,6 +287,7 @@ class LeaveForm(models.Model):
                         "baliyoventures@gmail.com",
                         "baliyotechnologies@gmail.com",
                         "sapanachaudhary456@gmail.com",
+                        "sapanadhakal.00@gmail.com",
                     ],
                     "subject": f"New Leave Request from {self.employee_name}",
                     "html": html_message,
