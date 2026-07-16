@@ -174,7 +174,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 class TeamMemberSmallSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
-        fields = ["id", "name", "designation", "image", "image_alt_description"]
+        fields = "__all__"
 
 
 class FaqSerializer(serializers.ModelSerializer):
