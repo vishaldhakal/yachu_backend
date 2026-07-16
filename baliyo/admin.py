@@ -15,6 +15,8 @@ from .models import (
     LeaveForm,
     OurPartner,
     Project,
+    ProjectDemo,
+    ProjectRenderingImage,
     Service,
     TeamMember,
     Testimonial,
@@ -34,6 +36,16 @@ class ImageInline(TabularInline):
     extra = 1
 
 
+class ProjectDemoInline(TabularInline):
+    model = ProjectDemo
+    extra = 1
+
+
+class ProjectRenderingImageInline(TabularInline):
+    model = ProjectRenderingImage
+    extra = 1
+
+
 @admin.register(Service)
 class ServiceAdmin(ModelAdmin):
     list_display = ["title", "slug", "description", "created_at", "updated_at"]
@@ -48,7 +60,7 @@ class ServiceAdmin(ModelAdmin):
 @admin.register(Project)
 class ProjectAdmin(TinyMCEAdmin):
     list_display = ["title", "slug", "get_categories", "created_at", "updated_at"]
-    inlines = [ImageInline]
+    inlines = [ImageInline, ProjectDemoInline, ProjectRenderingImageInline]
 
     def get_categories(self, obj):
         return mark_safe(
@@ -56,6 +68,20 @@ class ProjectAdmin(TinyMCEAdmin):
         )
 
     get_categories.short_description = "Categories"
+
+
+@admin.register(ProjectDemo)
+class ProjectDemoAdmin(ModelAdmin):
+    list_display = ["project", "video_url", "video_file", "created_at", "updated_at"]
+    list_filter = ["project"]
+    search_fields = ["project__title"]
+
+
+@admin.register(ProjectRenderingImage)
+class ProjectRenderingImageAdmin(ModelAdmin):
+    list_display = ["project", "image", "created_at", "updated_at"]
+    list_filter = ["project"]
+    search_fields = ["project__title"]
 
 
 @admin.register(BlogCategory)

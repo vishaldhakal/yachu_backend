@@ -39,20 +39,27 @@ class Image(models.Model):
         "Project", on_delete=models.CASCADE, related_name="images"
     )
 
+    def __str__(self):
+        return self.project.title
+
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     category = models.ManyToManyField("Service", related_name="projects", blank=True)
-    description = models.TextField()
-    meta_title = models.CharField(max_length=255, null=True, blank=True)
-    meta_description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    specs = models.TextField(null=True, blank=True)
+    problem_it_solves = models.TextField(null=True, blank=True)
+    case_study = models.TextField(null=True, blank=True)
     thumbnail_image = models.FileField(upload_to="project/", null=True, blank=True)
     thumbnail_image_alt_description = models.CharField(
         max_length=255, null=True, blank=True
     )
+    team_member = models.TextField(null=True, blank=True)
     catalogue = models.FileField(upload_to="catalogue/", null=True, blank=True)
     quotation = models.FileField(upload_to="quotation/", null=True, blank=True)
+    meta_title = models.CharField(max_length=255, null=True, blank=True)
+    meta_description = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -62,6 +69,33 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+
+class ProjectDemo(models.Model):
+    video_url = models.URLField(null=True, blank=True)
+    video_file = models.FileField(upload_to="project_demo/", null=True, blank=True)
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, related_name="demos"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.project.title
+
+
+class ProjectRenderingImage(models.Model):
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, related_name="rendering_images"
+    )
+    image = models.FileField(
+        upload_to="project_rendering_image/", null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.project.title
 
 
 class OurPartner(models.Model):

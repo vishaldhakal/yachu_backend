@@ -24,6 +24,28 @@ urlpatterns = [
         views.ProjectDetailView.as_view(),
         name="project-detail",
     ),
+    # Project Demo URLs
+    path(
+        "project-demos/",
+        views.ProjectDemoListCreateView.as_view(),
+        name="project-demo-list-create",
+    ),
+    path(
+        "project-demos/<int:pk>/",
+        views.ProjectDemoDetailView.as_view(),
+        name="project-demo-detail",
+    ),
+    # Project Rendering Image URLs
+    path(
+        "project-rendering-images/",
+        views.ProjectRenderingImageListCreateView.as_view(),
+        name="project-rendering-image-list-create",
+    ),
+    path(
+        "project-rendering-images/<int:pk>/",
+        views.ProjectRenderingImageDetailView.as_view(),
+        name="project-rendering-image-detail",
+    ),
     # Blog Category URLs
     path(
         "blog-categories/",

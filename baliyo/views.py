@@ -18,6 +18,8 @@ from .models import (
     LeaveForm,
     OurPartner,
     Project,
+    ProjectDemo,
+    ProjectRenderingImage,
     Service,
     TeamMember,
     Testimonial,
@@ -34,6 +36,8 @@ from .serializers import (
     ImageSerializer,
     LeaveFormSerializer,
     OurPartnerSerializer,
+    ProjectDemoSerializer,
+    ProjectRenderingImageSerializer,
     ProjectSerializer,
     ProjectSmallSerializer,
     ServiceSerializer,
@@ -107,7 +111,9 @@ class ProjectListCreateView(generics.ListCreateAPIView):
 
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Project.objects.all()
+    queryset = Project.objects.all().prefetch_related(
+        "images", "category", "demos", "rendering_images"
+    )
     serializer_class = ProjectSerializer
     lookup_field = "slug"
 
@@ -131,6 +137,32 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
         response_data["similar_projects"] = similar_projects_data
 
         return Response(response_data)
+
+
+# ProjectDemo Views
+
+
+class ProjectDemoListCreateView(generics.ListCreateAPIView):
+    queryset = ProjectDemo.objects.all().select_related("project")
+    serializer_class = ProjectDemoSerializer
+
+
+class ProjectDemoDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProjectDemo.objects.all().select_related("project")
+    serializer_class = ProjectDemoSerializer
+
+
+# ProjectRenderingImage Views
+
+
+class ProjectRenderingImageListCreateView(generics.ListCreateAPIView):
+    queryset = ProjectRenderingImage.objects.all().select_related("project")
+    serializer_class = ProjectRenderingImageSerializer
+
+
+class ProjectRenderingImageDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProjectRenderingImage.objects.all().select_related("project")
+    serializer_class = ProjectRenderingImageSerializer
 
 
 # Blog Views

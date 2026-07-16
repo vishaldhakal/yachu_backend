@@ -11,6 +11,8 @@ from .models import (
     LeaveForm,
     OurPartner,
     Project,
+    ProjectDemo,
+    ProjectRenderingImage,
     Service,
     TeamMember,
     Testimonial,
@@ -76,9 +78,23 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ProjectDemoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectDemo
+        fields = "__all__"
+
+
+class ProjectRenderingImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectRenderingImage
+        fields = "__all__"
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
     category = ServiceSmallSerializer(many=True, read_only=True)
+    demos = ProjectDemoSerializer(many=True, read_only=True)
+    rendering_images = ProjectRenderingImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
