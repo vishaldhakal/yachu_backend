@@ -1,11 +1,11 @@
 import os
 
 import resend
+from django.db.models import Q
 from django.template.loader import render_to_string
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import (
     Blog,
@@ -19,33 +19,63 @@ from .models import (
     OurPartner,
     Project,
     ProjectDemo,
-    ProjectRenderingImage,
     Service,
     TeamMember,
+    TechnicalDocument,
     Testimonial,
+)
+from .selectors import (
+    component_list_select,
+    component_model_list_select,
+    component_purchase_list_select,
+    inventory_list_select,
+    project_daily_update_list_select,
+    project_inventory_used_list_select,
+    project_tool_list_select,
+    vendor_list_select,
 )
 from .serializers import (
     BlogCategorySerializer,
     BlogSerializer,
     BlogSmallSerializer,
     BlogTagSerializer,
+    ComponentModelSerializer,
+    ComponentPurchaseDetailSerializer,
+    ComponentPurchaseListSerializer,
+    ComponentSerializer,
+    ComponentSmallSerializer,
     ContactSerializer,
     FaqSerializer,
     GallerySerializer,
     GallerySmallSerializer,
     ImageSerializer,
+    InventorySerializer,
     LeaveFormSerializer,
     OurPartnerSerializer,
+    ProjectDailyUpdateSerializer,
     ProjectDemoSerializer,
-    ProjectRenderingImageSerializer,
+    ProjectInventoryUsedSerializer,
     ProjectSerializer,
     ProjectSmallSerializer,
+    ProjectToolSerializer,
     ServiceSerializer,
     ServiceSmallSerializer,
     TeamMemberSerializer,
     TeamMemberSmallSerializer,
+    TechnicalDocumentSerializer,
     TestimonialSerializer,
     TestimonialSmallSerializer,
+    VendorSerializer,
+)
+from .services import (
+    component_create,
+    component_model_create,
+    component_purchase_create,
+    component_purchase_update,
+    project_daily_update_create,
+    project_inventory_used_create,
+    project_tool_create,
+    vendor_create,
 )
 
 # Configure Resend with API key from settings
@@ -100,8 +130,14 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Project.objects.all().order_by("-created_at")
         category_slug = self.request.query_params.get("category", None)
+        search = self.request.query_params.get("search", None)
+        status_param = self.request.query_params.get("status", None)
         if category_slug:
             queryset = queryset.filter(category__slug=category_slug)
+        if status_param:
+            queryset = queryset.filter(status=status_param)
+        if search:
+            queryset = queryset.filter(Q(title__icontains=search)).distinct()
         return queryset
 
     def get_serializer_class(self):
@@ -109,10 +145,23 @@ class ProjectListCreateView(generics.ListCreateAPIView):
             return ProjectSmallSerializer
         return ProjectSerializer
 
+    def perform_create(self, serializer):
+        project = serializer.save()
+        category_param = self.request.query_params.get(
+            "category", "product-development"
+        )
+        service = Service.objects.filter(slug=category_param).first()
+        if not service:
+            service = Service.objects.filter(slug="product-development").first()
+        if not service:
+            service = Service.objects.filter(title__icontains="product").first()
+        if service:
+            project.category.add(service)
+
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all().prefetch_related(
-        "images", "category", "demos", "rendering_images"
+        "images", "category", "demos", "technical_document"
     )
     serializer_class = ProjectSerializer
     lookup_field = "slug"
@@ -126,15 +175,13 @@ class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
             Project.objects
             .filter(category__in=instance.category.all())
             .exclude(id=instance.id)
-            .distinct()[:3]
+            .distinct()[:4]
         )
 
-        # Serialize similar projects
-        similar_projects_data = ProjectSmallSerializer(similar_projects, many=True).data
-
-        # Combine the data
         response_data = serializer.data
-        response_data["similar_projects"] = similar_projects_data
+        response_data["similar_projects"] = ProjectSmallSerializer(
+            similar_projects, many=True, context={"request": request}
+        ).data
 
         return Response(response_data)
 
@@ -152,17 +199,17 @@ class ProjectDemoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProjectDemoSerializer
 
 
-# ProjectRenderingImage Views
+# TechnicalDocument Views
 
 
-class ProjectRenderingImageListCreateView(generics.ListCreateAPIView):
-    queryset = ProjectRenderingImage.objects.all().select_related("project")
-    serializer_class = ProjectRenderingImageSerializer
+class TechnicalDocumentListCreateView(generics.ListCreateAPIView):
+    queryset = TechnicalDocument.objects.all().select_related("project")
+    serializer_class = TechnicalDocumentSerializer
 
 
-class ProjectRenderingImageDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ProjectRenderingImage.objects.all().select_related("project")
-    serializer_class = ProjectRenderingImageSerializer
+class TechnicalDocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TechnicalDocument.objects.all().select_related("project")
+    serializer_class = TechnicalDocumentSerializer
 
 
 # Blog Views
@@ -391,26 +438,249 @@ class LeaveFormDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LeaveFormSerializer
 
 
-class TestResendView(APIView):
-    def get(self, request, *args, **kwargs):
+# Vendor Views
+
+
+class VendorListCreateView(generics.ListCreateAPIView):
+    serializer_class = VendorSerializer
+
+    def get_queryset(self):
+        return vendor_list_select()
+
+    def perform_create(self, serializer):
+        serializer.instance = vendor_create(
+            name=serializer.validated_data.get("name"),
+            phone_no=serializer.validated_data.get("phone_no"),
+            vendor_address=serializer.validated_data.get("vendor_address"),
+        )
+
+
+class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = VendorSerializer
+    lookup_field = "slug"
+
+    def get_queryset(self):
+        return vendor_list_select()
+
+
+# ProjectTool Views
+
+
+class ProjectToolListCreateView(generics.ListCreateAPIView):
+    serializer_class = ProjectToolSerializer
+
+    def get_queryset(self):
+        return project_tool_list_select()
+
+    def perform_create(self, serializer):
+        serializer.instance = project_tool_create(
+            name=serializer.validated_data.get("name")
+        )
+
+
+class ProjectToolDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProjectToolSerializer
+    lookup_field = "slug"
+
+    def get_queryset(self):
+        return project_tool_list_select()
+
+
+# Component Views
+
+
+class ComponentListCreateView(generics.ListCreateAPIView):
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ComponentSmallSerializer
+        return ComponentSerializer
+
+    def get_queryset(self):
+        return component_list_select()
+
+    def perform_create(self, serializer):
+        serializer.instance = component_create(
+            name=serializer.validated_data.get("name"),
+            vendor=serializer.validated_data.get("vendor"),
+        )
+
+
+class ComponentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ComponentSerializer
+    lookup_field = "slug"
+
+    def get_queryset(self):
+        return component_list_select()
+
+
+# ComponentModel Views
+
+
+class ComponentModelListCreateView(generics.ListCreateAPIView):
+    serializer_class = ComponentModelSerializer
+
+    def get_queryset(self):
+        queryset = component_model_list_select()
+        search = self.request.query_params.get("search", None)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | Q(component__name__icontains=search)
+            ).distinct()
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.instance = component_model_create(
+            component=serializer.validated_data.get("component"),
+            name=serializer.validated_data.get("name"),
+            specs=serializer.validated_data.get("specs"),
+        )
+
+
+class ComponentModelDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ComponentModelSerializer
+    lookup_field = "slug"
+
+    def get_queryset(self):
+        return component_model_list_select()
+
+
+# ComponentPurchase Views
+
+
+class ComponentPurchaseListCreateView(generics.ListCreateAPIView):
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return ComponentPurchaseDetailSerializer
+        return ComponentPurchaseListSerializer
+
+    def get_queryset(self):
+        return component_purchase_list_select()
+
+    def perform_create(self, serializer):
+        items_data = self.request.data.get("items", [])
+        serializer.instance = component_purchase_create(
+            vendor=serializer.validated_data.get("vendor"),
+            purchase_date=serializer.validated_data.get("purchase_date"),
+            notes=serializer.validated_data.get("notes"),
+            component_model=None,
+            quantity=0,
+            price_per_item=0.0,
+            items_data=items_data,
+        )
+
+
+class ComponentPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ComponentPurchaseDetailSerializer
+
+    def get_queryset(self):
+        return component_purchase_list_select()
+
+    def perform_update(self, serializer):
+        items_data = self.request.data.get("items", None)
+        serializer.instance = component_purchase_update(
+            purchase=self.get_object(),
+            vendor=serializer.validated_data.get("vendor", serializer.instance.vendor),
+            purchase_date=serializer.validated_data.get(
+                "purchase_date", serializer.instance.purchase_date
+            ),
+            notes=serializer.validated_data.get("notes", serializer.instance.notes),
+            items_data=items_data
+            if items_data is not None
+            else [
+                {
+                    "component_model": item.component_model_id,
+                    "quantity": item.quantity,
+                    "price_per_item": item.price_per_item,
+                }
+                for item in serializer.instance.items.all()
+            ],
+        )
+
+
+# Inventory Views
+
+
+class InventoryListCreateView(generics.ListCreateAPIView):
+    serializer_class = InventorySerializer
+
+    def get_queryset(self):
+        return inventory_list_select()
+
+
+class InventoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = InventorySerializer
+
+    def get_queryset(self):
+        return inventory_list_select()
+
+
+# ProjectInventoryUsed Views
+
+
+class ProjectInventoryUsedListCreateView(generics.ListCreateAPIView):
+    serializer_class = ProjectInventoryUsedSerializer
+
+    def get_queryset(self):
+        queryset = project_inventory_used_list_select()
+        project_id = self.request.query_params.get("project", None)
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         try:
-            # Send email using Resend
-            params = {
-                "from": "BaliyoVenturesContactForm <contact@baliyoventures.com>",
-                "to": "ratish.shakya149@gmail.com",
-                "subject": "Test Email from BaliyoVentures",
-                "html": "This is a test email sent using Resend.",
-            }
-
-            resend.Emails.send(params)
-            return Response(
-                {"detail": "Email sent successfully"}, status=status.HTTP_200_OK
+            instance = project_inventory_used_create(
+                project_id=serializer.validated_data.get("project").id,
+                inventory=serializer.validated_data.get("inventory"),
+                quantity=serializer.validated_data.get("quantity", 0),
             )
-
-        except Exception as e:
-            # Log the error and still return success to the user
-            print(f"Error sending email via Resend: {str(e)}")
             return Response(
-                {"detail": "Failed to send email"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                ProjectInventoryUsedSerializer(
+                    instance, context={"request": request}
+                ).data,
+                status=status.HTTP_201_CREATED,
             )
+        except ValueError as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProjectInventoryUsedDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProjectInventoryUsedSerializer
+
+    def get_queryset(self):
+        return project_inventory_used_list_select()
+
+
+# ProjectDailyUpdate Views
+
+
+class ProjectDailyUpdateListCreateView(generics.ListCreateAPIView):
+    serializer_class = ProjectDailyUpdateSerializer
+
+    def get_queryset(self):
+        queryset = project_daily_update_list_select()
+        project_id = self.request.query_params.get("project", None)
+        category_slug = self.request.query_params.get("category", None)
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+        if category_slug:
+            queryset = queryset.filter(project__category__slug=category_slug)
+        return queryset.distinct()
+
+    def perform_create(self, serializer):
+        serializer.instance = project_daily_update_create(
+            project_id=serializer.validated_data.get("project").id,
+            task=serializer.validated_data.get("task"),
+            decision=serializer.validated_data.get("decision"),
+            reason=serializer.validated_data.get("reason"),
+            problem=serializer.validated_data.get("problem"),
+        )
+
+
+class ProjectDailyUpdateDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProjectDailyUpdateSerializer
+
+    def get_queryset(self):
+        return project_daily_update_list_select()

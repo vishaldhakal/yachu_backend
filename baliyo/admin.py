@@ -5,21 +5,31 @@ from tinymce.widgets import TinyMCE
 from unfold.admin import ModelAdmin, TabularInline
 
 from .models import (
+    BillOfMaterial,
     Blog,
     BlogCategory,
     BlogTag,
+    Component,
+    ComponentModel,
+    ComponentPurchase,
+    ComponentPurchaseItem,
     Contact,
     Faq,
     Gallery,
     Image,
+    Inventory,
     LeaveForm,
     OurPartner,
     Project,
+    ProjectDailyUpdate,
     ProjectDemo,
-    ProjectRenderingImage,
+    ProjectInventoryUsed,
+    ProjectTool,
     Service,
     TeamMember,
+    TechnicalDocument,
     Testimonial,
+    Vendor,
 )
 
 # Register your models here.
@@ -34,21 +44,69 @@ class TinyMCEAdmin(ModelAdmin):
 class ImageInline(TabularInline):
     model = Image
     extra = 1
+    tab = True
 
 
 class ProjectDemoInline(TabularInline):
     model = ProjectDemo
     extra = 1
+    tab = True
 
 
-class ProjectRenderingImageInline(TabularInline):
-    model = ProjectRenderingImage
+class TechnicalDocumentInline(TabularInline):
+    model = TechnicalDocument
     extra = 1
+    tab = True
+
+
+class ProjectInventoryUsedInline(TabularInline):
+    model = ProjectInventoryUsed
+    extra = 1
+    tab = True
+
+
+class ProjectDailyUpdateInline(TabularInline):
+    model = ProjectDailyUpdate
+    extra = 1
+    tab = True
+
+
+class ComponentModelInline(TabularInline):
+    model = ComponentModel
+    extra = 1
+    prepopulated_fields = {"slug": ("name",)}
+    tab = True
+
+
+class ComponentPurchaseItemInline(TabularInline):
+    model = ComponentPurchaseItem
+    extra = 1
+    tab = True
+
+
+class InventoryInline(TabularInline):
+    model = Inventory
+    extra = 1
+    tab = True
+
+
+class BillOfMaterialInline(TabularInline):
+    model = BillOfMaterial
+    extra = 1
+    tab = True
+
+
+class ComponentInline(TabularInline):
+    model = Component
+    extra = 1
+    prepopulated_fields = {"slug": ("name",)}
+    tab = True
 
 
 @admin.register(Service)
 class ServiceAdmin(ModelAdmin):
     list_display = ["title", "slug", "description", "created_at", "updated_at"]
+    prepopulated_fields = {"slug": ("title",)}
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -59,8 +117,22 @@ class ServiceAdmin(ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(TinyMCEAdmin):
-    list_display = ["title", "slug", "get_categories", "created_at", "updated_at"]
-    inlines = [ImageInline, ProjectDemoInline, ProjectRenderingImageInline]
+    list_display = [
+        "title",
+        "slug",
+        "get_categories",
+        "status",
+        "created_at",
+        "updated_at",
+    ]
+    prepopulated_fields = {"slug": ("title",)}
+    inlines = [
+        ImageInline,
+        ProjectDemoInline,
+        TechnicalDocumentInline,
+        ProjectInventoryUsedInline,
+        ProjectDailyUpdateInline,
+    ]
 
     def get_categories(self, obj):
         return mark_safe(
@@ -70,6 +142,85 @@ class ProjectAdmin(TinyMCEAdmin):
     get_categories.short_description = "Categories"
 
 
+@admin.register(Vendor)
+class VendorAdmin(ModelAdmin):
+    list_display = ["name", "slug", "phone_no", "created_at", "updated_at"]
+    search_fields = ["name", "phone_no"]
+    prepopulated_fields = {"slug": ("name",)}
+    inlines = [BillOfMaterialInline, ComponentInline]
+
+
+@admin.register(BillOfMaterial)
+class BillOfMaterialAdmin(ModelAdmin):
+    list_display = ["file", "vendor", "created_at", "updated_at"]
+    list_filter = ["vendor"]
+
+
+@admin.register(ProjectTool)
+class ProjectToolAdmin(ModelAdmin):
+    list_display = ["name", "slug", "created_at", "updated_at"]
+    search_fields = ["name"]
+    prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(Component)
+class ComponentAdmin(ModelAdmin):
+    list_display = ["name", "slug", "vendor", "created_at", "updated_at"]
+    list_filter = ["vendor"]
+    search_fields = ["name"]
+    prepopulated_fields = {"slug": ("name",)}
+    inlines = [ComponentModelInline]
+
+
+@admin.register(ComponentModel)
+class ComponentModelAdmin(ModelAdmin):
+    list_display = ["name", "slug", "component", "created_at", "updated_at"]
+    list_filter = ["component"]
+    search_fields = ["name", "specs"]
+    prepopulated_fields = {"slug": ("name",)}
+    inlines = [InventoryInline]
+
+
+@admin.register(ComponentPurchase)
+class ComponentPurchaseAdmin(ModelAdmin):
+    list_display = [
+        "vendor",
+        "purchase_date",
+        "total_price",
+        "created_at",
+        "updated_at",
+    ]
+    list_filter = ["vendor", "purchase_date"]
+    search_fields = ["vendor__name", "notes"]
+    inlines = [ComponentPurchaseItemInline]
+
+
+@admin.register(Inventory)
+class InventoryAdmin(ModelAdmin):
+    list_display = ["component_model", "quantity", "created_at", "updated_at"]
+    list_filter = ["component_model"]
+
+
+@admin.register(ProjectInventoryUsed)
+class ProjectInventoryUsedAdmin(ModelAdmin):
+    list_display = ["project", "inventory", "quantity", "created_at", "updated_at"]
+    list_filter = ["project"]
+
+
+@admin.register(ProjectDailyUpdate)
+class ProjectDailyUpdateAdmin(ModelAdmin):
+    list_display = [
+        "project",
+        "task",
+        "decision",
+        "problem",
+        "created_at",
+        "updated_at",
+    ]
+    list_filter = ["project"]
+    search_fields = ["project__title", "task", "decision", "problem"]
+
+
 @admin.register(ProjectDemo)
 class ProjectDemoAdmin(ModelAdmin):
     list_display = ["project", "video_url", "video_file", "created_at", "updated_at"]
@@ -77,9 +228,9 @@ class ProjectDemoAdmin(ModelAdmin):
     search_fields = ["project__title"]
 
 
-@admin.register(ProjectRenderingImage)
-class ProjectRenderingImageAdmin(ModelAdmin):
-    list_display = ["project", "image", "created_at", "updated_at"]
+@admin.register(TechnicalDocument)
+class TechnicalDocumentAdmin(ModelAdmin):
+    list_display = ["project", "file", "created_at", "updated_at"]
     list_filter = ["project"]
     search_fields = ["project__title"]
 

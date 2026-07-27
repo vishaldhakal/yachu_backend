@@ -99,16 +99,6 @@ WSGI_APPLICATION = "yachu.wsgi.application"
     }
 } """
 
-""" DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "yachu",
-        "USER": "vishal",
-        "PASSWORD": "DatabaseUserPassword",
-        "HOST": "localhost",
-        "PORT": "",
-    }
-} """
 # coolify database
 DATABASES = {
     "default": {
@@ -316,10 +306,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://latina-trail-yards-encyclopedia.trycloudflare.com",
+    "https://fri-recipients-salt-shirt.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://latina-trail-yards-encyclopedia.trycloudflare.com",
+    "https://fri-recipients-salt-shirt.trycloudflare.com",
     "https://www.yachu.baliyoventures.com",
     "https://yachu.baliyoventures.com",
 ]

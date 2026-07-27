@@ -35,16 +35,16 @@ urlpatterns = [
         views.ProjectDemoDetailView.as_view(),
         name="project-demo-detail",
     ),
-    # Project Rendering Image URLs
+    # Technical Document URLs
     path(
-        "project-rendering-images/",
-        views.ProjectRenderingImageListCreateView.as_view(),
-        name="project-rendering-image-list-create",
+        "technical-documents/",
+        views.TechnicalDocumentListCreateView.as_view(),
+        name="technical-document-list-create",
     ),
     path(
-        "project-rendering-images/<int:pk>/",
-        views.ProjectRenderingImageDetailView.as_view(),
-        name="project-rendering-image-detail",
+        "technical-documents/<int:pk>/",
+        views.TechnicalDocumentDetailView.as_view(),
+        name="technical-document-detail",
     ),
     # Blog Category URLs
     path(
@@ -124,6 +124,86 @@ urlpatterns = [
         views.LeaveFormDetailView.as_view(),
         name="leave-form-detail",
     ),
-    # TestResendView
-    path("test-resend/", views.TestResendView.as_view(), name="test-resend"),
+    # Vendor URLs
+    path("vendors/", views.VendorListCreateView.as_view(), name="vendor-list-create"),
+    path(
+        "vendors/<slug:slug>/", views.VendorDetailView.as_view(), name="vendor-detail"
+    ),
+    # Project Tool URLs
+    path(
+        "project-tools/",
+        views.ProjectToolListCreateView.as_view(),
+        name="project-tool-list-create",
+    ),
+    path(
+        "project-tools/<slug:slug>/",
+        views.ProjectToolDetailView.as_view(),
+        name="project-tool-detail",
+    ),
+    # Component URLs
+    path(
+        "components/",
+        views.ComponentListCreateView.as_view(),
+        name="component-list-create",
+    ),
+    path(
+        "components/<slug:slug>/",
+        views.ComponentDetailView.as_view(),
+        name="component-detail",
+    ),
+    # Component Model URLs
+    path(
+        "component-models/",
+        views.ComponentModelListCreateView.as_view(),
+        name="component-model-list-create",
+    ),
+    path(
+        "component-models/<slug:slug>/",
+        views.ComponentModelDetailView.as_view(),
+        name="component-model-detail",
+    ),
+    # Component Purchase URLs
+    path(
+        "component-purchases/",
+        views.ComponentPurchaseListCreateView.as_view(),
+        name="component-purchase-list-create",
+    ),
+    path(
+        "component-purchases/<int:pk>/",
+        views.ComponentPurchaseDetailView.as_view(),
+        name="component-purchase-detail",
+    ),
+    # Inventory URLs
+    path(
+        "inventory/",
+        views.InventoryListCreateView.as_view(),
+        name="inventory-list-create",
+    ),
+    path(
+        "inventory/<int:pk>/",
+        views.InventoryDetailView.as_view(),
+        name="inventory-detail",
+    ),
+    # Project Inventory Used URLs
+    path(
+        "project-inventory-used/",
+        views.ProjectInventoryUsedListCreateView.as_view(),
+        name="project-inventory-used-list-create",
+    ),
+    path(
+        "project-inventory-used/<int:pk>/",
+        views.ProjectInventoryUsedDetailView.as_view(),
+        name="project-inventory-used-detail",
+    ),
+    # Project Daily Update URLs
+    path(
+        "project-daily-updates/",
+        views.ProjectDailyUpdateListCreateView.as_view(),
+        name="project-daily-update-list-create",
+    ),
+    path(
+        "project-daily-updates/<int:pk>/",
+        views.ProjectDailyUpdateDetailView.as_view(),
+        name="project-daily-update-detail",
+    ),
 ]

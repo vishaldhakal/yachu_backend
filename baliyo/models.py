@@ -43,10 +43,171 @@ class Image(models.Model):
         return self.project.title
 
 
+class Vendor(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
+    phone_no = models.CharField(max_length=15)
+    vendor_address = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class BillOfMaterial(models.Model):
+    vendor = models.ForeignKey(
+        "Vendor",
+        on_delete=models.CASCADE,
+        related_name="bill_of_materials",
+        null=True,
+        blank=True,
+    )
+    file = models.FileField(upload_to="bill_of_material/")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.file.name
+
+
+class ProjectTool(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Component(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
+    vendor = models.ForeignKey(
+        "Vendor",
+        on_delete=models.CASCADE,
+        related_name="components",
+        null=True,
+        blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class ComponentModel(models.Model):
+    component = models.ForeignKey(
+        "Component", on_delete=models.CASCADE, related_name="models"
+    )
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
+    specs = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class ComponentPurchase(models.Model):
+    vendor = models.ForeignKey(
+        "Vendor",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="purchases",
+    )
+    purchase_date = models.DateField(null=True, blank=True)
+    total_price = models.FloatField(null=True, blank=True, default=0.0)
+    notes = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["vendor", "purchase_date"]),
+        ]
+
+    def __str__(self):
+        return f"Purchase #{self.id}" + (
+            f" from {self.vendor.name}" if self.vendor else ""
+        )
+
+
+class ComponentPurchaseItem(models.Model):
+    purchase = models.ForeignKey(
+        ComponentPurchase,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
+    component_model = models.ForeignKey(
+        "ComponentModel",
+        on_delete=models.CASCADE,
+        related_name="purchase_items",
+    )
+    quantity = models.IntegerField(default=1)
+    price_per_item = models.FloatField(default=0.0)
+    total_price = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.quantity}x {self.component_model.name} for Purchase #{self.purchase_id}"
+
+    def save(self, *args, **kwargs):
+        if self.quantity is not None and self.price_per_item is not None:
+            self.total_price = float(self.quantity) * float(self.price_per_item)
+        super().save(*args, **kwargs)
+
+
+class Inventory(models.Model):
+    component_model = models.ForeignKey(
+        "ComponentModel",
+        on_delete=models.CASCADE,
+        related_name="inventory",
+        null=True,
+        blank=True,
+    )
+    quantity = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.component_model.name
+
+
 class Project(models.Model):
+    STATUS_CHOICES = (
+        ("in_progress", "In Progress"),
+        ("completed", "Completed"),
+    )
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default="in_progress", db_index=True
+    )
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     category = models.ManyToManyField("Service", related_name="projects", blank=True)
+    tools = models.ManyToManyField("ProjectTool", related_name="projects", blank=True)
     description = models.TextField(null=True, blank=True)
     specs = models.TextField(null=True, blank=True)
     problem_it_solves = models.TextField(null=True, blank=True)
@@ -71,7 +232,23 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
 
+class ProjectInventoryUsed(models.Model):
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, related_name="components_used"
+    )
+    inventory = models.ForeignKey(
+        "Inventory", on_delete=models.CASCADE, related_name="projects_used"
+    )
+    quantity = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.project.title} - {self.inventory}"
+
+
 class ProjectDemo(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
     video_url = models.URLField(null=True, blank=True)
     video_file = models.FileField(upload_to="project_demo/", null=True, blank=True)
     project = models.ForeignKey(
@@ -81,21 +258,40 @@ class ProjectDemo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.project.title
+        return self.name
 
 
-class ProjectRenderingImage(models.Model):
+class TechnicalDocument(models.Model):
     project = models.ForeignKey(
-        "Project", on_delete=models.CASCADE, related_name="rendering_images"
+        "Project", on_delete=models.CASCADE, related_name="technical_document"
     )
-    image = models.FileField(
-        upload_to="project_rendering_image/", null=True, blank=True
+    name = models.CharField(max_length=255, null=True, blank=True)
+    file = models.FileField(
+        upload_to="project_technical_documents/", null=True, blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.project.title
+        return self.name
+
+
+class ProjectDailyUpdate(models.Model):
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, related_name="daily_updates"
+    )
+    task = models.TextField()
+    decision = models.TextField(null=True, blank=True)
+    reason = models.TextField(null=True, blank=True)
+    problem = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.project.title} - {self.task[:30]}"
 
 
 class OurPartner(models.Model):
