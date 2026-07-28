@@ -140,6 +140,22 @@ urlpatterns = [
         views.ProjectToolDetailView.as_view(),
         name="project-tool-detail",
     ),
+    path(
+        "project-tools/<int:pk>/",
+        views.ProjectToolDetailView.as_view(),
+        name="project-tool-detail-pk",
+    ),
+    # Project Tool Used URLs
+    path(
+        "project-tool-used/",
+        views.ProjectToolUsedListCreateView.as_view(),
+        name="project-tool-used-list-create",
+    ),
+    path(
+        "project-tool-used/<int:pk>/",
+        views.ProjectToolUsedDetailView.as_view(),
+        name="project-tool-used-detail",
+    ),
     # Component URLs
     path(
         "components/",

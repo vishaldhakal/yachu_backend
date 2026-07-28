@@ -12,6 +12,7 @@ from ..models import (
     ProjectDailyUpdate,
     ProjectInventoryUsed,
     ProjectTool,
+    ProjectToolUsed,
     Vendor,
 )
 
@@ -35,8 +36,73 @@ def bill_of_material_create(*, file, vendor: Vendor = None) -> BillOfMaterial:
     return BillOfMaterial.objects.create(file=file, vendor=vendor)
 
 
-def project_tool_create(*, name: str) -> ProjectTool:
-    return ProjectTool.objects.create(name=name)
+def project_tool_create(*, name: str, quantity: int = None) -> ProjectTool:
+    return ProjectTool.objects.create(name=name, quantity=quantity)
+
+
+@transaction.atomic
+def project_tool_used_create(
+    *,
+    project_id: int,
+    tool: ProjectTool,
+    quantity: int = None,
+) -> ProjectToolUsed:
+    if tool.quantity is not None:
+        used_qty = quantity if quantity is not None else 1
+        current_qty = tool.quantity or 0
+        if current_qty < used_qty:
+            raise ValueError(
+                f"Insufficient quantity for tool {tool.name}. Available: {current_qty}, Requested: {used_qty}"
+            )
+        tool.quantity = current_qty - used_qty
+        tool.save(update_fields=["quantity", "updated_at"])
+
+    obj, created = ProjectToolUsed.objects.get_or_create(
+        project_id=project_id,
+        tool=tool,
+        defaults={"quantity": quantity},
+    )
+    if not created and quantity is not None:
+        obj.quantity = quantity
+        obj.save(update_fields=["quantity"])
+    return obj
+
+
+@transaction.atomic
+def project_tool_used_update(
+    *,
+    instance: ProjectToolUsed,
+    new_quantity: int = None,
+) -> ProjectToolUsed:
+    tool = instance.tool
+    old_qty = instance.quantity or 0
+    target_qty = new_quantity if new_quantity is not None else 0
+
+    if tool.quantity is not None:
+        diff = target_qty - old_qty
+        if diff > 0:
+            if tool.quantity < diff:
+                raise ValueError(
+                    f"Insufficient quantity for tool {tool.name}. Available: {tool.quantity}, Needed additional: {diff}"
+                )
+            tool.quantity -= diff
+        elif diff < 0:
+            tool.quantity += abs(diff)
+        tool.save(update_fields=["quantity", "updated_at"])
+
+    instance.quantity = new_quantity
+    instance.save(update_fields=["quantity", "updated_at"])
+    return instance
+
+
+@transaction.atomic
+def project_tool_used_delete(*, instance: ProjectToolUsed) -> None:
+    tool = instance.tool
+    used_qty = instance.quantity or 0
+    if tool.quantity is not None and used_qty > 0:
+        tool.quantity += used_qty
+        tool.save(update_fields=["quantity", "updated_at"])
+    instance.delete()
 
 
 def component_create(*, name: str, vendor: Vendor = None) -> Component:

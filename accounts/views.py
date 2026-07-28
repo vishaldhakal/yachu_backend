@@ -1,13 +1,34 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, OrganizationDetailSerializer, OrganizationSerializer, UserSerializer, DepartmentSerializer, OrganizationContactsSerializer, ProjectSerializer, ProjectDetailSerializer, ProjectNotesSerializer, ProjectReminderSerializer, ProjectReminderDetailSerializer
-from .models import CustomUser, Organization, Profile, Department, OrganizationContacts, Project, ProjectNotes, ProjectReminder
-from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import FilterSet, CharFilter, DjangoFilterBackend
+from django_filters.rest_framework import CharFilter, DjangoFilterBackend, FilterSet
+from rest_framework import generics, status
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import (
+    CustomUser,
+    Department,
+    Organization,
+    OrganizationContacts,
+    Profile,
+    Project,
+    ProjectNotes,
+    ProjectReminder,
+)
+from .serializers import (
+    DepartmentSerializer,
+    LoginSerializer,
+    OrganizationContactsSerializer,
+    OrganizationDetailSerializer,
+    OrganizationSerializer,
+    ProjectDetailSerializer,
+    ProjectNotesSerializer,
+    ProjectReminderDetailSerializer,
+    ProjectReminderSerializer,
+    ProjectSerializer,
+    UserSerializer,
+)
 
 # Create your views here.
 
@@ -22,21 +43,24 @@ class RegisterView(generics.CreateAPIView):
             # Create a mutable copy of the request data
             data = request.data.copy()
             # Extract password from request data
-            password = data.get('password', None)
+            password = data.get("password", None)
 
             if not password:
-                return Response({
-                    'error': 'Password is required'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Password is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-            if not data.get('username'):
-                return Response({
-                    'error': 'Username is required'
-                }, status=status.HTTP_400_BAD_REQUEST)
-            if CustomUser.objects.filter(username=data.get('username')).exists():
-                return Response({
-                    'error': 'Username already exists'
-                }, status=status.HTTP_400_BAD_REQUEST)
+            if not data.get("username"):
+                return Response(
+                    {"error": "Username is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if CustomUser.objects.filter(username=data.get("username")).exists():
+                return Response(
+                    {"error": "Username already exists"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
@@ -51,22 +75,26 @@ class RegisterView(generics.CreateAPIView):
 
             # Generate tokens
             refresh = RefreshToken.for_user(user)
-            refresh['user_id'] = user.id
-            refresh['username'] = user.username
-            refresh['email'] = user.email
-            refresh['phone_number'] = user.phone_number
-            refresh['address'] = user.address
+            refresh["user_id"] = user.id
+            refresh["username"] = user.username
+            refresh["email"] = user.email
+            refresh["phone_number"] = user.phone_number
+            refresh["address"] = user.address
 
             headers = self.get_success_headers(serializer.data)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }, status=status.HTTP_201_CREATED, headers=headers)
+            return Response(
+                {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                },
+                status=status.HTTP_201_CREATED,
+                headers=headers,
+            )
 
         except Exception as e:
-            return Response({
-                'error': str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class LoginView(generics.GenericAPIView):
@@ -74,32 +102,36 @@ class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
 
         if not username or not password:
-            return Response({
-                'error': 'Please provide both username and password'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Please provide both username and password"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user = authenticate(username=username, password=password)
 
         if user:
             refresh = RefreshToken.for_user(user)
-            refresh['user_id'] = user.id
-            refresh['username'] = user.username
-            refresh['email'] = user.email
-            refresh['phone_number'] = user.phone_number
-            refresh['address'] = user.address
+            refresh["user_id"] = user.id
+            refresh["username"] = user.username
+            refresh["email"] = user.email
+            refresh["phone_number"] = user.phone_number
+            refresh["address"] = user.address
 
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                },
+                status=status.HTTP_200_OK,
+            )
 
-        return Response({
-            'error': 'Invalid credentials'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(
+            {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 class OrganizationContactsListCreateView(generics.ListCreateAPIView):
@@ -113,16 +145,16 @@ class OrganizationContactsDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class OrganizationFilter(FilterSet):
-    name = CharFilter(field_name='name', lookup_expr='icontains')
+    name = CharFilter(field_name="name", lookup_expr="icontains")
     person_in_charge = CharFilter(
-        field_name='person_in_charge', lookup_expr='icontains')
-    phone_number = CharFilter(
-        field_name='phone_number', lookup_expr='icontains')
-    address = CharFilter(field_name='address', lookup_expr='icontains')
+        field_name="person_in_charge", lookup_expr="icontains"
+    )
+    phone_number = CharFilter(field_name="phone_number", lookup_expr="icontains")
+    address = CharFilter(field_name="address", lookup_expr="icontains")
 
     class Meta:
         model = Organization
-        fields = ['name', 'person_in_charge', 'phone_number', 'address']
+        fields = ["name", "person_in_charge", "phone_number", "address"]
 
 
 class OrganizationListCreateView(generics.ListCreateAPIView):
@@ -131,10 +163,10 @@ class OrganizationListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = OrganizationFilter
     permission_classes = [IsAuthenticated]
-    search_fields = ['name']
+    search_fields = ["name"]
 
     def get_queryset(self):
-        return Organization.objects.prefetch_related('contacts').all()
+        return Organization.objects.prefetch_related("contacts").all()
 
 
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -143,10 +175,10 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Organization.objects.prefetch_related('contacts').all()
+        return Organization.objects.prefetch_related("contacts").all()
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return OrganizationDetailSerializer
         return OrganizationSerializer
 
@@ -162,13 +194,12 @@ class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectFilter(FilterSet):
-    organization = CharFilter(
-        field_name='organization_id', lookup_expr='exact')
-    name = CharFilter(field_name='name', lookup_expr='icontains')
+    organization = CharFilter(field_name="organization_id", lookup_expr="exact")
+    name = CharFilter(field_name="name", lookup_expr="icontains")
 
     class Meta:
         model = Project
-        fields = ['organization', 'name']
+        fields = ["organization", "name"]
 
 
 class ProjectListCreateView(generics.ListCreateAPIView):
@@ -176,26 +207,26 @@ class ProjectListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = ProjectFilter
-    search_fields = ['name']
+    search_fields = ["name"]
 
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    lookup_field = 'slug'
+    lookup_field = "slug"
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return ProjectDetailSerializer
         return ProjectSerializer
 
 
 class ProjectNotesFilter(FilterSet):
-    project = CharFilter(field_name='project__slug', lookup_expr='icontains')
+    project = CharFilter(field_name="project__slug", lookup_expr="icontains")
 
     class Meta:
         model = ProjectNotes
-        fields = ['project']
+        fields = ["project"]
 
 
 class ProjectNotesListCreateView(generics.ListCreateAPIView):
@@ -205,7 +236,7 @@ class ProjectNotesListCreateView(generics.ListCreateAPIView):
     filterset_class = ProjectNotesFilter
 
     def perform_create(self, serializer):
-        project_slug = self.request.data.get('project_slug')
+        project_slug = self.request.data.get("project_slug")
         project = Project.objects.get(slug=project_slug)
         serializer.save(user=self.request.user, project=project)
 
@@ -216,11 +247,11 @@ class ProjectNotesDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectReminderFilter(FilterSet):
-    project = CharFilter(field_name='project__slug', lookup_expr='icontains')
+    project = CharFilter(field_name="project__slug", lookup_expr="icontains")
 
     class Meta:
         model = ProjectReminder
-        fields = ['project']
+        fields = ["project"]
 
 
 class ProjectReminderListCreateView(generics.ListCreateAPIView):
@@ -230,7 +261,7 @@ class ProjectReminderListCreateView(generics.ListCreateAPIView):
     filterset_class = ProjectReminderFilter
 
     def perform_create(self, serializer):
-        project_slug = self.request.data.get('project_slug')
+        project_slug = self.request.data.get("project_slug")
         project = Project.objects.get(slug=project_slug)
         serializer.save(user=self.request.user, project=project)
 
@@ -248,14 +279,14 @@ class ProjectReminderDetailView(generics.RetrieveUpdateDestroyAPIView):
 class UpdateReminderView(generics.UpdateAPIView):
     queryset = ProjectReminder.objects.all()
     serializer_class = ProjectReminderSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
 
     def perform_update(self, serializer):
-        reminder = self.kwargs.get('id')
+        reminder = self.kwargs.get("id")
         if reminder:
             reminder = ProjectReminder.objects.get(id=reminder)
             reminder.is_completed = not reminder.is_completed
             reminder.save()
-            return Response({
-                'message': 'Reminder updated successfully'
-            }, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Reminder updated successfully"}, status=status.HTTP_200_OK
+            )

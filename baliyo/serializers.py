@@ -21,6 +21,7 @@ from .models import (
     ProjectDemo,
     ProjectInventoryUsed,
     ProjectTool,
+    ProjectToolUsed,
     Service,
     TeamMember,
     TechnicalDocument,
@@ -111,6 +112,28 @@ class ProjectToolSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectTool
         fields = "__all__"
+
+
+class ProjectToolUsedSerializer(serializers.ModelSerializer):
+    tool_name = serializers.CharField(source="tool.name", read_only=True)
+    tool_slug = serializers.CharField(source="tool.slug", read_only=True)
+    tool_details = ProjectToolSerializer(source="tool", read_only=True)
+    project_title = serializers.CharField(source="project.title", read_only=True)
+
+    class Meta:
+        model = ProjectToolUsed
+        fields = [
+            "id",
+            "project",
+            "project_title",
+            "tool",
+            "tool_name",
+            "tool_slug",
+            "tool_details",
+            "quantity",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class ComponentModelSerializer(serializers.ModelSerializer):
@@ -209,20 +232,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         source="technical_document", many=True, read_only=True
     )
     components_used = ProjectInventoryUsedSerializer(many=True, read_only=True)
+    tools_used = ProjectToolUsedSerializer(many=True, read_only=True)
     daily_updates = serializers.SerializerMethodField()
-    tools = ProjectToolSerializer(many=True, read_only=True)
-    tool_ids = serializers.PrimaryKeyRelatedField(
-        queryset=ProjectTool.objects.all(),
-        write_only=True,
-        many=True,
-        required=False,
-    )
-    # Accepts a list of tool names — creates the tool if it doesn't exist
-    tool_names = serializers.ListField(
-        child=serializers.CharField(max_length=255),
-        write_only=True,
-        required=False,
-    )
 
     class Meta:
         model = Project
@@ -233,50 +244,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         return ProjectDailyUpdateSerializer(
             updates, many=True, context=self.context
         ).data
-
-    def create(self, validated_data):
-        tool_ids = validated_data.pop("tool_ids", None)
-        tool_names = validated_data.pop("tool_names", None)
-
-        instance = super().create(validated_data)
-
-        if tool_ids is not None:
-            instance.tools.set(tool_ids)
-
-        if tool_names is not None:
-            current_ids = set(instance.tools.values_list("id", flat=True))
-            for name in tool_names:
-                tool, _ = ProjectTool.objects.get_or_create(
-                    name__iexact=name.strip(),
-                    defaults={"name": name.strip()},
-                )
-                current_ids.add(tool.id)
-            instance.tools.set(current_ids)
-
-        return instance
-
-    def update(self, instance, validated_data):
-        tool_ids = validated_data.pop("tool_ids", None)
-        tool_names = validated_data.pop("tool_names", None)
-
-        instance = super().update(instance, validated_data)
-
-        # If tool_ids provided, set directly
-        if tool_ids is not None:
-            instance.tools.set(tool_ids)
-
-        # If tool_names provided, get_or_create each and append to existing tools
-        if tool_names is not None:
-            current_ids = set(instance.tools.values_list("id", flat=True))
-            for name in tool_names:
-                tool, _ = ProjectTool.objects.get_or_create(
-                    name__iexact=name.strip(),
-                    defaults={"name": name.strip()},
-                )
-                current_ids.add(tool.id)
-            instance.tools.set(current_ids)
-
-        return instance
 
 
 class BlogTagSerializer(serializers.ModelSerializer):

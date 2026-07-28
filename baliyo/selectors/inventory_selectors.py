@@ -9,6 +9,7 @@ from ..models import (
     ProjectDailyUpdate,
     ProjectInventoryUsed,
     ProjectTool,
+    ProjectToolUsed,
     Vendor,
 )
 
@@ -32,6 +33,14 @@ def bill_of_material_list_select() -> QuerySet[BillOfMaterial]:
 def project_tool_list_select() -> QuerySet[ProjectTool]:
     return ProjectTool.objects.all().order_by("-created_at")
 
+
+def project_tool_used_list_select() -> QuerySet[ProjectToolUsed]:
+    return (
+        ProjectToolUsed.objects
+        .all()
+        .select_related("project", "tool")
+        .order_by("-created_at")
+    )
 
 def project_tool_detail_select_by_slug(slug: str) -> ProjectTool:
     return ProjectTool.objects.filter(slug=slug).first()

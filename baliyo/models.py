@@ -78,6 +78,7 @@ class BillOfMaterial(models.Model):
 class ProjectTool(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
+    quantity = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -207,7 +208,7 @@ class Project(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     category = models.ManyToManyField("Service", related_name="projects", blank=True)
-    tools = models.ManyToManyField("ProjectTool", related_name="projects", blank=True)
+
     description = models.TextField(null=True, blank=True)
     specs = models.TextField(null=True, blank=True)
     problem_it_solves = models.TextField(null=True, blank=True)
@@ -245,6 +246,27 @@ class ProjectInventoryUsed(models.Model):
 
     def __str__(self):
         return f"{self.project.title} - {self.inventory}"
+
+
+class ProjectToolUsed(models.Model):
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, related_name="tools_used"
+    )
+    tool = models.ForeignKey(
+        "ProjectTool", on_delete=models.CASCADE, related_name="projects_used"
+    )
+    quantity = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("project", "tool")
+        indexes = [
+            models.Index(fields=["project", "tool"]),
+        ]
+
+    def __str__(self):
+        return f"{self.project.title} - {self.tool.name}"
 
 
 class ProjectDemo(models.Model):

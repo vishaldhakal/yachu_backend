@@ -2,6 +2,7 @@ import os
 
 import resend
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
@@ -32,6 +33,7 @@ from .selectors import (
     project_daily_update_list_select,
     project_inventory_used_list_select,
     project_tool_list_select,
+    project_tool_used_list_select,
     vendor_list_select,
 )
 from .serializers import (
@@ -58,6 +60,7 @@ from .serializers import (
     ProjectSerializer,
     ProjectSmallSerializer,
     ProjectToolSerializer,
+    ProjectToolUsedSerializer,
     ServiceSerializer,
     ServiceSmallSerializer,
     TeamMemberSerializer,
@@ -75,6 +78,9 @@ from .services import (
     project_daily_update_create,
     project_inventory_used_create,
     project_tool_create,
+    project_tool_used_create,
+    project_tool_used_delete,
+    project_tool_used_update,
     vendor_create,
 )
 
@@ -161,7 +167,12 @@ class ProjectListCreateView(generics.ListCreateAPIView):
 
 class ProjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all().prefetch_related(
-        "images", "category", "demos", "technical_document"
+        "images",
+        "category",
+        "demos",
+        "technical_document",
+        "components_used__inventory__component_model",
+        "tools_used__tool",
     )
     serializer_class = ProjectSerializer
     lookup_field = "slug"
@@ -443,6 +454,7 @@ class LeaveFormDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class VendorListCreateView(generics.ListCreateAPIView):
     serializer_class = VendorSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return vendor_list_select()
@@ -468,28 +480,104 @@ class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ProjectToolListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectToolSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return project_tool_list_select()
 
     def perform_create(self, serializer):
         serializer.instance = project_tool_create(
-            name=serializer.validated_data.get("name")
+            name=serializer.validated_data.get("name"),
+            quantity=serializer.validated_data.get("quantity"),
         )
 
 
 class ProjectToolDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProjectToolSerializer
-    lookup_field = "slug"
 
     def get_queryset(self):
         return project_tool_list_select()
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        lookup = self.kwargs.get("slug") or self.kwargs.get("pk")
+        if str(lookup).isdigit():
+            return get_object_or_404(queryset, pk=int(lookup))
+        return get_object_or_404(queryset, slug=lookup)
+
+
+# ProjectToolUsed Views
+
+
+class ProjectToolUsedListCreateView(generics.ListCreateAPIView):
+    serializer_class = ProjectToolUsedSerializer
+
+    def get_queryset(self):
+        queryset = project_tool_used_list_select()
+        project_id = self.request.query_params.get("project", None)
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            instance = project_tool_used_create(
+                project_id=serializer.validated_data.get("project").id,
+                tool=serializer.validated_data.get("tool"),
+                quantity=serializer.validated_data.get("quantity"),
+            )
+        except ValueError as err:
+            return Response(
+                {"detail": str(err)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            ProjectToolUsedSerializer(instance, context={"request": request}).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class ProjectToolUsedDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProjectToolUsedSerializer
+
+    def get_queryset(self):
+        return project_tool_used_list_select()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        try:
+            updated_instance = project_tool_used_update(
+                instance=instance,
+                new_quantity=serializer.validated_data.get(
+                    "quantity", instance.quantity
+                ),
+            )
+        except ValueError as err:
+            return Response(
+                {"detail": str(err)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            ProjectToolUsedSerializer(
+                updated_instance, context={"request": request}
+            ).data
+        )
+
+    def perform_destroy(self, instance):
+        project_tool_used_delete(instance=instance)
 
 
 # Component Views
 
 
 class ComponentListCreateView(generics.ListCreateAPIView):
+    pagination_class = CustomPagination
+
     def get_serializer_class(self):
         if self.request.method == "GET":
             return ComponentSmallSerializer
@@ -518,6 +606,7 @@ class ComponentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ComponentModelListCreateView(generics.ListCreateAPIView):
     serializer_class = ComponentModelSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         queryset = component_model_list_select()
@@ -548,6 +637,8 @@ class ComponentModelDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ComponentPurchaseListCreateView(generics.ListCreateAPIView):
+    pagination_class = CustomPagination
+
     def get_serializer_class(self):
         if self.request.method == "POST":
             return ComponentPurchaseDetailSerializer
@@ -602,6 +693,7 @@ class ComponentPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class InventoryListCreateView(generics.ListCreateAPIView):
     serializer_class = InventorySerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return inventory_list_select()
@@ -658,6 +750,7 @@ class ProjectInventoryUsedDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ProjectDailyUpdateListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectDailyUpdateSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         queryset = project_daily_update_list_select()
