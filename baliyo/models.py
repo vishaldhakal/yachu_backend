@@ -201,6 +201,7 @@ class Project(models.Model):
     STATUS_CHOICES = (
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
+        ("published",  "Published"),
     )
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default="in_progress", db_index=True
