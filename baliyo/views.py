@@ -1,3 +1,4 @@
+import json
 import os
 
 import resend
@@ -648,11 +649,19 @@ class ComponentPurchaseListCreateView(generics.ListCreateAPIView):
         return component_purchase_list_select()
 
     def perform_create(self, serializer):
-        items_data = self.request.data.get("items", [])
+        raw_items = self.request.data.get("items", [])
+        if isinstance(raw_items, str):
+            try:
+                items_data = json.loads(raw_items)
+            except (ValueError, TypeError):
+                items_data = []
+        else:
+            items_data = raw_items
         serializer.instance = component_purchase_create(
             vendor=serializer.validated_data.get("vendor"),
             purchase_date=serializer.validated_data.get("purchase_date"),
             notes=serializer.validated_data.get("notes"),
+            bill_file=self.request.FILES.get("bill_file"),
             component_model=None,
             quantity=0,
             price_per_item=0.0,
@@ -667,7 +676,14 @@ class ComponentPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
         return component_purchase_list_select()
 
     def perform_update(self, serializer):
-        items_data = self.request.data.get("items", None)
+        raw_items = self.request.data.get("items", None)
+        if isinstance(raw_items, str):
+            try:
+                items_data = json.loads(raw_items)
+            except (ValueError, TypeError):
+                items_data = None
+        else:
+            items_data = raw_items
         serializer.instance = component_purchase_update(
             purchase=self.get_object(),
             vendor=serializer.validated_data.get("vendor", serializer.instance.vendor),
@@ -675,6 +691,7 @@ class ComponentPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
                 "purchase_date", serializer.instance.purchase_date
             ),
             notes=serializer.validated_data.get("notes", serializer.instance.notes),
+            bill_file=self.request.FILES.get("bill_file"),
             items_data=items_data
             if items_data is not None
             else [

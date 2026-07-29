@@ -125,6 +125,7 @@ def component_purchase_create(
     vendor: Vendor = None,
     purchase_date=None,
     notes: str = None,
+    bill_file=None,
     component_model: "ComponentModel" = None,
     quantity: int = 0,
     price_per_item: float = 0.0,
@@ -135,6 +136,7 @@ def component_purchase_create(
         vendor=vendor,
         purchase_date=purchase_date,
         notes=notes,
+        bill_file=bill_file,
         total_price=0.0,
     )
 
@@ -184,6 +186,7 @@ def component_purchase_update(
     vendor: Vendor = None,
     purchase_date=None,
     notes: str = None,
+    bill_file=None,
     items_data: list = None,
 ) -> ComponentPurchase:
     # Map old items & quantities before clearing
@@ -199,6 +202,9 @@ def component_purchase_update(
     purchase.vendor = vendor
     purchase.purchase_date = purchase_date
     purchase.notes = notes
+    if bill_file is not None:
+        purchase.bill_file = bill_file
+
 
     grand_total = 0.0
 

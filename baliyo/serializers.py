@@ -432,6 +432,7 @@ class ComponentPurchaseListSerializer(serializers.ModelSerializer):
             "purchase_date",
             "total_price",
             "notes",
+            "bill_file",
             "created_at",
             "updated_at",
         ]
@@ -460,10 +461,12 @@ class ComponentPurchaseDetailSerializer(serializers.ModelSerializer):
             "purchase_date",
             "total_price",
             "notes",
+            "bill_file",
             "items",
             "created_at",
             "updated_at",
         ]
+
 
 
 # Alias for backward compatibility if imported elsewhere

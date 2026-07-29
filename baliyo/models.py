@@ -140,6 +140,9 @@ class ComponentPurchase(models.Model):
     purchase_date = models.DateField(null=True, blank=True)
     total_price = models.FloatField(null=True, blank=True, default=0.0)
     notes = models.TextField(null=True, blank=True)
+    bill_file = models.FileField(
+        upload_to="component_purchase_bills/", null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
