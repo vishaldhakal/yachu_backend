@@ -20,6 +20,7 @@ from .models import (
     ProjectDailyUpdate,
     ProjectDemo,
     ProjectInventoryUsed,
+    ProjectOrder,
     ProjectTool,
     ProjectToolUsed,
     Service,
@@ -471,3 +472,19 @@ class ComponentPurchaseDetailSerializer(serializers.ModelSerializer):
 
 # Alias for backward compatibility if imported elsewhere
 ComponentPurchaseSerializer = ComponentPurchaseDetailSerializer
+
+
+class ProjectOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectOrder
+        fields = [
+            "id",
+            "full_name",
+            "phone_number",
+            "project_name",
+            "quantity",
+            "remarks",
+            "created_at",
+            "updated_at",
+        ]
+

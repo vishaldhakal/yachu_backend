@@ -204,7 +204,7 @@ class Project(models.Model):
     STATUS_CHOICES = (
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
-        ("published",  "Published"),
+        ("published", "Published"),
     )
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default="in_progress", db_index=True
@@ -318,6 +318,19 @@ class ProjectDailyUpdate(models.Model):
 
     def __str__(self):
         return f"{self.project.title} - {self.task[:30]}"
+
+
+class ProjectOrder(models.Model):
+    full_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    project_name = models.CharField(max_length=255)
+    quantity = models.IntegerField(default=1)
+    remarks = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.project_name
 
 
 class OurPartner(models.Model):

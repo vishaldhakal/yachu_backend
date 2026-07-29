@@ -21,6 +21,7 @@ from .models import (
     OurPartner,
     Project,
     ProjectDemo,
+    ProjectOrder,
     Service,
     TeamMember,
     TechnicalDocument,
@@ -58,6 +59,7 @@ from .serializers import (
     ProjectDailyUpdateSerializer,
     ProjectDemoSerializer,
     ProjectInventoryUsedSerializer,
+    ProjectOrderSerializer,
     ProjectSerializer,
     ProjectSmallSerializer,
     ProjectToolSerializer,
@@ -794,3 +796,18 @@ class ProjectDailyUpdateDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return project_daily_update_list_select()
+
+
+# ProjectOrder Views
+
+
+class ProjectOrderListCreateView(generics.ListCreateAPIView):
+    queryset = ProjectOrder.objects.all().order_by("-created_at")
+    serializer_class = ProjectOrderSerializer
+    pagination_class = CustomPagination
+
+
+class ProjectOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProjectOrder.objects.all()
+    serializer_class = ProjectOrderSerializer
+

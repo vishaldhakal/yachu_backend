@@ -24,6 +24,7 @@ from .models import (
     ProjectDailyUpdate,
     ProjectDemo,
     ProjectInventoryUsed,
+    ProjectOrder,
     ProjectTool,
     Service,
     TeamMember,
@@ -302,3 +303,15 @@ class LeaveFormAdmin(ModelAdmin):
     ]
     list_filter = ["reason_of_leave", "approved_by"]
     search_fields = ["employee_name", "employee_email", "brief_reason"]
+
+
+@admin.register(ProjectOrder)
+class ProjectOrderAdmin(ModelAdmin):
+    list_display = [
+        "project_name",
+        "full_name",
+        "phone_number",
+        "quantity",
+        "created_at",
+    ]
+    search_fields = ["project_name", "full_name", "phone_number"]

@@ -222,4 +222,15 @@ urlpatterns = [
         views.ProjectDailyUpdateDetailView.as_view(),
         name="project-daily-update-detail",
     ),
+    # Project Order URLs
+    path(
+        "project-orders/",
+        views.ProjectOrderListCreateView.as_view(),
+        name="project-order-list-create",
+    ),
+    path(
+        "project-orders/<int:pk>/",
+        views.ProjectOrderDetailView.as_view(),
+        name="project-order-detail",
+    ),
 ]
