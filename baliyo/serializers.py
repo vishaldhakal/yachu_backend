@@ -65,7 +65,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         exclude = ["created_at", "updated_at"]
 
     def get_projects(self, obj):
-        projects = obj.projects.filter(status="completed").order_by("-created_at")
+        projects = obj.projects.filter(status="published").order_by("-created_at")
 
         return ProjectSmallSerializer(projects, many=True, context=self.context).data
 

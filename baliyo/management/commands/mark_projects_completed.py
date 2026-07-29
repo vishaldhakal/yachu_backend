@@ -4,7 +4,7 @@ from baliyo.models import Project
 
 
 class Command(BaseCommand):
-    help = "Mark all projects (or a filtered subset) as 'completed'."
+    help = "Mark all projects (or a filtered subset) as 'published'."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -27,9 +27,7 @@ class Command(BaseCommand):
 
         if current_status:
             qs = qs.filter(status=current_status)
-            self.stdout.write(
-                f"Filtering projects with status='{current_status}' ..."
-            )
+            self.stdout.write(f"Filtering projects with status='{current_status}' ...")
 
         count = qs.count()
 
@@ -40,16 +38,16 @@ class Command(BaseCommand):
         if dry_run:
             self.stdout.write(
                 self.style.WARNING(
-                    f"[DRY RUN] Would mark {count} project(s) as 'completed'."
+                    f"[DRY RUN] Would mark {count} project(s) as 'published'."
                 )
             )
             for project in qs:
                 self.stdout.write(f"  - [{project.status}] {project.title}")
             return
 
-        updated = qs.update(status="completed")
+        updated = qs.update(status="published")
         self.stdout.write(
             self.style.SUCCESS(
-                f"Successfully marked {updated} project(s) as 'completed'."
+                f"Successfully marked {updated} project(s) as 'published'."
             )
         )
