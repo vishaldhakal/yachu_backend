@@ -802,12 +802,19 @@ class ProjectDailyUpdateDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectOrderListCreateView(generics.ListCreateAPIView):
-    queryset = ProjectOrder.objects.all().order_by("-created_at")
     serializer_class = ProjectOrderSerializer
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = ProjectOrder.objects.all().order_by("-created_at")
+        search = self.request.query_params.get("search", None)
+        if search:
+            queryset = queryset.filter(
+                Q(full_name__icontains=search) | Q(phone_number__icontains=search)
+            ).distinct()
+        return queryset
 
 
 class ProjectOrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ProjectOrder.objects.all()
     serializer_class = ProjectOrderSerializer
-
