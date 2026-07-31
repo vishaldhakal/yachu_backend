@@ -5,10 +5,12 @@ import resend
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from rest_framework import generics, status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from .filters import ComponentFilter, InventoryFilter
 from .models import (
     Blog,
     BlogCategory,
@@ -458,6 +460,8 @@ class LeaveFormDetailView(generics.RetrieveUpdateDestroyAPIView):
 class VendorListCreateView(generics.ListCreateAPIView):
     serializer_class = VendorSerializer
     pagination_class = CustomPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["name", "phone_no"]
 
     def get_queryset(self):
         return vendor_list_select()
@@ -580,6 +584,15 @@ class ProjectToolUsedDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ComponentListCreateView(generics.ListCreateAPIView):
     pagination_class = CustomPagination
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_class = ComponentFilter
+    search_fields = ["name", "vendor__name", "slug"]
+    ordering_fields = ["created_at", "name"]
+    ordering = ["-created_at"]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -641,6 +654,8 @@ class ComponentModelDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ComponentPurchaseListCreateView(generics.ListCreateAPIView):
     pagination_class = CustomPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["vendor__name", "notes"]
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -713,6 +728,19 @@ class ComponentPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
 class InventoryListCreateView(generics.ListCreateAPIView):
     serializer_class = InventorySerializer
     pagination_class = CustomPagination
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_class = InventoryFilter
+    search_fields = [
+        "component_model__name",
+        "component_model__component__name",
+        "component_model__component__vendor__name",
+    ]
+    ordering_fields = ["created_at", "quantity", "component_model__name"]
+    ordering = ["-created_at"]
 
     def get_queryset(self):
         return inventory_list_select()
@@ -770,6 +798,8 @@ class ProjectInventoryUsedDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProjectDailyUpdateListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectDailyUpdateSerializer
     pagination_class = CustomPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["project__title", "task"]
 
     def get_queryset(self):
         queryset = project_daily_update_list_select()
