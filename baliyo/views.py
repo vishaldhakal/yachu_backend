@@ -461,7 +461,7 @@ class VendorListCreateView(generics.ListCreateAPIView):
     serializer_class = VendorSerializer
     pagination_class = CustomPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = ["name", "phone_no"]
+    search_fields = ["name"]
 
     def get_queryset(self):
         return vendor_list_select()
@@ -488,6 +488,8 @@ class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProjectToolListCreateView(generics.ListCreateAPIView):
     serializer_class = ProjectToolSerializer
     pagination_class = CustomPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["name", "slug"]
 
     def get_queryset(self):
         return project_tool_list_select()

@@ -1,6 +1,23 @@
 import django_filters
 
-from .models import Component, ComponentModel, Inventory
+from .models import Component, ComponentModel, Inventory, ProjectTool, Vendor
+
+
+class VendorFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    phone_no = django_filters.CharFilter(field_name="phone_no", lookup_expr="icontains")
+
+    class Meta:
+        model = Vendor
+        fields = ["name", "phone_no"]
+
+
+class ProjectToolFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+
+    class Meta:
+        model = ProjectTool
+        fields = ["name"]
 
 
 class ComponentFilter(django_filters.FilterSet):
