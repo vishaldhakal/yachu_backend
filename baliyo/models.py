@@ -159,6 +159,11 @@ class ComponentPurchase(models.Model):
 
 
 class ComponentPurchaseItem(models.Model):
+    class UnitChoices(models.TextChoices):
+        PCS = "pcs", "Pcs"
+        KG = "kg", "Kg"
+        METER = "m", "Meter"
+
     purchase = models.ForeignKey(
         ComponentPurchase,
         on_delete=models.CASCADE,
@@ -170,13 +175,18 @@ class ComponentPurchaseItem(models.Model):
         related_name="purchase_items",
     )
     quantity = models.IntegerField(default=1)
+    unit = models.CharField(
+        max_length=20,
+        choices=UnitChoices.choices,
+        default=UnitChoices.PCS,
+    )
     price_per_item = models.FloatField(default=0.0)
     total_price = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.quantity}x {self.component_model.name} for Purchase #{self.purchase_id}"
+        return f"{self.quantity} {self.unit} x {self.component_model.name} for Purchase #{self.purchase_id}"
 
     def save(self, *args, **kwargs):
         if self.quantity is not None and self.price_per_item is not None:

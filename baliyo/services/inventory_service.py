@@ -155,10 +155,13 @@ def component_purchase_create(
                 else ComponentModel.objects.get(pk=c_model)
             )
 
+            unit = item_dict.get("unit", ComponentPurchaseItem.UnitChoices.PCS)
+
             ComponentPurchaseItem.objects.create(
                 purchase=purchase,
                 component_model=target_model,
                 quantity=qty,
+                unit=unit,
                 price_per_item=price,
                 total_price=subtotal,
             )
@@ -221,10 +224,13 @@ def component_purchase_update(
                 else ComponentModel.objects.get(pk=c_model)
             )
 
+            unit = item_dict.get("unit", ComponentPurchaseItem.UnitChoices.PCS)
+
             ComponentPurchaseItem.objects.create(
                 purchase=purchase,
                 component_model=target_model,
                 quantity=qty,
+                unit=unit,
                 price_per_item=price,
                 total_price=subtotal,
             )

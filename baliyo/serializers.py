@@ -405,6 +405,7 @@ class ComponentPurchaseItemSerializer(serializers.ModelSerializer):
             "component_slug",
             "component_model_slug",
             "quantity",
+            "unit",
             "price_per_item",
             "total_price",
             "created_at",

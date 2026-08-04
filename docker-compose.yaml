@@ -3,7 +3,7 @@ version: "3.9"
 services:
   web:
     build: .
-    command: gunicorn yachu.wsgi:application --bind 0.0.0.0:8000
+    command: sh -c "python manage.py migrate && gunicorn yachu.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - yachu_media_data:/app/media   # Persist media uploads
       - yachu_static_data:/app/static # Persist static files
