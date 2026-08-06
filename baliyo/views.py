@@ -10,6 +10,11 @@ from rest_framework import filters, generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from baliyo.services.inventory_service import (
+    import_project_inventory_used,
+    import_project_tool_used,
+)
+
 from .filters import ComponentFilter, InventoryFilter
 from .models import (
     Blog,
@@ -60,10 +65,12 @@ from .serializers import (
     OurPartnerSerializer,
     ProjectDailyUpdateSerializer,
     ProjectDemoSerializer,
+    ProjectInventoryImportSerializer,
     ProjectInventoryUsedSerializer,
     ProjectOrderSerializer,
     ProjectSerializer,
     ProjectSmallSerializer,
+    ProjectToolImportSerializer,
     ProjectToolSerializer,
     ProjectToolUsedSerializer,
     ServiceSerializer,
@@ -792,6 +799,60 @@ class ProjectInventoryUsedDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return project_inventory_used_list_select()
+
+
+class ProjectInventoryImportView(generics.GenericAPIView):
+    serializer_class = ProjectInventoryImportSerializer
+
+    def post(self, request, pk=None, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        source_project_id = serializer.validated_data["project_id"]
+
+        try:
+            result = import_project_inventory_used(
+                target_project_id=pk,
+                source_project_id=source_project_id,
+            )
+            return Response(
+                {
+                    "message": "Project inventory used imported successfully",
+                    "data": result,
+                },
+                status=status.HTTP_200_OK,
+            )
+        except ValueError as err:
+            return Response(
+                {"detail": str(err)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class ProjectToolImportView(generics.GenericAPIView):
+    serializer_class = ProjectToolImportSerializer
+
+    def post(self, request, pk=None, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        source_project_id = serializer.validated_data["project_id"]
+
+        try:
+            result = import_project_tool_used(
+                target_project_id=pk,
+                source_project_id=source_project_id,
+            )
+            return Response(
+                {
+                    "message": "Project tools used imported successfully",
+                    "data": result,
+                },
+                status=status.HTTP_200_OK,
+            )
+        except ValueError as err:
+            return Response(
+                {"detail": str(err)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 # ProjectDailyUpdate Views

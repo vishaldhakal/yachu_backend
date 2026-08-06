@@ -145,6 +145,11 @@ urlpatterns = [
         views.ProjectToolDetailView.as_view(),
         name="project-tool-detail-pk",
     ),
+    path(
+        "project-tools/<int:pk>/import/",
+        views.ProjectToolImportView.as_view(),
+        name="project-tool-import",
+    ),
     # Project Tool Used URLs
     path(
         "project-tool-used/",
@@ -199,6 +204,11 @@ urlpatterns = [
         "inventory/<int:pk>/",
         views.InventoryDetailView.as_view(),
         name="inventory-detail",
+    ),
+    path(
+        "inventory/<int:pk>/import/",
+        views.ProjectInventoryImportView.as_view(),
+        name="project-inventory-import",
     ),
     # Project Inventory Used URLs
     path(

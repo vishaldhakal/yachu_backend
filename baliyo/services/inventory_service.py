@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 from ..models import (
     BillOfMaterial,
@@ -208,7 +209,6 @@ def component_purchase_update(
     if bill_file is not None:
         purchase.bill_file = bill_file
 
-
     grand_total = 0.0
 
     if items_data:
@@ -305,3 +305,172 @@ def project_daily_update_create(
         reason=reason,
         problem=problem,
     )
+
+
+@transaction.atomic
+def inventory_import(*, items_data: list) -> dict:
+    created_count = 0
+    updated_count = 0
+
+    for item in items_data:
+        comp_name = item.get("component_name")
+        if not comp_name:
+            continue
+
+        model_name = item.get("model_name") or comp_name
+        vendor_name = item.get("vendor_name")
+        specs = item.get("specs", "")
+        qty = int(item.get("quantity", 0))
+
+        vendor_obj = None
+        if vendor_name:
+            vendor_obj, _ = Vendor.objects.get_or_create(name=vendor_name)
+
+        comp_obj, _ = Component.objects.get_or_create(
+            name=comp_name,
+            defaults={"vendor": vendor_obj},
+        )
+        if vendor_obj and not comp_obj.vendor:
+            comp_obj.vendor = vendor_obj
+            comp_obj.save(update_fields=["vendor", "updated_at"])
+
+        model_obj, _ = ComponentModel.objects.get_or_create(
+            component=comp_obj,
+            name=model_name,
+            defaults={"specs": specs},
+        )
+
+        inv, is_new = Inventory.objects.get_or_create(
+            component_model=model_obj,
+            defaults={"quantity": qty},
+        )
+
+        if is_new:
+            created_count += 1
+        else:
+            inv.quantity = (inv.quantity or 0) + qty
+            inv.save(update_fields=["quantity", "updated_at"])
+            updated_count += 1
+
+    return {
+        "created_count": created_count,
+        "updated_count": updated_count,
+        "total_processed": len(items_data),
+    }
+
+
+@transaction.atomic
+def tool_import(*, items_data: list) -> dict:
+    created_count = 0
+    updated_count = 0
+
+    for item in items_data:
+        name = item.get("name")
+        if not name:
+            continue
+        qty = int(item.get("quantity", 0))
+
+        tool_obj, is_new = ProjectTool.objects.get_or_create(
+            name=name,
+            defaults={"quantity": qty},
+        )
+
+        if is_new:
+            created_count += 1
+        else:
+            tool_obj.quantity = (tool_obj.quantity or 0) + qty
+            tool_obj.save(update_fields=["quantity", "updated_at"])
+            updated_count += 1
+
+
+@transaction.atomic
+def import_project_inventory_used(
+    *, target_project_id: int, source_project_id: int
+) -> dict:
+    from ..models import Project, ProjectInventoryUsed
+
+    target_project = get_object_or_404(Project, pk=target_project_id)
+    source_project = get_object_or_404(Project, pk=source_project_id)
+
+    imported_inventories = 0
+    source_inv_items = ProjectInventoryUsed.objects.filter(
+        project=source_project
+    ).select_related("inventory", "inventory__component_model")
+    for item in source_inv_items:
+        inv = item.inventory
+        qty = item.quantity or 0
+
+        # Check main stock availability before deducting
+        current_stock = inv.quantity or 0
+        if current_stock < qty:
+            raise ValueError(
+                f"Insufficient stock for inventory item '{inv.component_model.name}'. Available: {current_stock}, Requested: {qty}"
+            )
+
+        # Deduct from main inventory stock
+        inv.quantity = current_stock - qty
+        inv.save(update_fields=["quantity", "updated_at"])
+
+        # Add or update target project inventory used
+        target_inv_used, created = ProjectInventoryUsed.objects.get_or_create(
+            project=target_project,
+            inventory=inv,
+            defaults={"quantity": qty},
+        )
+        if not created:
+            target_inv_used.quantity = (target_inv_used.quantity or 0) + qty
+            target_inv_used.save(update_fields=["quantity", "updated_at"])
+
+        imported_inventories += 1
+
+    return {
+        "imported_inventory_items_count": imported_inventories,
+        "target_project_id": target_project.id,
+        "source_project_id": source_project.id,
+    }
+
+
+@transaction.atomic
+def import_project_tool_used(*, target_project_id: int, source_project_id: int) -> dict:
+    from ..models import Project, ProjectToolUsed
+
+    target_project = get_object_or_404(Project, pk=target_project_id)
+    source_project = get_object_or_404(Project, pk=source_project_id)
+
+    imported_tools = 0
+    source_tool_items = ProjectToolUsed.objects.filter(
+        project=source_project
+    ).select_related("tool")
+    for t_item in source_tool_items:
+        tool = t_item.tool
+        t_qty = t_item.quantity or 0
+
+        # Only check and deduct quantity if tool has tracked quantity stock specified
+        if tool.quantity is not None and t_qty > 0:
+            current_tool_stock = tool.quantity or 0
+            if current_tool_stock < t_qty:
+                raise ValueError(
+                    f"Insufficient stock for tool '{tool.name}'. Available: {current_tool_stock}, Requested: {t_qty}"
+                )
+            tool.quantity = current_tool_stock - t_qty
+            tool.save(update_fields=["quantity", "updated_at"])
+
+        target_tool_used, created = ProjectToolUsed.objects.get_or_create(
+            project=target_project,
+            tool=tool,
+            defaults={"quantity": t_item.quantity},
+        )
+        if not created and t_item.quantity is not None:
+            if target_tool_used.quantity is None:
+                target_tool_used.quantity = t_item.quantity
+            else:
+                target_tool_used.quantity += t_item.quantity
+            target_tool_used.save(update_fields=["quantity", "updated_at"])
+
+        imported_tools += 1
+
+    return {
+        "imported_tool_items_count": imported_tools,
+        "target_project_id": target_project.id,
+        "source_project_id": source_project.id,
+    }

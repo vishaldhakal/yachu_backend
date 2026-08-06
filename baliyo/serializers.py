@@ -470,11 +470,7 @@ class ComponentPurchaseDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-
 # Alias for backward compatibility if imported elsewhere
-ComponentPurchaseSerializer = ComponentPurchaseDetailSerializer
-
-
 class ProjectOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectOrder
@@ -489,3 +485,14 @@ class ProjectOrderSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
+
+class ProjectInventoryImportSerializer(serializers.Serializer):
+    project_id = serializers.IntegerField(
+        help_text="ID of the source project to import inventory used from"
+    )
+
+
+class ProjectToolImportSerializer(serializers.Serializer):
+    project_id = serializers.IntegerField(
+        help_text="ID of the source project to import tools used from"
+    )
