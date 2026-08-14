@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Any, Dict
 
 from django.db import transaction
@@ -128,7 +129,7 @@ def component_purchase_create(
     notes: str = None,
     bill_file=None,
     component_model: "ComponentModel" = None,
-    quantity: int = 0,
+    quantity: Any = 0,
     price_per_item: float = 0.0,
     items_data: list = None,
 ) -> ComponentPurchase:
@@ -141,13 +142,13 @@ def component_purchase_create(
         total_price=0.0,
     )
 
-    grand_total = 0.0
+    grand_total = Decimal("0.0")
 
     if items_data:
         for item_dict in items_data:
             c_model = item_dict.get("component_model")
-            qty = int(item_dict.get("quantity", 0))
-            price = float(item_dict.get("price_per_item", 0.0))
+            qty = Decimal(str(item_dict.get("quantity", 0)))
+            price = Decimal(str(item_dict.get("price_per_item", 0.0)))
             subtotal = qty * price
 
             target_model = (
@@ -163,8 +164,8 @@ def component_purchase_create(
                 component_model=target_model,
                 quantity=qty,
                 unit=unit,
-                price_per_item=price,
-                total_price=subtotal,
+                price_per_item=float(price),
+                total_price=float(subtotal),
             )
 
             grand_total += subtotal
@@ -172,12 +173,12 @@ def component_purchase_create(
             # Get or create inventory for this component model and increase stock
             inventory, _ = Inventory.objects.get_or_create(
                 component_model=target_model,
-                defaults={"quantity": 0},
+                defaults={"quantity": Decimal("0")},
             )
-            inventory.quantity = (inventory.quantity or 0) + qty
+            inventory.quantity = (inventory.quantity or Decimal("0")) + qty
             inventory.save()
 
-    purchase.total_price = grand_total
+    purchase.total_price = float(grand_total)
     purchase.save()
 
     return purchase
@@ -197,7 +198,7 @@ def component_purchase_update(
     old_items_map = {}
     for old_item in purchase.items.all():
         m_id = old_item.component_model_id
-        old_items_map[m_id] = old_items_map.get(m_id, 0) + old_item.quantity
+        old_items_map[m_id] = old_items_map.get(m_id, Decimal("0")) + Decimal(str(old_item.quantity))
 
     # Clear previous items
     purchase.items.all().delete()
@@ -209,13 +210,13 @@ def component_purchase_update(
     if bill_file is not None:
         purchase.bill_file = bill_file
 
-    grand_total = 0.0
+    grand_total = Decimal("0.0")
 
     if items_data:
         for item_dict in items_data:
             c_model = item_dict.get("component_model")
-            qty = int(item_dict.get("quantity", 0))
-            price = float(item_dict.get("price_per_item", 0.0))
+            qty = Decimal(str(item_dict.get("quantity", 0)))
+            price = Decimal(str(item_dict.get("price_per_item", 0.0)))
             subtotal = qty * price
 
             target_model = (
@@ -231,34 +232,34 @@ def component_purchase_update(
                 component_model=target_model,
                 quantity=qty,
                 unit=unit,
-                price_per_item=price,
-                total_price=subtotal,
+                price_per_item=float(price),
+                total_price=float(subtotal),
             )
 
             grand_total += subtotal
 
             # Calculate stock delta vs old purchase item
-            old_qty = old_items_map.pop(target_model.id, 0)
+            old_qty = old_items_map.pop(target_model.id, Decimal("0"))
             delta = qty - old_qty
 
             # Get or create inventory entry if not already present
             inventory, _ = Inventory.objects.get_or_create(
                 component_model=target_model,
-                defaults={"quantity": 0},
+                defaults={"quantity": Decimal("0")},
             )
 
             if delta != 0:
-                inventory.quantity = max(0, (inventory.quantity or 0) + delta)
+                inventory.quantity = max(Decimal("0"), (inventory.quantity or Decimal("0")) + delta)
                 inventory.save()
 
     # Deduct stock for items that were completely removed in the updated purchase
     for removed_model_id, removed_qty in old_items_map.items():
         inv = Inventory.objects.filter(component_model_id=removed_model_id).first()
         if inv:
-            inv.quantity = max(0, (inv.quantity or 0) - removed_qty)
+            inv.quantity = max(Decimal("0"), (inv.quantity or Decimal("0")) - removed_qty)
             inv.save()
 
-    purchase.total_price = grand_total
+    purchase.total_price = float(grand_total)
     purchase.save()
 
     return purchase
@@ -269,12 +270,12 @@ def project_inventory_used_create(
     *,
     project_id: int,
     inventory: Inventory,
-    quantity: int = 0,
+    quantity: Any = 0,
 ) -> ProjectInventoryUsed:
-    quantity = quantity or 0
+    quantity = Decimal(str(quantity or 0))
 
     # Deduct quantity from stock inventory
-    current_qty = inventory.quantity or 0
+    current_qty = Decimal(str(inventory.quantity or 0))
     if current_qty < quantity:
         raise ValueError(
             f"Insufficient stock for {inventory.component_model.name}. Available: {current_qty}, Requested: {quantity}"
@@ -320,7 +321,7 @@ def inventory_import(*, items_data: list) -> dict:
         model_name = item.get("model_name") or comp_name
         vendor_name = item.get("vendor_name")
         specs = item.get("specs", "")
-        qty = int(item.get("quantity", 0))
+        qty = Decimal(str(item.get("quantity", 0)))
 
         vendor_obj = None
         if vendor_name:
@@ -348,7 +349,7 @@ def inventory_import(*, items_data: list) -> dict:
         if is_new:
             created_count += 1
         else:
-            inv.quantity = (inv.quantity or 0) + qty
+            inv.quantity = (inv.quantity or Decimal("0")) + qty
             inv.save(update_fields=["quantity", "updated_at"])
             updated_count += 1
 
@@ -398,10 +399,10 @@ def import_project_inventory_used(
     ).select_related("inventory", "inventory__component_model")
     for item in source_inv_items:
         inv = item.inventory
-        qty = item.quantity or 0
+        qty = Decimal(str(item.quantity or 0))
 
         # Check main stock availability before deducting
-        current_stock = inv.quantity or 0
+        current_stock = Decimal(str(inv.quantity or 0))
         if current_stock < qty:
             raise ValueError(
                 f"Insufficient stock for inventory item '{inv.component_model.name}'. Available: {current_stock}, Requested: {qty}"
@@ -418,7 +419,7 @@ def import_project_inventory_used(
             defaults={"quantity": qty},
         )
         if not created:
-            target_inv_used.quantity = (target_inv_used.quantity or 0) + qty
+            target_inv_used.quantity = (target_inv_used.quantity or Decimal("0")) + qty
             target_inv_used.save(update_fields=["quantity", "updated_at"])
 
         imported_inventories += 1

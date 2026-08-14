@@ -174,7 +174,7 @@ class ComponentPurchaseItem(models.Model):
         on_delete=models.CASCADE,
         related_name="purchase_items",
     )
-    quantity = models.IntegerField(default=1)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1.0)
     unit = models.CharField(
         max_length=20,
         choices=UnitChoices.choices,
@@ -202,7 +202,7 @@ class Inventory(models.Model):
         null=True,
         blank=True,
     )
-    quantity = models.IntegerField(null=True, blank=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -254,7 +254,7 @@ class ProjectInventoryUsed(models.Model):
     inventory = models.ForeignKey(
         "Inventory", on_delete=models.CASCADE, related_name="projects_used"
     )
-    quantity = models.IntegerField(null=True, blank=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
