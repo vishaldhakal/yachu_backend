@@ -186,13 +186,14 @@ class ComponentModelAdmin(ModelAdmin):
 class ComponentPurchaseAdmin(ModelAdmin):
     list_display = [
         "vendor",
+        "project",
         "purchase_date",
         "total_price",
         "created_at",
         "updated_at",
     ]
-    list_filter = ["vendor", "purchase_date"]
-    search_fields = ["vendor__name", "notes"]
+    list_filter = ["vendor", "project", "purchase_date"]
+    search_fields = ["vendor__name", "project__title", "notes"]
     inlines = [ComponentPurchaseItemInline]
 
 

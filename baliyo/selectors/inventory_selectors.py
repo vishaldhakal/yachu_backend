@@ -1,10 +1,19 @@
-from django.db.models import QuerySet
+from django.db.models import (
+    ExpressionWrapper,
+    F,
+    FloatField,
+    OuterRef,
+    QuerySet,
+    Subquery,
+)
+from django.db.models.functions import Coalesce
 
 from ..models import (
     BillOfMaterial,
     Component,
     ComponentModel,
     ComponentPurchase,
+    ComponentPurchaseItem,
     Inventory,
     ProjectDailyUpdate,
     ProjectInventoryUsed,
@@ -94,6 +103,7 @@ def component_purchase_list_select() -> QuerySet[ComponentPurchase]:
         .all()
         .select_related(
             "vendor",
+            "project",
         )
         .prefetch_related(
             "items",
@@ -106,6 +116,15 @@ def component_purchase_list_select() -> QuerySet[ComponentPurchase]:
 
 
 def inventory_list_select() -> QuerySet[Inventory]:
+    latest_unit_price = Subquery(
+        ComponentPurchaseItem.objects.filter(
+            component_model=OuterRef("component_model")
+        )
+        .order_by("-created_at")
+        .values("price_per_item")[:1],
+        output_field=FloatField(),
+    )
+
     return (
         Inventory.objects
         .all()
@@ -113,6 +132,15 @@ def inventory_list_select() -> QuerySet[Inventory]:
             "component_model",
             "component_model__component",
             "component_model__component__vendor",
+        )
+        .annotate(
+            _unit_price=Coalesce(latest_unit_price, 0.0, output_field=FloatField())
+        )
+        .annotate(
+            _total_price=ExpressionWrapper(
+                F("quantity") * F("_unit_price"),
+                output_field=FloatField(),
+            )
         )
         .order_by("-created_at")
     )

@@ -200,6 +200,8 @@ class InventorySerializer(serializers.ModelSerializer):
     component_model_details = ComponentModelSerializer(
         source="component_model", read_only=True
     )
+    unit_price = serializers.FloatField(read_only=True)
+    total_price = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Inventory
@@ -422,6 +424,9 @@ class ComponentPurchaseListSerializer(serializers.ModelSerializer):
     vendor_address = serializers.CharField(
         source="vendor.vendor_address", read_only=True, default=None
     )
+    project_title = serializers.CharField(
+        source="project.title", read_only=True, default=None
+    )
 
     class Meta:
         model = ComponentPurchase
@@ -431,6 +436,8 @@ class ComponentPurchaseListSerializer(serializers.ModelSerializer):
             "vendor_name",
             "vendor_phone",
             "vendor_address",
+            "project",
+            "project_title",
             "purchase_date",
             "total_price",
             "notes",
@@ -450,6 +457,9 @@ class ComponentPurchaseDetailSerializer(serializers.ModelSerializer):
     vendor_address = serializers.CharField(
         source="vendor.vendor_address", read_only=True, default=None
     )
+    project_title = serializers.CharField(
+        source="project.title", read_only=True, default=None
+    )
     items = ComponentPurchaseItemSerializer(many=True, read_only=True)
 
     class Meta:
@@ -460,6 +470,8 @@ class ComponentPurchaseDetailSerializer(serializers.ModelSerializer):
             "vendor_name",
             "vendor_phone",
             "vendor_address",
+            "project",
+            "project_title",
             "purchase_date",
             "total_price",
             "notes",

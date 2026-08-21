@@ -1,6 +1,13 @@
 import django_filters
 
-from .models import Component, ComponentModel, Inventory, ProjectTool, Vendor
+from .models import (
+    Component,
+    ComponentModel,
+    ComponentPurchase,
+    Inventory,
+    ProjectTool,
+    Vendor,
+)
 
 
 class VendorFilter(django_filters.FilterSet):
@@ -79,4 +86,30 @@ class InventoryFilter(django_filters.FilterSet):
             "vendor_name",
             "min_quantity",
             "max_quantity",
+        ]
+
+
+class ComponentPurchaseFilter(django_filters.FilterSet):
+    vendor = django_filters.NumberFilter(field_name="vendor__id", lookup_expr="exact")
+    vendor_name = django_filters.CharFilter(
+        field_name="vendor__name", lookup_expr="icontains"
+    )
+    project = django_filters.NumberFilter(field_name="project__id", lookup_expr="exact")
+    project_title = django_filters.CharFilter(
+        field_name="project__title", lookup_expr="icontains"
+    )
+    purchase_date = django_filters.DateFilter(field_name="purchase_date")
+    min_price = django_filters.NumberFilter(field_name="total_price", lookup_expr="gte")
+    max_price = django_filters.NumberFilter(field_name="total_price", lookup_expr="lte")
+
+    class Meta:
+        model = ComponentPurchase
+        fields = [
+            "vendor",
+            "vendor_name",
+            "project",
+            "project_title",
+            "purchase_date",
+            "min_price",
+            "max_price",
         ]

@@ -137,6 +137,13 @@ class ComponentPurchase(models.Model):
         blank=True,
         related_name="purchases",
     )
+    project = models.ForeignKey(
+        "Project",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="component_purchases",
+    )
     purchase_date = models.DateField(null=True, blank=True)
     total_price = models.FloatField(null=True, blank=True, default=0.0)
     notes = models.TextField(null=True, blank=True)
@@ -150,12 +157,13 @@ class ComponentPurchase(models.Model):
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["vendor", "purchase_date"]),
+            models.Index(fields=["project"]),
         ]
 
     def __str__(self):
-        return f"Purchase #{self.id}" + (
-            f" from {self.vendor.name}" if self.vendor else ""
-        )
+        project_info = f" for {self.project.title}" if self.project else ""
+        vendor_info = f" from {self.vendor.name}" if self.vendor else ""
+        return f"Purchase #{self.id}" + vendor_info + project_info
 
 
 class ComponentPurchaseItem(models.Model):
@@ -207,7 +215,27 @@ class Inventory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.component_model.name
+        return self.component_model.name if self.component_model else f"Inventory #{self.id}"
+
+    @property
+    def unit_price(self) -> float:
+        if hasattr(self, "_unit_price") and self._unit_price is not None:
+            return float(self._unit_price)
+        if not self.component_model_id:
+            return 0.0
+        latest_item = (
+            ComponentPurchaseItem.objects.filter(component_model=self.component_model)
+            .order_by("-created_at")
+            .first()
+        )
+        return latest_item.price_per_item if latest_item else 0.0
+
+    @property
+    def total_price(self) -> float:
+        if hasattr(self, "_total_price") and self._total_price is not None:
+            return float(self._total_price)
+        qty = float(self.quantity or 0.0)
+        return round(qty * self.unit_price, 2)
 
 
 class Project(models.Model):

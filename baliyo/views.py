@@ -15,7 +15,7 @@ from baliyo.services.inventory_service import (
     import_project_tool_used,
 )
 
-from .filters import ComponentFilter, InventoryFilter
+from .filters import ComponentFilter, ComponentPurchaseFilter, InventoryFilter
 from .models import (
     Blog,
     BlogCategory,
@@ -663,8 +663,15 @@ class ComponentModelDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ComponentPurchaseListCreateView(generics.ListCreateAPIView):
     pagination_class = CustomPagination
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["vendor__name", "notes"]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_class = ComponentPurchaseFilter
+    search_fields = ["vendor__name", "project__title", "notes"]
+    ordering_fields = ["created_at", "purchase_date", "total_price"]
+    ordering = ["-created_at"]
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -685,6 +692,7 @@ class ComponentPurchaseListCreateView(generics.ListCreateAPIView):
             items_data = raw_items
         serializer.instance = component_purchase_create(
             vendor=serializer.validated_data.get("vendor"),
+            project=serializer.validated_data.get("project"),
             purchase_date=serializer.validated_data.get("purchase_date"),
             notes=serializer.validated_data.get("notes"),
             bill_file=self.request.FILES.get("bill_file"),
@@ -713,6 +721,7 @@ class ComponentPurchaseDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer.instance = component_purchase_update(
             purchase=self.get_object(),
             vendor=serializer.validated_data.get("vendor", serializer.instance.vendor),
+            project=serializer.validated_data.get("project", serializer.instance.project),
             purchase_date=serializer.validated_data.get(
                 "purchase_date", serializer.instance.purchase_date
             ),

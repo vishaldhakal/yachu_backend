@@ -11,6 +11,7 @@ from ..models import (
     ComponentPurchase,
     ComponentPurchaseItem,
     Inventory,
+    Project,
     ProjectDailyUpdate,
     ProjectInventoryUsed,
     ProjectTool,
@@ -125,6 +126,7 @@ def component_model_create(
 def component_purchase_create(
     *,
     vendor: Vendor = None,
+    project: Project = None,
     purchase_date=None,
     notes: str = None,
     bill_file=None,
@@ -136,6 +138,7 @@ def component_purchase_create(
 
     purchase = ComponentPurchase.objects.create(
         vendor=vendor,
+        project=project,
         purchase_date=purchase_date,
         notes=notes,
         bill_file=bill_file,
@@ -178,6 +181,16 @@ def component_purchase_create(
             inventory.quantity = (inventory.quantity or Decimal("0")) + qty
             inventory.save()
 
+            # If purchase is linked directly to a project, add inventory to that project
+            if project:
+                proj_inv_used, _ = ProjectInventoryUsed.objects.get_or_create(
+                    project=project,
+                    inventory=inventory,
+                    defaults={"quantity": Decimal("0")},
+                )
+                proj_inv_used.quantity = (proj_inv_used.quantity or Decimal("0")) + qty
+                proj_inv_used.save()
+
     purchase.total_price = float(grand_total)
     purchase.save()
 
@@ -189,11 +202,14 @@ def component_purchase_update(
     *,
     purchase: ComponentPurchase,
     vendor: Vendor = None,
+    project: Project = None,
     purchase_date=None,
     notes: str = None,
     bill_file=None,
     items_data: list = None,
 ) -> ComponentPurchase:
+    old_project = purchase.project
+
     # Map old items & quantities before clearing
     old_items_map = {}
     for old_item in purchase.items.all():
@@ -205,12 +221,25 @@ def component_purchase_update(
 
     # Update purchase header
     purchase.vendor = vendor
+    purchase.project = project
     purchase.purchase_date = purchase_date
     purchase.notes = notes
     if bill_file is not None:
         purchase.bill_file = bill_file
 
     grand_total = Decimal("0.0")
+
+    # If old_project exists, reduce old project inventory quantities for removed items
+    if old_project:
+        for old_m_id, old_qty in old_items_map.items():
+            inv = Inventory.objects.filter(component_model_id=old_m_id).first()
+            if inv:
+                p_used = ProjectInventoryUsed.objects.filter(
+                    project=old_project, inventory=inv
+                ).first()
+                if p_used:
+                    p_used.quantity = max(Decimal("0"), (p_used.quantity or Decimal("0")) - old_qty)
+                    p_used.save()
 
     if items_data:
         for item_dict in items_data:
@@ -251,6 +280,21 @@ def component_purchase_update(
             if delta != 0:
                 inventory.quantity = max(Decimal("0"), (inventory.quantity or Decimal("0")) + delta)
                 inventory.save()
+
+            # If project is linked, update ProjectInventoryUsed for new project
+            if project:
+                proj_inv_used, _ = ProjectInventoryUsed.objects.get_or_create(
+                    project=project,
+                    inventory=inventory,
+                    defaults={"quantity": Decimal("0")},
+                )
+                if project == old_project:
+                    proj_inv_used.quantity = max(
+                        Decimal("0"), (proj_inv_used.quantity or Decimal("0")) + delta
+                    )
+                else:
+                    proj_inv_used.quantity = (proj_inv_used.quantity or Decimal("0")) + qty
+                proj_inv_used.save()
 
     # Deduct stock for items that were completely removed in the updated purchase
     for removed_model_id, removed_qty in old_items_map.items():
