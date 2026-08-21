@@ -32,13 +32,13 @@ def _update_order_on_success(order, merchant_txn_id):
     if not order:
         return
     update_fields = []
-    if hasattr(order, "order_status"):
-        order.order_status = "Confirmed"
-        update_fields.append("order_status")
     if hasattr(order, "is_paid"):
         order.is_paid = True
         update_fields.append("is_paid")
-    if hasattr(order, "status"):
+    if hasattr(order, "order_status"):
+        order.order_status = "Confirmed"
+        update_fields.append("order_status")
+    elif hasattr(order, "status"):
         order.status = "Confirmed"
         update_fields.append("status")
     if hasattr(order, "transaction_id"):
@@ -270,6 +270,14 @@ class NPSWebhookListenerAPIView(APIView):
             except (ValueError, TypeError):
                 pass
 
+            order_id = request.query_params.get("order_id") or request.query_params.get(
+                "order"
+            )
+            if not txn.order and order_id:
+                order_obj = Order.objects.filter(id=order_id).first()
+                if order_obj:
+                    txn.order = order_obj
+
             if str(txn_status).strip().lower() in ["success", "0"]:
                 txn.status = "Success"
                 _update_order_on_success(txn.order, merchant_txn_id)
@@ -344,6 +352,14 @@ class NPSVerifyTransactionAPIView(APIView):
                 txn.service_charge = float(data.get("ServiceCharge", 0.0))
             except (ValueError, TypeError):
                 pass
+
+            order_id = request.query_params.get("order_id") or request.query_params.get(
+                "order"
+            )
+            if not txn.order and order_id:
+                order_obj = Order.objects.filter(id=order_id).first()
+                if order_obj:
+                    txn.order = order_obj
 
             if str(txn_status).strip().lower() in ["success", "0"]:
                 txn.status = "Success"

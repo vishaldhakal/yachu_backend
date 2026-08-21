@@ -120,7 +120,10 @@ class OrderListCreateView(ListCreateAPIView):
                 "remarks": request.data.get("remarks"),
                 "payment_type": request.data.get("payment_type", "COD"),
                 "order_products": order_products,
-                "transaction_id": request.data.get("transaction_id") or None,
+                "transaction_id": request.data.get("transaction_id")
+                or request.data.get("merchant_txn_id")
+                or None,
+
                 "is_paid": is_paid_val,
             }
             # Update the request data

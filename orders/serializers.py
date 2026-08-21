@@ -26,9 +26,13 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_products = OrderProductSerializer(many=True)
-    franchise = serializers.CharField(write_only=True, required=False, allow_blank=True, allow_null=True)
+    franchise = serializers.CharField(
+        write_only=True, required=False, allow_blank=True, allow_null=True
+    )
     is_paid = serializers.BooleanField(required=False, default=False)
-    transaction_id = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    transaction_id = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True
+    )
 
     class Meta:
         model = Order
@@ -77,6 +81,27 @@ class OrderSerializer(serializers.ModelSerializer):
             quantity = order_product_data["quantity"]
             OrderProduct.objects.create(order=order, product=product, quantity=quantity)
 
+        # Assign NPSTransaction based on merchant_txn_id / transaction_id if provided
+        if order.transaction_id:
+            try:
+                from nps_payment.models import NPSTransaction
+
+                nps_txn = NPSTransaction.objects.filter(
+                    merchant_txn_id=order.transaction_id
+                ).first()
+                if nps_txn:
+                    if not nps_txn.order:
+                        nps_txn.order = order
+                        nps_txn.save(update_fields=["order"])
+
+                    # If the transaction was already successful, update order status and is_paid
+                    if str(nps_txn.status).strip().lower() in ["success", "0"]:
+                        order.is_paid = True
+                        order.order_status = "Confirmed"
+                        order.save(update_fields=["is_paid", "order_status"])
+            except Exception:
+                pass
+
         return order
 
     def update(self, instance, validated_data):
@@ -121,4 +146,12 @@ class TrackingSerializer(serializers.ModelSerializer):
 class InstantOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstantOrder
-        fields = ["id", "name", "phone_number", "address", "quantity", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "name",
+            "phone_number",
+            "address",
+            "quantity",
+            "created_at",
+            "updated_at",
+        ]
