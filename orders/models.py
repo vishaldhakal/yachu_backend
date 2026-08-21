@@ -46,10 +46,15 @@ class OrderProduct(models.Model):
 class Order(models.Model):
     ORDER_STATUS_CHOICES = [
         ("Pending", "Pending"),
+        ("Confirmed", "Confirmed"),
         ("Processing", "Processing"),
         ("Shipped", "Shipped"),
         ("Delivered", "Delivered"),
         ("Cancelled", "Cancelled"),
+    ]
+    PAYMENT_TYPE_CHOICES = [
+        ("COD", "Cash on Delivery"),
+        ("NPS", "Nepal Payment Solution"),
     ]
     franchise = models.ForeignKey(
         Franchise, on_delete=models.CASCADE, blank=True, null=True
@@ -60,6 +65,13 @@ class Order(models.Model):
     delivery_address = models.CharField(max_length=200)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     alternate_phone_number = models.CharField(max_length=20, blank=True, null=True)
+    payment_type = models.CharField(
+        max_length=50, choices=PAYMENT_TYPE_CHOICES, default="COD", db_index=True
+    )
+    is_paid = models.BooleanField(default=False, db_index=True)
+    transaction_id = models.CharField(
+        max_length=255, blank=True, null=True, db_index=True
+    )
     order_status = models.CharField(
         max_length=255, choices=ORDER_STATUS_CHOICES, default="Pending"
     )

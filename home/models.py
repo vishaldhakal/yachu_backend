@@ -167,6 +167,9 @@ class Member(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class FormData(models.Model):
     team_name = models.CharField(max_length=100)
@@ -178,6 +181,12 @@ class FormData(models.Model):
         "FileSchema", related_name="form_data", blank=True
     )
 
+    def __str__(self) -> str:
+        return self.team_name
+
 
 class FileSchema(models.Model):
     file = models.FileField(upload_to="uploads/")
+
+    def __str__(self) -> str:
+        return self.file.name

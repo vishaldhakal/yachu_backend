@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "ai_data",
     "api_keys",
     "price_guess",
+    "nps_payment",
 ]
 
 MIDDLEWARE = [
@@ -306,10 +307,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://fri-recipients-salt-shirt.trycloudflare.com",
+    "https://qualify-ruling-heater-sbjct.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://fri-recipients-salt-shirt.trycloudflare.com",
+    "https://qualify-ruling-heater-sbjct.trycloudflare.com",
     "https://www.yachu.baliyoventures.com",
     "https://yachu.baliyoventures.com",
 ]

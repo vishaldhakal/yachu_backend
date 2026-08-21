@@ -26,7 +26,9 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_products = OrderProductSerializer(many=True)
-    franchise = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    franchise = serializers.CharField(write_only=True, required=False, allow_blank=True, allow_null=True)
+    is_paid = serializers.BooleanField(required=False, default=False)
+    transaction_id = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Order
@@ -38,6 +40,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "phone_number",
             "alternate_phone_number",
             "delivery_address",
+            "payment_type",
+            "is_paid",
+            "transaction_id",
             "order_status",
             "created_at",
             "updated_at",

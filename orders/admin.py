@@ -22,11 +22,13 @@ class OrderAdmin(ModelAdmin):
         "full_name",
         "phone_number",
         "total_amount",
+        "is_paid",
+        "transaction_id",
         "order_status",
         "created_at",
     )
-    list_filter = ("order_status",)
-    search_fields = ("full_name", "phone_number")
+    list_filter = ("is_paid", "order_status")
+    search_fields = ("full_name", "phone_number", "transaction_id")
 
     def save_model(self, request, obj, form, change):
         is_new = obj.pk is None

@@ -39,12 +39,15 @@ class OrderFilter(django_filters.FilterSet):
     order_status = django_filters.CharFilter(
         field_name="order_status", lookup_expr="icontains"
     )
+    payment_type = django_filters.CharFilter(
+        field_name="payment_type", lookup_expr="iexact"
+    )
     date_gte = django_filters.DateFilter(field_name="created_at", lookup_expr="gte")
     date_lte = django_filters.DateFilter(field_name="created_at", lookup_expr="lte")
 
     class Meta:
         model = Order
-        fields = ["franchise", "order_status", "date_gte", "date_lte"]
+        fields = ["franchise", "order_status", "payment_type", "date_gte", "date_lte"]
 
 
 class OrderListCreateView(ListCreateAPIView):
@@ -96,6 +99,15 @@ class OrderListCreateView(ListCreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+            # Parse optional fields safely
+            is_paid_raw = request.data.get("is_paid")
+            is_paid_val = False
+            if is_paid_raw is not None:
+                if isinstance(is_paid_raw, bool):
+                    is_paid_val = is_paid_raw
+                elif isinstance(is_paid_raw, str):
+                    is_paid_val = is_paid_raw.strip().lower() in ["true", "1", "yes"]
+
             # Create the modified data dictionary
             modified_data = {
                 "franchise": request.data.get("franchise"),
@@ -106,7 +118,10 @@ class OrderListCreateView(ListCreateAPIView):
                 "total_amount": request.data.get("total_amount"),
                 "alternate_phone_number": request.data.get("alternate_phone_number"),
                 "remarks": request.data.get("remarks"),
+                "payment_type": request.data.get("payment_type", "COD"),
                 "order_products": order_products,
+                "transaction_id": request.data.get("transaction_id") or None,
+                "is_paid": is_paid_val,
             }
             # Update the request data
             request._full_data = modified_data
@@ -195,4 +210,5 @@ class InstantOrderRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = InstantOrder.objects.all()
     serializer_class = InstantOrderSerializer
 
-# test push to check media 
+
+# test push to check media
