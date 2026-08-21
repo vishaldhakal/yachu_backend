@@ -21,7 +21,6 @@ class NPSConfigAdmin(ModelAdmin):
 @admin.register(NPSTransaction)
 class NPSTransactionAdmin(ModelAdmin):
     list_display = (
-        "id",
         "merchant_txn_id",
         "order",
         "amount",

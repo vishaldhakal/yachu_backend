@@ -307,10 +307,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://qualify-ruling-heater-sbjct.trycloudflare.com",
+    "https://task-simply-rising-slope.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://qualify-ruling-heater-sbjct.trycloudflare.com",
+    "https://task-simply-rising-slope.trycloudflare.com",
     "https://www.yachu.baliyoventures.com",
     "https://yachu.baliyoventures.com",
 ]

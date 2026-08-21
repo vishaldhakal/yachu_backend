@@ -218,9 +218,11 @@ class NPSWebhookListenerAPIView(APIView):
         merchant_txn_id = request.query_params.get(
             "MerchantTxnId"
         ) or request.query_params.get("merchant_txn_id")
-        gateway_txn_id = request.query_params.get(
-            "GatewayTxnId"
-        ) or request.query_params.get("gateway_txn_id")
+        gateway_txn_id = (
+            request.query_params.get("GatewayTxnId")
+            or request.query_params.get("gateway_txn_id")
+            or request.query_params.get("GatewayReferenceNo")
+        )
 
         if not merchant_txn_id:
             return HttpResponse("invalid request", status=400)
@@ -242,7 +244,6 @@ class NPSWebhookListenerAPIView(APIView):
         # Server-to-server check status verification
         success, status_res = verify_transaction_status(config, merchant_txn_id)
         txn.webhook_received_at = now()
-        txn.gateway_txn_id = gateway_txn_id
         txn.raw_response = status_res
 
         if success and status_res.get("data"):
@@ -252,6 +253,18 @@ class NPSWebhookListenerAPIView(APIView):
             txn.institution = data.get("Institution", "")
             txn.instrument = data.get("Instrument", "")
             txn.cbs_message = data.get("CbsMessage", "")
+
+            # According to NPS Gateway 2025 spec, the CheckTransactionStatus API returns 'GatewayReferenceNo' in data
+            g_id = (
+                data.get("GatewayReferenceNo")
+                or data.get("GatewayTxnId")
+                or data.get("GatewayTxnID")
+            )
+            if g_id:
+                txn.gateway_txn_id = g_id
+            elif gateway_txn_id:
+                txn.gateway_txn_id = gateway_txn_id
+
             try:
                 txn.service_charge = float(data.get("ServiceCharge", 0.0))
             except (ValueError, TypeError):
@@ -261,6 +274,8 @@ class NPSWebhookListenerAPIView(APIView):
                 txn.status = "Success"
                 _update_order_on_success(txn.order, merchant_txn_id)
         else:
+            if gateway_txn_id:
+                txn.gateway_txn_id = gateway_txn_id
             txn.status = "Fail"
 
         txn.save()
@@ -297,6 +312,12 @@ class NPSVerifyTransactionAPIView(APIView):
         ) or request.query_params.get("franchise_slug")
         config = get_nps_config(franchise_identifier=franchise_slug, order=txn.order)
 
+        query_gateway_txn_id = (
+            request.query_params.get("gateway_txn_id")
+            or request.query_params.get("GatewayTxnId")
+            or request.query_params.get("GatewayReferenceNo")
+        )
+
         # Refresh transaction status from NPS
         success, status_res = verify_transaction_status(config, merchant_txn_id)
         if success and status_res.get("data"):
@@ -307,6 +328,18 @@ class NPSVerifyTransactionAPIView(APIView):
             txn.instrument = data.get("Instrument", "")
             txn.cbs_message = data.get("CbsMessage", "")
             txn.raw_response = status_res
+
+            # Extract GatewayReferenceNo / GatewayTxnId according to NPS 2025 spec
+            g_id = (
+                data.get("GatewayReferenceNo")
+                or data.get("GatewayTxnId")
+                or data.get("GatewayTxnID")
+            )
+            if g_id:
+                txn.gateway_txn_id = g_id
+            elif query_gateway_txn_id:
+                txn.gateway_txn_id = query_gateway_txn_id
+
             try:
                 txn.service_charge = float(data.get("ServiceCharge", 0.0))
             except (ValueError, TypeError):
@@ -316,6 +349,9 @@ class NPSVerifyTransactionAPIView(APIView):
                 txn.status = "Success"
                 _update_order_on_success(txn.order, merchant_txn_id)
 
+            txn.save()
+        elif query_gateway_txn_id and not txn.gateway_txn_id:
+            txn.gateway_txn_id = query_gateway_txn_id
             txn.save()
 
         serializer = NPSTransactionSerializer(txn)

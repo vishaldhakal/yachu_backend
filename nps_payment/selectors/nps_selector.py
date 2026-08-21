@@ -36,31 +36,35 @@ def get_nps_config(
         franchise_obj = order.franchise
 
     # Query NPSConfig specifically for this franchise (or default unassigned if no franchise)
+    config = None
     if franchise_obj:
         config = (
-            NPSConfig.objects.select_related("franchise")
+            NPSConfig.objects
+            .select_related("franchise")
             .filter(franchise=franchise_obj)
-            .first()
-        )
-    else:
-        config = (
-            NPSConfig.objects.select_related("franchise")
-            .filter(franchise__isnull=True)
             .first()
         )
 
     if not config:
+        config = (
+            NPSConfig.objects
+            .select_related("franchise")
+            .filter(franchise__isnull=True)
+            .first()
+        )
+
+    # Fallback to any active/available NPSConfig if no franchise-specific config was found
+    if not config:
+        config = NPSConfig.objects.select_related("franchise").first()
+
+    if not config:
         if raise_exception:
-            raise serializers.ValidationError(
-                "NPS payment system is not configured for this franchise."
-            )
+            raise serializers.ValidationError("NPS payment system is not configured.")
         return None
 
     if not config.is_enabled:
         if raise_exception:
-            raise serializers.ValidationError(
-                "NPS payment system is disabled for this franchise."
-            )
+            raise serializers.ValidationError("NPS payment system is disabled.")
         return None
 
     return config
