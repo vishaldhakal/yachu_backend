@@ -11,12 +11,9 @@ from ..constants import (
     ENDPOINT_GET_INSTRUMENTS,
     ENDPOINT_GET_PROCESS_ID,
     ENDPOINT_GET_SERVICE_CHARGE,
-    NPS_PRODUCTION_BASE_URL,
-    NPS_PRODUCTION_GATEWAY_URL,
-    NPS_SANDBOX_BASE_URL,
-    NPS_SANDBOX_GATEWAY_URL,
 )
 from ..models import NPSConfig
+from ..selectors import get_nps_base_url, get_nps_gateway_url
 
 
 def generate_hmac_sha512(payload: Dict[str, Any], secret_key: str) -> str:
@@ -48,14 +45,6 @@ def get_basic_auth_header(username: str, password: str) -> Dict[str, str]:
         "Authorization": f"Basic {b64_encoded}",
         "Content-Type": "application/json",
     }
-
-
-def get_nps_base_url(config: NPSConfig) -> str:
-    return NPS_SANDBOX_BASE_URL if config.is_sandbox else NPS_PRODUCTION_BASE_URL
-
-
-def get_nps_gateway_url(config: NPSConfig) -> str:
-    return NPS_SANDBOX_GATEWAY_URL if config.is_sandbox else NPS_PRODUCTION_GATEWAY_URL
 
 
 def generate_merchant_txn_id() -> str:

@@ -4,7 +4,33 @@ from rest_framework import serializers
 
 from about.models import Franchise
 
+from ..constants import (
+    NPS_PRODUCTION_BASE_URL,
+    NPS_PRODUCTION_GATEWAY_URL,
+    NPS_SANDBOX_BASE_URL,
+    NPS_SANDBOX_GATEWAY_URL,
+)
 from ..models import NPSConfig
+
+
+def get_nps_base_url(config: NPSConfig) -> str:
+    """
+    Returns base URL for NPS requests:
+    If is_sandbox is False, returns production base URL, else sandbox base URL.
+    """
+    if not config.is_sandbox:
+        return NPS_PRODUCTION_BASE_URL
+    return NPS_SANDBOX_BASE_URL
+
+
+def get_nps_gateway_url(config: NPSConfig) -> str:
+    """
+    Returns gateway URL for NPS requests:
+    If is_sandbox is False, returns production gateway URL, else sandbox gateway URL.
+    """
+    if not config.is_sandbox:
+        return NPS_PRODUCTION_GATEWAY_URL
+    return NPS_SANDBOX_GATEWAY_URL
 
 
 def get_nps_config(
