@@ -1,9 +1,10 @@
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from .filters import AQIFilter
 from .models import AQI
@@ -39,6 +40,28 @@ class AQIListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return get_all_aqi()
+
+    def create(self, request, *args, **kwargs):
+        print("=== AQI POST Request Payload ===")
+        print(request.data)
+
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            print("=== AQI POST Validation Error ===")
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            self.perform_create(serializer)
+        except Exception as exc:
+            print("=== AQI POST Exception ===")
+            print(exc)
+            raise exc
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
 
 class LatestAQIAPIView(generics.RetrieveAPIView):
