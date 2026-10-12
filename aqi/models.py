@@ -3,7 +3,7 @@ from django.db import models
 
 class AQI(models.Model):
     aqi = models.CharField(max_length=255)
-    dateTime = models.DateTimeField(auto_now_add=True, db_index=True)
+    dateTime = models.DateTimeField(db_index=True)
 
     class Meta:
         ordering = ["-dateTime"]

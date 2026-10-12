@@ -7,7 +7,7 @@ class AQISerializer(serializers.ModelSerializer):
     class Meta:
         model = AQI
         fields = ["id", "aqi", "dateTime"]
-        read_only_fields = ["id", "dateTime"]
+        read_only_fields = ["id"]
 
     def validate_aqi(self, value: str) -> str:
         """
