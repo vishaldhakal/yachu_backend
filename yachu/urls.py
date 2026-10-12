@@ -20,6 +20,7 @@ urlpatterns = [
     path("api/", include("api_keys.urls")),  # API Key Rotation System
     path("api/", include("price_guess.urls")),
     path("api/", include("nps_payment.urls")),
+    path("api/", include("aqi.urls")),
 ]
 
 if settings.DEBUG:

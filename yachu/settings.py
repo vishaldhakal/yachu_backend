@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "api_keys",
     "price_guess",
     "nps_payment",
+    "aqi",
 ]
 
 MIDDLEWARE = [
@@ -307,10 +308,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "content_style": "body { font-family:Roboto,Helvetica,Arial,sans-serif; font-size:14px }",
 }
 CORS_ALLOWED_ORIGINS = [
-    "https://officer-pumps-bufing-diploma.trycloudflare.com",
+    "https://supervisor-acceptable-palmer-snow.trycloudflare.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://officer-pumps-bufing-diploma.trycloudflare.com",
+    "https://supervisor-acceptable-palmer-snow.trycloudflare.com",
     "https://www.yachu.baliyoventures.com",
     "https://yachu.baliyoventures.com",
 ]

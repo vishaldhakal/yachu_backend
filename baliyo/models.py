@@ -210,12 +210,18 @@ class Inventory(models.Model):
         null=True,
         blank=True,
     )
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.component_model.name if self.component_model else f"Inventory #{self.id}"
+        return (
+            self.component_model.name
+            if self.component_model
+            else f"Inventory #{self.id}"
+        )
 
     @property
     def unit_price(self) -> float:
@@ -224,7 +230,8 @@ class Inventory(models.Model):
         if not self.component_model_id:
             return 0.0
         latest_item = (
-            ComponentPurchaseItem.objects.filter(component_model=self.component_model)
+            ComponentPurchaseItem.objects
+            .filter(component_model=self.component_model)
             .order_by("-created_at")
             .first()
         )
@@ -282,7 +289,9 @@ class ProjectInventoryUsed(models.Model):
     inventory = models.ForeignKey(
         "Inventory", on_delete=models.CASCADE, related_name="projects_used"
     )
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
