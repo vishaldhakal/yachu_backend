@@ -52,6 +52,31 @@ class AQIListCreateAPIView(generics.ListCreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            incoming_aqi = serializer.validated_data.get("aqi")
+            incoming_date_time = serializer.validated_data.get("dateTime")
+            latest_aqi = get_latest_aqi()
+
+            is_unchanged = False
+            if latest_aqi:
+                current_val = str(latest_aqi.aqi).strip()
+                new_val = str(incoming_aqi).strip()
+                if current_val == new_val:
+                    is_unchanged = True
+                else:
+                    try:
+                        is_unchanged = float(current_val) == float(new_val)
+                    except (ValueError, TypeError):
+                        is_unchanged = False
+
+            if is_unchanged:
+                print(
+                    f"=== AQI POST: AQI unchanged ({latest_aqi.aqi}). Updating dateTime to {incoming_date_time} ==="
+                )
+                latest_aqi.dateTime = incoming_date_time
+                latest_aqi.save(update_fields=["dateTime"])
+                response_serializer = self.get_serializer(latest_aqi)
+                return Response(response_serializer.data, status=status.HTTP_200_OK)
+
             self.perform_create(serializer)
         except Exception as exc:
             print("=== AQI POST Exception ===")
